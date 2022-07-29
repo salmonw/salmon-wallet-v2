@@ -7,6 +7,7 @@ import { ROUTES_MAP as ROUTES_MAP_APP } from '../../routes/app-routes';
 import { ROUTES_MAP } from './routes';
 
 import theme from '../../component-library/Global/theme';
+import commonStyles from '../Styles/CommonStyles';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalText from '../../component-library/Global/GlobalText';
@@ -21,15 +22,6 @@ import AppIcon from '../../assets/images/AppIcon.png';
 import AppTitle from '../../assets/images/AppTitle.png';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignSelf: 'center',
-    paddingVertical: 40,
-    paddingHorizontal: theme.gutters.paddingSM,
-    width: '100%',
-    maxWidth: theme.variables.mobileWidthLG,
-  },
   headerActions: {
     // width: '100%',
   },
@@ -128,7 +120,7 @@ const SelectOptions = () => {
 
   return (
     <GlobalLayout>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         {step === 0 && (
           <SelectAction
             onNext={onSelectAction}

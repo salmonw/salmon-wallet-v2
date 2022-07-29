@@ -5,6 +5,7 @@ import { useNavigation } from '../../routes/hooks';
 import { ROUTES_MAP } from '../../routes/app-routes';
 
 import theme from '../../component-library/Global/theme';
+import commonStyles from '../Styles/CommonStyles';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalText from '../../component-library/Global/GlobalText';
 import GlobalImage from '../../component-library/Global/GlobalImage';
@@ -16,15 +17,6 @@ import GlobalDivider from '../../component-library/Global/GlobalDivider';
 import IconSuccessGradient from '../../assets/images/IconSuccessGradient.png';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 40,
-    paddingHorizontal: theme.gutters.paddingSM,
-    width: '100%',
-    maxWidth: theme.variables.mobileWidthLG,
-  },
   containerTop: {
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -81,7 +73,7 @@ const WelcomePage = () => {
 
   return (
     <GlobalLayout>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         <View style={styles.containerTop}>
           <View style={styles.headerActions}>
             <GlobalButton

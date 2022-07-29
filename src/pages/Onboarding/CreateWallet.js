@@ -10,6 +10,7 @@ import clipboard from '../../utils/clipboard';
 import { createAccount } from '../../utils/wallet';
 
 import theme from '../../component-library/Global/theme';
+import commonStyles from '../Styles/CommonStyles';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalInput from '../../component-library/Global/GlobalInput';
@@ -20,16 +21,6 @@ import GlobalPageDot from '../../component-library/Global/GlobalPageDot';
 import GlobalDivider from '../../component-library/Global/GlobalDivider';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignSelf: 'center',
-    paddingHorizontal: theme.gutters.paddingSM,
-    paddingVertical: 40,
-    maxWidth: theme.variables.mobileWidthLG,
-    width: '100%',
-    minHeight: '100%',
-  },
   headerActions: {
     // width: '100%',
   },
@@ -335,7 +326,7 @@ const CreateWallet = ({ params }) => {
   };
   return (
     <GlobalLayout>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         {step === 1 && (
           <Message
             onNext={() => setStep(2)}

@@ -25,6 +25,7 @@ const initialState = {
   isLogged: false,
   ready: false,
   hiddenBalance: false,
+  isExtension: process.env.REACT_APP_IS_EXTENSION || false,
 };
 
 const reducer = (state, action) => {

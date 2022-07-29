@@ -7,6 +7,7 @@ import { ROUTES_MAP } from '../../routes/app-routes';
 import { ROUTES_MAP as ROUTES_ONBOARDING } from './routes';
 
 import theme from '../../component-library/Global/theme';
+import commonStyles from '../Styles/CommonStyles';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalText from '../../component-library/Global/GlobalText';
@@ -25,16 +26,6 @@ import {
 } from '../../utils/wallet';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignSelf: 'center',
-    paddingHorizontal: theme.gutters.paddingSM,
-    paddingVertical: 40,
-    width: '100%',
-    maxWidth: theme.variables.mobileWidthLG,
-    minHeight: '100%',
-  },
   headerActions: {
     width: '100%',
   },
@@ -294,7 +285,7 @@ const RecoverWallet = () => {
 
   return (
     <GlobalLayout>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         {step === 1 && (
           <Form
             onComplete={handleRecover}
