@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigation } from '../../routes/hooks';
 
 import { AppContext } from '../../AppProvider';
 
@@ -18,7 +18,7 @@ import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 
 const LockedPage = ({ t }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigation();
   const [, { unlockWallets, logout }] = useContext(AppContext);
   const [pass, setPass] = useState('');
   const [error, setError] = useState(false);
