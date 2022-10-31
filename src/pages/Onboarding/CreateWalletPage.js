@@ -208,7 +208,7 @@ const CreateWalletPage = ({ params, t }) => {
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.CREATE_WALLET);
   const navigate = useNavigation();
   const [
-    { selectedEndpoints, requiredLock, isAdapter },
+    { selectedEndpoints, requiredLock, isAdapter, biometricEnabled },
     { addWallet, checkPassword },
   ] = useContext(AppContext);
   const [step, setStep] = useState(1);
@@ -289,6 +289,7 @@ const CreateWalletPage = ({ params, t }) => {
           requiredLock={requiredLock}
           checkPassword={checkPassword}
           waiting={waiting}
+          biometricEnabled={biometricEnabled}
           t={t}
         />
       )}

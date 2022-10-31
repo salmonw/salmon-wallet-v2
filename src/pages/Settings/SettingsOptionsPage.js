@@ -83,7 +83,7 @@ const SettingsOptionsPage = ({ t }) => {
   const goToExplorer = () =>
     navigate(ROUTES_SETTINGS_MAP.SETTINGS_CHANGEEXPLORER);
 
-  // const goToSecurity = () => navigate(ROUTES_SETTINGS_MAP.SETTINGS_SECURITY);
+  const goToSecurity = () => navigate(ROUTES_SETTINGS_MAP.SETTINGS_SECURITY);
 
   // const goToNofifications = () =>
   //   navigate(ROUTES_SETTINGS_MAP.SETTINGS_NOTIFICATIONS);
@@ -145,13 +145,11 @@ const SettingsOptionsPage = ({ t }) => {
           {explorer && <GlobalText type="caption">{explorer.name}</GlobalText>}
         </CardButton>
 
-        {/*Not implemented yet
         <CardButton
           title={t(`settings.security`)}
           actionIcon="right"
           onPress={goToSecurity}
         />
-         */}
 
         {/*Not implemented yet
         <CardButton

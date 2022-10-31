@@ -12310,6 +12310,11 @@ react-native-crypto-js@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-crypto-js/-/react-native-crypto-js-1.0.0.tgz#e677e022e147f41b35614416c92d655f87e2450a"
   integrity sha512-FNbLuG/HAdapQoybeZSoes1PWdOj0w242gb+e1R0hicf3Gyj/Mf8M9NaED2AnXVOX01b2FXomwUiw1xP1K+8sA==
 
+react-native-device-crypto@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/react-native-device-crypto/-/react-native-device-crypto-0.1.7.tgz#4d7fd50952766d9337fdea6d52cea00163f9521a"
+  integrity sha512-dE8hBni8Lddj/NlC6ChTnfzWHXnmIdnIDVDihJv32i9yVPm3FLbYekQCscTFMbNwAp3p96/kmfk0w0QNwgoFng==
+
 react-native-encrypted-storage@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/react-native-encrypted-storage/-/react-native-encrypted-storage-4.0.2.tgz#c7d59b1d3ff2f80d572be3e85aaab3fdee16744a"

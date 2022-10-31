@@ -20,6 +20,7 @@ const Password = ({
   requiredLock,
   checkPassword,
   waiting,
+  biometricEnabled,
   t,
 }) => {
   const [pass, setPass] = useState('');
@@ -47,8 +48,8 @@ const Password = ({
   };
 
   const onContinue = async () => {
-    if (requiredLock) {
-      setChecking(true);
+    setChecking(true);
+    if (requiredLock && !biometricEnabled) {
       const result = await checkPassword(pass);
       if (!result) {
         setWrongpass(true);
@@ -57,7 +58,12 @@ const Password = ({
         onComplete(pass);
       }
     } else {
-      await onComplete(pass);
+      try {
+        await onComplete(pass);
+      } catch (e) {
+        setWrongpass(true);
+        setChecking(false);
+      }
     }
   };
   const onChange = v => {
@@ -187,7 +193,12 @@ const Password = ({
               : t(`wallet.${type}_wallet`)
           }
           onPress={onContinue}
-          disabled={!isValid || checking || waiting || wrongpass || isEmpty}
+          disabled={
+            ((!isValid || isEmpty) && !biometricEnabled) ||
+            checking ||
+            waiting ||
+            wrongpass
+          }
         />
       </GlobalLayout.Footer>
     </>

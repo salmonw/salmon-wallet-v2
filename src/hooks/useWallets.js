@@ -12,6 +12,7 @@ import {
   recoverAccount,
   recoverDerivedAccount,
 } from '../utils/wallet';
+import useBiometrics from './useBiometrics';
 
 const STORAGE_KEYS = {
   WALLETS: 'wallets',
@@ -62,7 +63,9 @@ const useWallets = () => {
   const [ready, setReady] = useState(false);
   const [locked, setLocked] = useState(false);
   const [requiredLock, setRequiredLock] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [selectedEndpoints, setSelectedEndpoints] = useState({});
+  const [biometricOptions, biometricActions] = useBiometrics();
   const waitUntilUnlock = w => {
     setRequiredLock(true);
     setLocked(true);
@@ -82,7 +85,15 @@ const useWallets = () => {
     async (password, endpoints, explorers) => {
       try {
         const storedWallets = await storage.getItem(STORAGE_KEYS.WALLETS);
-        const unlockedWallets = await unlock(storedWallets.wallets, password);
+        let unlockedWallets;
+        if (biometricEnabled) {
+          const unparsedWallets = await biometricActions.unlock(
+            storedWallets.wallets,
+          );
+          unlockedWallets = JSON.parse(unparsedWallets);
+        } else {
+          unlockedWallets = await unlock(storedWallets.wallets, password);
+        }
         const activeIndex = await storage.getItem(STORAGE_KEYS.ACTIVE);
         setWallets(unlockedWallets);
         setConfig(storedWallets.config || {});
@@ -108,7 +119,8 @@ const useWallets = () => {
         return false;
       }
     },
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [biometricEnabled],
   );
 
   const unlockWallets = useCallback(
@@ -121,6 +133,20 @@ const useWallets = () => {
     },
     [unlockWalletsAt, selectedEndpoints],
   );
+
+  const addBiometric = async () => {
+    const encryptedWallets = await biometricActions.lock(
+      JSON.stringify(wallets),
+    );
+    setBiometricEnabled(true);
+    await storage.setItem(STORAGE_KEYS.WALLETS, {
+      passwordRequired: true,
+      biometricEnabled: true,
+      lastNumber,
+      config,
+      wallets: encryptedWallets,
+    });
+  };
 
   const lockWallets = async () => {
     setLocked(true);
@@ -163,6 +189,7 @@ const useWallets = () => {
         } else {
           let result = false;
           const password = await stash.getItem('password');
+          setBiometricEnabled(!!storedWallets.biometricEnabled);
           if (password) {
             result = await unlockWalletsAt(password, activeEndpoints);
           }
@@ -213,9 +240,17 @@ const useWallets = () => {
           ]
         : []),
     ];
-    if (password) {
-      const encryptedWallets = await lock(storedWallets, password);
+    if (password || biometricEnabled) {
+      let encryptedWallets;
+      if (biometricEnabled) {
+        encryptedWallets = await biometricActions.lock(
+          JSON.stringify(storedWallets),
+        );
+      } else {
+        encryptedWallets = await lock(storedWallets, password);
+      }
       await storage.setItem(STORAGE_KEYS.WALLETS, {
+        biometricEnabled,
         passwordRequired: true,
         lastNumber: _lastNumber,
         config: _config,
@@ -263,9 +298,17 @@ const useWallets = () => {
       ),
       ...derivedAccounts,
     ];
-    if (password) {
-      const encryptedWallets = await lock(storedWallets, password);
+    if (password || biometricEnabled) {
+      let encryptedWallets;
+      if (biometricEnabled) {
+        encryptedWallets = await biometricActions.lock(
+          JSON.stringify(storedWallets),
+        );
+      } else {
+        encryptedWallets = await lock(storedWallets, password);
+      }
       await storage.setItem(STORAGE_KEYS.WALLETS, {
+        biometricEnabled,
         passwordRequired: true,
         wallets: encryptedWallets,
         config: { ...config, ...derConfig },
@@ -404,6 +447,8 @@ const useWallets = () => {
       selectedEndpoints,
       requiredLock,
       config,
+      biometricOptions,
+      biometricEnabled,
     },
     {
       setWallets,
@@ -420,6 +465,9 @@ const useWallets = () => {
       editWalletAvatar,
       addTrustedApp,
       removeTrustedApp,
+      biometricActions,
+      setBiometricEnabled,
+      addBiometric,
     },
   ];
 };
