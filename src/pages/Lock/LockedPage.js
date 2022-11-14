@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../AppProvider';
 
 import theme from '../../component-library/Global/theme';
@@ -16,11 +16,25 @@ import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 
 const LockedPage = ({ t }) => {
-  const [, { unlockWallets, logout }] = useContext(AppContext);
+  const [{ biometricEnabled }, { unlockWallets, logout }] =
+    useContext(AppContext);
   const [pass, setPass] = useState('');
   const [error, setError] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+
+  useEffect(() => {
+    if (biometricEnabled) {
+      setUnlocking(true);
+      unlockWallets('').then(result => {
+        if (!result) {
+          setError(true);
+          setUnlocking(false);
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.UNLOCK_WALLET);
 
@@ -56,16 +70,19 @@ const LockedPage = ({ t }) => {
 
         <GlobalPadding size="md" />
 
-        <GlobalInput
-          placeholder={t('lock.placeholder')}
-          value={pass}
-          setValue={onChange}
-          secureTextEntry
-          autocomplete={false}
-          invalid={error}
-          autoFocus={true}
-          onEnter={unlock}
-        />
+        {!biometricEnabled && (
+          <GlobalInput
+            placeholder={t('lock.placeholder')}
+            value={pass}
+            setValue={onChange}
+            secureTextEntry
+            autocomplete={false}
+            invalid={error}
+            autoFocus={true}
+            onEnter={unlock}
+          />
+        )}
+
         {error && (
           <GlobalText type="body1" color="negative">
             {t('lock.error')}
@@ -79,7 +96,7 @@ const LockedPage = ({ t }) => {
           wide
           title={unlocking ? t('lock.buttonChecking') : t('lock.buttonUnlock')}
           onPress={unlock}
-          disabled={!pass || unlocking}
+          disabled={(!pass && !biometricEnabled) || unlocking}
         />
 
         <GlobalPadding size="lg" />

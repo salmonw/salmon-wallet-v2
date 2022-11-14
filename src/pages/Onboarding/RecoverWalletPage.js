@@ -97,7 +97,7 @@ const RecoverWalletPage = ({ t }) => {
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.RECOVER_WALLET);
   const navigate = useNavigation();
   const [
-    { selectedEndpoints, requiredLock, isAdapter },
+    { selectedEndpoints, requiredLock, isAdapter, biometricEnabled },
     { addWallet, checkPassword },
   ] = useContext(AppContext);
   const [account, setAccount] = useState(null);
@@ -153,6 +153,7 @@ const RecoverWalletPage = ({ t }) => {
           requiredLock={requiredLock}
           checkPassword={checkPassword}
           waiting={waiting}
+          biometricEnabled={biometricEnabled}
           t={t}
         />
       )}
