@@ -219,6 +219,19 @@
       "content3b": "@salmonwallet"
     }
   },
+  "whitelist": {
+    "whitelist": "Whitelist",
+    "whitelist_alpha": "Whitelist Alpha",
+    "whitelist_beta": "Whitelist Beta",
+    "whitelist_gamma": "Whitelist Gamma",
+    "not_opened_alpha": "Will open soon",
+    "not_opened_beta": "Will open once alpha is full",
+    "not_opened_gamma": "Will open once beta is full",
+    "completed": "This phase is full",
+    "registered": "You are registered!",
+    "click_to_register": "Click to register",
+    "learn_more": "Learn more"
+  },
   "adapter": {
     "select": {
       "title": "Welcome"

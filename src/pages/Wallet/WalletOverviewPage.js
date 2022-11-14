@@ -26,6 +26,7 @@ import Header from '../../component-library/Layout/Header';
 // import IconNotifications from '../../assets/images/IconNotifications.png';
 // import IconNotificationsAdd from '../../assets/images/IconNotificationsAdd.png';
 import { isMoreThanOne } from '../../utils/nfts';
+import GlobalWhitelist from '../../component-library/Global/GlobalWhitelist';
 // import IconNotifications from '../../assets/images/IconNotifications.png';
 // import IconNotificationsAdd from '../../assets/images/IconNotificationsAdd.png';
 
@@ -152,6 +153,16 @@ const WalletOverviewPage = ({ t }) => {
               />
             </GlobalCollapse>
           ) : null}
+
+          <GlobalPadding />
+
+          <GlobalCollapse
+            title={t('whitelist.whitelist')}
+            isOpen
+            viewAllAction={goToNFTs}
+            actionTitle={t('whitelist.learn_more')}>
+            <GlobalWhitelist t={t} />
+          </GlobalCollapse>
 
           <GlobalPadding />
 

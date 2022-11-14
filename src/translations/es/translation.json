@@ -190,6 +190,19 @@
       "select_blockchain_text": "Ten en cuenta que la Wallet que estás por crear funcionará únicamente en este blockchain.\nPodrás agregar Wallets de otros blockchains más tarde."
     }
   },
+  "whitelist": {
+    "whitelist": "Whitelist",
+    "whitelist_alpha": "Whitelist Alpha",
+    "whitelist_beta": "Whitelist Beta",
+    "whitelist_gamma": "Whitelist Gamma",
+    "not_opened_alpha": "Abrirá pronto",
+    "not_opened_beta": "Abrirá pronto cuando alpha este completo",
+    "not_opened_gamma": "Abrirá pronto cuando beta este completo",
+    "completed": "Esta fase esta completa",
+    "registered": "Ya te encuentras registrado!",
+    "click_to_register": "Hacé click para registrarte",
+    "learn_more": "Más info"
+  },
   "adapter": {
     "select": {
       "title": "Bienvenido"
