@@ -149,9 +149,8 @@ const TransactionsListPage = ({ t }) => {
             {loaded && recentTransactions?.length ? (
               recentTransactions?.map((transaction, i) => {
                 switch (transaction.type) {
-                  case TRANSACTION_TYPE.TRANSFER:
-                  case TRANSACTION_TYPE.TRANSFER_NEAR:
-                  case TRANSACTION_TYPE.TRANSFER_CHECKED:
+                  case TRANSACTION_TYPE[current_blockchain].TRANSFER:
+                  case TRANSACTION_TYPE[current_blockchain].TRANSFER_CHECKED:
                     const isReceive = transaction.transferType === 'received';
                     const isUnknown = !transaction.destination;
                     const isCreate = isUnknown && !transaction.amount;
@@ -176,6 +175,7 @@ const TransactionsListPage = ({ t }) => {
                           tokenImg1={
                             transaction.transferLogoIn ||
                             transaction.transferLogoOut ||
+                            transaction.nftAmount?.media ||
                             transaction.nftAmount ||
                             (!transaction.error &&
                               getBlockchainIcon(current_blockchain))
@@ -221,7 +221,11 @@ const TransactionsListPage = ({ t }) => {
                                             : 'negativeLight'
                                         }>
                                         {isReceive ? '+ 1 ' : '- 1 '}
-                                        {`${transaction.nftAmount?.collection?.name} `}
+                                        {`${
+                                          transaction.nftAmount?.collection
+                                            ?.name ||
+                                          transaction.nftAmount?.name
+                                        } `}
                                       </GlobalText>
                                     </View>
                                   ),
@@ -261,8 +265,10 @@ const TransactionsListPage = ({ t }) => {
                                             : 'negativeLight'
                                         }>
                                         {isReceive ? '+' : '-'}
-                                        {transaction.amount /
-                                          TOKEN_DECIMALS[current_blockchain] ||
+                                        {(
+                                          transaction.amount /
+                                          TOKEN_DECIMALS[current_blockchain]
+                                        ).toFixed(2) ||
                                           transaction.transferAmount}
                                         {` ${DEFAULT_SYMBOL[current_blockchain]}`}
                                       </GlobalText>
@@ -274,7 +280,7 @@ const TransactionsListPage = ({ t }) => {
                         />
                       </View>
                     );
-                  // case TRANSACTION_TYPE.SWAP:
+                  // case TRANSACTION_TYPE[current_blockchain].SWAP:
                   //   return (
                   //     <View key={`transaction-${i}`}>
                   //       <GlobalText
@@ -362,10 +368,10 @@ const TransactionsListPage = ({ t }) => {
                   //       />
                   //     </View>
                   //   );
-                  // case TRANSACTION_TYPE.GET_ACC_DATA:
-                  // case TRANSACTION_TYPE.CREATE_ACCOUNT:
-                  // case TRANSACTION_TYPE.CREATE:
-                  // case TRANSACTION_TYPE.CLOSE_ACCOUNT:
+                  // case TRANSACTION_TYPE[current_blockchain].GET_ACC_DATA:
+                  // case TRANSACTION_TYPE[current_blockchain].CREATE_ACCOUNT:
+                  // case TRANSACTION_TYPE[current_blockchain].CREATE:
+                  // case TRANSACTION_TYPE[current_blockchain].CLOSE_ACCOUNT:
                   //   return (
                   //     <View key={`transaction-${i}`}>
                   //       <GlobalText
