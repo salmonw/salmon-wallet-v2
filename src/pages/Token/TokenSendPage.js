@@ -128,6 +128,7 @@ const TokenSendPage = ({ params, t }) => {
         recipientAddress,
         token.address,
         recipientAmount,
+        { decimals: token.decimals },
       );
       setTransactionId(txId);
       setStatus(TRANSACTION_STATUS.SENDING);

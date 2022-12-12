@@ -224,7 +224,6 @@ const SwapPage = ({ t }) => {
         const tks = balance.items || [];
         setTokens(tks);
         setInToken(tks.length ? tks[0] : null);
-        console.log('av', atks);
         setAvailableTokens(atks);
         setFeaturedTokens(ftks);
         setReady(true);
