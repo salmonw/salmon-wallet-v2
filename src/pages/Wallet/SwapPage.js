@@ -203,7 +203,10 @@ const SwapPage = ({ t }) => {
 
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.SWAP);
   const current_blockchain = getWalletChain(activeWallet);
-  const { explorer } = useUserConfig(current_blockchain);
+  const { explorer } = useUserConfig(
+    current_blockchain,
+    activeWallet.networkId,
+  );
 
   useEffect(() => {
     if (activeWallet) {
@@ -305,7 +308,6 @@ const SwapPage = ({ t }) => {
         parseFloat(inAmount),
       )
       .then(txs => {
-        console.log('txs', txs);
         setError(false);
         trackEvent(EVENTS_MAP.SWAP_COMPLETED);
         setStatus(TRANSACTION_STATUS.SUCCESS);

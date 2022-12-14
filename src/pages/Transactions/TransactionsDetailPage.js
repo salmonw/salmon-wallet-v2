@@ -91,7 +91,10 @@ const TransactionsDetailPage = ({ t, params }) => {
   const [transactionDetail, setTransactionDetail] = useState({});
   const [loaded, setLoaded] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const { explorer } = useUserConfig(getWalletChain(activeWallet));
+  const { explorer } = useUserConfig(
+    getWalletChain(activeWallet),
+    activeWallet.networkId,
+  );
 
   useAnalyticsEventTracker(SECTIONS_MAP.TRANSACTIONS_LIST);
 
