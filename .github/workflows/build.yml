@@ -6,6 +6,7 @@ on:
     branches:
       - develop
       - main
+      - wip-ci
 
 jobs:
   # Set the job key. The key is displayed as the job name
@@ -34,6 +35,14 @@ jobs:
           aws-region: us-east-1
       - name: Install node modules
         run: yarn install
+      - name: Build Wallet ${{ env.GITHUB_REF_SLUG }}
+        run: |
+          npm run serverless:build:${{ env.GITHUB_REF_SLUG }}
+        env:
+          CI: false
+      - name: Publish ${{ env.GITHUB_REF_SLUG }}
+        run: |
+          npm run serverless:deploy:${{ env.GITHUB_REF_SLUG }}
       - name: Build extensions ${{ env.GITHUB_REF_SLUG }} stack
         run: yarn build:extension
       - name: Upload bundle into S3
