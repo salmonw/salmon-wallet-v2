@@ -169,6 +169,7 @@
     "my_nfts": "My NFTs",
     "nfts": "NFTs",
     "copied": "Copied to clipboard!",
+    "connect_wallet": "Connect with social",
     "create_wallet": "Create Wallet",
     "recover_wallet": "Recover Wallet",
     "select_token": "Select Token",
@@ -212,6 +213,9 @@
       "messageBody": "Recover your wallet using your 12/24 words seed phrase.",
       "pasteSeed": "Paste your seed phrase",
       "i_accept_terms_conditions": "By tapping the Recover Wallet button \nI accept the Terms & Conditions"
+    },
+    "connect": {
+      "i_accept_terms_conditions": "By tapping the Connect Wallet button \nI accept the Terms & Conditions"
     },
     "onboarding": {
       "titleOnboarded": "Add New Wallet",

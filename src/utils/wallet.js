@@ -6,9 +6,12 @@ import {
   getAvailableTokens as getAvailableTokens4m,
   getFeaturedTokens as getFeaturedTokens4m,
   retriveConfig as retrieveConfig4m,
+  getSocialConnectCfg,
+  getSocialConnectModalCfg,
 } from '4m-wallet-adapter';
 import chains from '4m-wallet-adapter/constants/chains';
 import get from 'lodash/get';
+import { Web3Auth } from '@web3auth/modal';
 
 import ENDPOINTS from '../config/endpoints';
 
@@ -178,3 +181,16 @@ export const getAvailableTokens = getAvailableTokens4m;
 export const getFeaturedTokens = getFeaturedTokens4m;
 
 export const retriveConfig = retrieveConfig4m;
+
+export const initConnectModal = async chain => {
+  const socialConnectCfg = await getSocialConnectCfg();
+  const socialConnectModalCfg = await getSocialConnectModalCfg();
+  const web3auth = new Web3Auth(socialConnectCfg);
+  await web3auth.initModal(socialConnectModalCfg);
+  await web3auth.connect();
+  const privateKey = await web3auth.provider.request({
+    method: 'solanaPrivateKey',
+    params: {},
+  });
+  return privateKey;
+};

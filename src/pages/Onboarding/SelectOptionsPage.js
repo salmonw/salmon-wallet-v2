@@ -22,7 +22,7 @@ import { AppContext } from '../../AppProvider';
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 import { ChainCard } from './components/ChainCard';
-import { retriveConfig } from '../../utils/wallet';
+import { retriveConfig, initConnectModal } from '../../utils/wallet';
 
 const styles = StyleSheet.create({
   appIconImage: {
@@ -61,6 +61,16 @@ const SelectAction = ({ onNext, onBack, onboarded, t }) => {
       </GlobalLayout.Inner>
 
       <GlobalLayout.Footer>
+        <GlobalButton
+          type="danger"
+          wide
+          title={t('wallet.connect_wallet')}
+          onPress={() => onNext(ROUTES_MAP.ONBOARDING_CONNECT)}
+          // disabled={!chainCode}
+        />
+
+        <GlobalPadding size="lg" />
+
         <GlobalButton
           type="primary"
           wide
@@ -149,7 +159,7 @@ const SelectChain = ({
 const SelectOptionsPage = ({ t }) => {
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.SELECT_CHAIN);
   const navigate = useNavigation();
-  const [{ wallets }] = useContext(AppContext);
+  const [{ wallets }, { recoverFromPrivateKey }] = useContext(AppContext);
   const [actionRoute, setActionRoute] = useState();
   const [step, setStep] = useState(0);
   const [comingSoon, setComingSoon] = useState(false);
@@ -164,7 +174,13 @@ const SelectOptionsPage = ({ t }) => {
     setActionRoute(action);
     setStep(1);
   };
-  const onSelectChain = chain => {
+
+  const onSelectChain = async chain => {
+    if (actionRoute === 'ONBOARDING_CONNECT') {
+      const privateKey = await initConnectModal(chain);
+      await recoverFromPrivateKey(chain, privateKey);
+      setStep(2);
+    }
     trackEvent(EVENTS_MAP.SELECT_CHAIN, chain);
     navigate(actionRoute, { chainCode: chain });
   };

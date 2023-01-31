@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-scripts/config/webpack.config.js b/node_modules/react-scripts/config/webpack.config.js
-index e465d8e..28f05fd 100644
+index e465d8e..e615447 100644
 --- a/node_modules/react-scripts/config/webpack.config.js
 +++ b/node_modules/react-scripts/config/webpack.config.js
-@@ -303,6 +303,16 @@ module.exports = function (webpackEnv) {
+@@ -303,6 +303,17 @@ module.exports = function (webpackEnv) {
        ],
      },
      resolve: {
@@ -14,12 +14,13 @@ index e465d8e..28f05fd 100644
 +        "http": require.resolve("stream-http"),
 +        "https": require.resolve("https-browserify"),
 +        "os": require.resolve("os-browserify"),
-+        "url": require.resolve("url")
++        "url": require.resolve("url"),
++        "process/browser": require.resolve("process/browser")
 +      },
        // This allows you to set a fallback for where webpack should look for modules.
        // We placed these paths second because we want `node_modules` to "win"
        // if there are any conflicts. This matches Node resolution mechanism.
-@@ -604,6 +614,10 @@ module.exports = function (webpackEnv) {
+@@ -604,6 +615,10 @@ module.exports = function (webpackEnv) {
        ].filter(Boolean),
      },
      plugins: [

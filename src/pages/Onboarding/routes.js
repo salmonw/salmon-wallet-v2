@@ -2,12 +2,14 @@ import CreateWalletPage from './CreateWalletPage';
 import DerivedAccountsPage from './DerivedAccountsPage';
 import RecoverWalletPage from './RecoverWalletPage';
 import SelectOptionsPage from './SelectOptionsPage';
+import ConnectWalletPage from './ConnectWalletPage';
 
 export const ROUTES_MAP = {
   ONBOARDING_HOME: 'ONBOARDING_HOME',
   ONBOARDING_CREATE: 'ONBOARDING_CREATE',
   ONBOARDING_RECOVER: 'ONBOARDING_RECOVER',
   ONBOARDING_DERIVED: 'ONBOARDING_DERIVED',
+  ONBOARDING_CONNECT: 'ONBOARDING_CONNECT',
 };
 
 const routes = [
@@ -39,6 +41,13 @@ const routes = [
     path: 'derived',
     route: '/onboarding/derived',
     Component: DerivedAccountsPage,
+  },
+  {
+    key: ROUTES_MAP.ONBOARDING_CONNECT,
+    name: 'onboardingConnect',
+    path: 'connect/:chainCode',
+    route: '/onboarding/connect/:chainCode',
+    Component: ConnectWalletPage,
   },
 ];
 

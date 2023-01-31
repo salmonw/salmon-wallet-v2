@@ -489,6 +489,17 @@ const useWallets = () => {
     });
     setConfig(_config);
   };
+
+  const recoverFromPrivateKey = async (chain, privateKey) => {
+    if (privateKey) {
+      const acc = await recoverAccount(
+        chain,
+        privateKey,
+        selectedEndpoints[chain],
+      );
+      setActiveWallet(acc);
+    }
+  };
   return [
     {
       ready,
@@ -504,6 +515,7 @@ const useWallets = () => {
       changeActiveWallet,
       changeEndpoint,
       addWallet,
+      recoverFromPrivateKey,
       addDerivedAccounts,
       unlockWallets,
       lockWallets,
