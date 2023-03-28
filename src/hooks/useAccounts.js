@@ -267,7 +267,7 @@ const useAccounts = () => {
           await load(storedMnemonics);
           setRequiredLock(false);
         } else {
-          setRequiredLock(true);
+          __DEV__ ? setRequiredLock(false) : setRequiredLock(true);
 
           let result = false;
           const password = await stash.getItem('password');
@@ -427,7 +427,7 @@ const useAccounts = () => {
     await storage.setItem(NETWORK_ID, newNetworkId);
     await storage.setItem(PATH_INDEX, 0);
 
-    setRequiredLock(!!password);
+    __DEV__ ? setRequiredLock(false) : setRequiredLock(!!password);
   };
 
   const editAccount = async (
@@ -480,7 +480,7 @@ const useAccounts = () => {
       await storage.setItem(ACCOUNTS, newAccounts.map(formatAccount));
 
       if (password) {
-        setRequiredLock(true);
+        __DEV__ ? setRequiredLock(false) : setRequiredLock(true);
         await storage.setItem(MNEMONICS, await lock(newMnemonics, password));
         await stash.setItem('password', password);
       } else {
