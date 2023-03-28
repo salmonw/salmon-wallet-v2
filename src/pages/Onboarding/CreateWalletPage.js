@@ -31,7 +31,7 @@ const Message = ({ onNext, onBack, waiting, t }) => (
   <>
     <GlobalLayout.Header>
       <GlobalBackTitle onBack={onBack} />
-      <Logo size={isExtension() ? 'sm' : null} />
+      <Logo size={isExtension() ? 'sm' : null} center />
     </GlobalLayout.Header>
 
     <GlobalLayout.Inner>
@@ -73,7 +73,7 @@ const Form = ({ account, onComplete, onBack, t }) => {
           </View>
         </GlobalBackTitle>
 
-        <Logo size={isExtension() ? 'sm' : null} />
+        <Logo size={isExtension() ? 'sm' : null} center />
 
         <GlobalPadding size={isExtension() ? 'lg' : '2xl'} />
 
@@ -161,7 +161,7 @@ const ValidateSeed = ({ account, onComplete, onBack, t }) => {
           </View>
         </GlobalBackTitle>
 
-        <Logo size={isExtension() ? 'sm' : null} />
+        <Logo size={isExtension() ? 'sm' : null} center />
 
         <GlobalPadding size={isExtension() ? 'lg' : '2xl'} />
 

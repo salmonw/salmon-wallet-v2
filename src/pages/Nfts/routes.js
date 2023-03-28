@@ -48,7 +48,7 @@ const routes = [
   },
   {
     key: ROUTES_MAP.NFTS_COLLECTION_DETAIL_PARAMS,
-    name: 'nftsCollectionDetail',
+    name: 'nftsCollectionDetailParams',
     path: 'hyperspace/:id/:nftId/:pageNumber',
     route: '/wallet/nfts/hyperspace/:id/:nftId/:pageNumber',
     Component: NftsCollectionDetailPage,

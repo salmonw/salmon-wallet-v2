@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import GlobalImage from '../../../component-library/Global/GlobalImage';
 import AppIcon from '../../../assets/images/AppIcon.png';
 
@@ -14,14 +14,19 @@ const styles = StyleSheet.create({
     height: 48,
     margin: 'auto',
   },
+  center: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+  },
 });
 
-const Logo = ({ size }) => {
+const Logo = ({ size, center }) => {
   const logoStyle = size === 'sm' ? styles.appLogoSm : styles.appLogo;
   return (
-    <>
+    <View style={center && styles.center}>
       <GlobalImage source={AppIcon} style={logoStyle} />
-    </>
+    </View>
   );
 };
 

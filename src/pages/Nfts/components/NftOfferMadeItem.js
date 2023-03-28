@@ -39,8 +39,6 @@ const styles = StyleSheet.create({
   },
   updateBtn: {
     minHeight: 0,
-    alignSelf: 'left',
-    justifyContent: 'left',
     paddingHorizontal: 0,
   },
   updateBtnTxt: {
@@ -123,7 +121,7 @@ const NftOfferMadeItem = ({ item, isModalOpen, setIsModalOpen, t }) => {
           </View>
         </View>
       </View>
-      {selectedItem && (
+      {selectedItem ? (
         <Modal
           transparent
           animationType="fade"
@@ -137,7 +135,7 @@ const NftOfferMadeItem = ({ item, isModalOpen, setIsModalOpen, t }) => {
             setIsModalOpen={setIsModalOpen}
           />
         </Modal>
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 };

@@ -41,6 +41,8 @@ const styles = StyleSheet.create({
   imageContainer: {
     flexGrow: 1,
     width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   hyperspaceIcon: {
     marginBottom: -3,
@@ -82,7 +84,6 @@ const NftsCollectionDetailPage = ({ params, t }) => {
       ]).then(async ([collDetail, collItems]) => {
         if (collDetail) {
           setCollectionDetail(collDetail?.project_stats[0]);
-          setLoaded(true);
         }
         if (collItems) {
           setCollectionItems(
@@ -93,6 +94,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
           );
           setHasNextPage(collItems.pagination_info?.has_next_page);
         }
+        setLoaded(true);
       });
     }
   }, [activeBlockchainAccount, params.id]);

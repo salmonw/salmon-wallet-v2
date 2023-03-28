@@ -49,7 +49,7 @@ const Form = ({ waiting, onComplete, onBack, t }) => {
             <GlobalPageDot />
           </View>
         </GlobalBackTitle>
-        <Logo size={isExtension() ? 'sm' : null} />
+        <Logo size={isExtension() ? 'sm' : null} center />
 
         <GlobalPadding size={isExtension() ? 'lg' : '2xl'} />
 

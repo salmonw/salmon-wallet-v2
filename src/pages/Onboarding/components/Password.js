@@ -89,7 +89,7 @@ const Password = ({
 
         {requiredLock && (
           <>
-            <Logo size={isExtension() ? 'sm' : null} />
+            <Logo size={isExtension() ? 'sm' : null} center />
 
             <GlobalPadding size={isExtension() ? 'lg' : '2xl'} />
             <GlobalText type="headline2" center>
@@ -120,7 +120,7 @@ const Password = ({
 
         {!requiredLock && (
           <>
-            <Logo size={isExtension() ? 'sm' : null} />
+            <Logo size={isExtension() ? 'sm' : null} center />
 
             <GlobalPadding size={isExtension() ? 'lg' : '2xl'} />
 
