@@ -9,7 +9,7 @@ import theme from '../../component-library/Global/theme';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalButton from '../../component-library/Global/GlobalButton';
-import AvatarImage from '../../component-library/Image/AvatarImage';
+import GlobalImage from '../../component-library/Global/GlobalImage';
 import CardButton from '../../component-library/CardButton/CardButton';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalText from '../../component-library/Global/GlobalText';
@@ -51,10 +51,9 @@ const ExchangeSection = ({ t }) => {
           title={t('swap.same_blockchain')}
           active={optSelected === 0}
           actions={[
-            <AvatarImage
-              key="network-icon"
+            <GlobalImage
               url={activeBlockchainAccount.network.icon}
-              size={30}
+              size="xs"
             />,
           ]}
         />
@@ -64,9 +63,7 @@ const ExchangeSection = ({ t }) => {
           onPress={() => setOptSelected(1)}
           title={t('swap.other_blockchain')}
           active={optSelected === 1}
-          actions={[
-            <AvatarImage key="bridge-icon" url={IconBridge} size={30} />,
-          ]}
+          actions={[<GlobalImage source={IconBridge} size="xs" />]}
         />
       </GlobalLayout.Header>
 
