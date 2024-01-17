@@ -1,6 +1,11 @@
 # Salmon Wallet
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Salmon was born as a fork of Sollet, and had it's code totally rewritten afterwards. As a result of our Riptide Hackaton presentation, we got honored with a Grant from the Serum Foundation.
+
+We want to Salmon to be 100% transparent. Open-source software promotes decentralization and allows for a more democratic and inclusive ecosystem. It enables anyone to participate and contribute to the project, fostering long-term sustainability and growth.
+
+It also helps to ensure the security and reliability of the code. Why should we use a closed-source self-custodial wallet then?
+
 
 ## Installation
 
@@ -18,13 +23,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-## Run iOS
-
-`yarn start:ios`
-
-## Run Android
-
-`yarn start:android`
 
 ## Build extension
 
