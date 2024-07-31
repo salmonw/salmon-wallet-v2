@@ -180,7 +180,7 @@ const NftsSendPage = ({ params, t }) => {
   };
 
   const openTransaction = async () => {
-    const url = `${explorer.url}/${transactionId}`;
+    const url = explorer.url.replace('{txId}', transactionId);
     const supported = await Linking.canOpenURL(url);
     if (supported) {
       await Linking.openURL(url);
