@@ -10,31 +10,6 @@
     d "1"
     es5-ext "^0.10.47"
 
-"4m-wallet-adapter@^0.0.96":
-  version "0.0.96"
-  resolved "https://registry.yarnpkg.com/4m-wallet-adapter/-/4m-wallet-adapter-0.0.96.tgz#897e7af8a73b99b888c9b30a7684e464ad8ab5e0"
-  integrity sha512-a1L/TvCP/ELsrlzUTRwVRwTMAO0s+uvilOHRQwEEts6s0jVbNWFveBv/iim8Z8E9xFuDElS9kquoCPaMzx6DeQ==
-  dependencies:
-    "@bonfida/spl-name-service" "^0.1.40"
-    "@solana/spl-token" "^0.2.0"
-    "@solana/web3.js" "^1.47.3"
-    axios "^0.27.2"
-    bip32 "^2.0.6"
-    bip39 "^3.0.4"
-    bitcoinjs-lib "^6.0.2"
-    bitcore-lib "^8.25.40"
-    bs58 "^5.0.0"
-    buffer "^6.0.3"
-    coinkey "^3.0.0"
-    ecpair "^2.1.0"
-    ed25519-hd-key "^1.2.0"
-    ethers "^5.7.2"
-    near-api-js "^0.44.2"
-    near-seed-phrase "^0.2.0"
-    qs "^6.10.3"
-    simple-uniswap-sdk "^3.7.0"
-    uuid "^9.0.0"
-
 "@adobe/css-tools@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.0.1.tgz#b38b444ad3aa5fedbb15f2f746dcd934226a12dd"
@@ -14984,6 +14959,31 @@ safe-regex@^1.1.0:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
+
+salmon-wallet-adapter@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/salmon-wallet-adapter/-/salmon-wallet-adapter-0.1.0.tgz#f416fb3a85bae564816378714e3f027bbb04d23b"
+  integrity sha512-2tskgc4cGxoFRP/48pLunm8wAdOm9ITxIL6QPMc19yM0t6STAtUA2n9p5cfQ//fw3necN/a4iRE41NnKLc7qfg==
+  dependencies:
+    "@bonfida/spl-name-service" "^0.1.40"
+    "@solana/spl-token" "^0.2.0"
+    "@solana/web3.js" "^1.47.3"
+    axios "^0.27.2"
+    bip32 "^2.0.6"
+    bip39 "^3.0.4"
+    bitcoinjs-lib "^6.0.2"
+    bitcore-lib "^8.25.40"
+    bs58 "^5.0.0"
+    buffer "^6.0.3"
+    coinkey "^3.0.0"
+    ecpair "^2.1.0"
+    ed25519-hd-key "^1.2.0"
+    ethers "^5.7.2"
+    near-api-js "^0.44.2"
+    near-seed-phrase "^0.2.0"
+    qs "^6.10.3"
+    simple-uniswap-sdk "^3.7.0"
+    uuid "^9.0.0"
 
 salmon-wallet-standard@^0.0.6:
   version "0.0.6"
