@@ -328,7 +328,7 @@ const TransactionDetail = ({
         type="secondary"
         wideSmall
         title={t(`token.send.goto_explorer`)}
-        onPress={() => Linking.openURL(`${explorer.url}/${id}`)}
+        onPress={() => Linking.openURL(explorer.url.replace('{txId}', id))}
       />
       <GlobalPadding />
       <GlobalButton

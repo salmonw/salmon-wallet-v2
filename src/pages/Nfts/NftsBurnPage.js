@@ -59,7 +59,7 @@ const NftsBurnPage = ({ params, t }) => {
   useAnalyticsEventTracker(SECTIONS_MAP.NFT_SEND);
 
   const openTransaction = async () => {
-    const url = `${explorer.url}/${transactionId}`;
+    const url = explorer.url.replace('{txId}', transactionId);
     const supported = await Linking.canOpenURL(url);
     if (supported) {
       await Linking.openURL(url);

@@ -8,6 +8,7 @@ import routes from './routes';
 import { ROUTES_TYPES } from '../../routes/constants';
 import SwapPage from './SwapPage';
 import NftsSection from '../Nfts';
+import ExchangeSection from './ExchangeSection';
 import UnavailablePage from './UnavailablePage';
 
 import GlobalTabBarLayout from '../../component-library/Global/GlobalTabBarLayout';
@@ -27,6 +28,7 @@ const WalletPage = () => {
     if (switches) {
       const nftsRoute = routes.find(r => r.name === 'NFT');
       const swapRoute = routes.find(r => r.name === 'Swap');
+      const exchangeRoute = routes.find(r => r.name === 'Exchange');
 
       if (!switches.nfts?.active) {
         nftsRoute.Component = UnavailablePage;
@@ -37,6 +39,11 @@ const WalletPage = () => {
         swapRoute.Component = UnavailablePage;
       } else {
         swapRoute.Component = SwapPage;
+      }
+      if (!switches.exchange?.active) {
+        exchangeRoute.Component = UnavailablePage;
+      } else {
+        exchangeRoute.Component = ExchangeSection;
       }
     }
   }, [switches]);

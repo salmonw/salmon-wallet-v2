@@ -180,7 +180,7 @@
     "prices_issue": "We are having issues to get prices",
     "load_error": "We are having issues to load data",
     "not_available_title": "Not available",
-    "not_available_msg": "This feature is not available for BTC",
+    "not_available_msg": "This feature is not available",
     "import_tokens": "Import tokens",
     "create": {
       "messageTitle": "Keep your seed phrase safe!",

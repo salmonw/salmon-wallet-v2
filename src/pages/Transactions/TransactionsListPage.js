@@ -1,14 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import moment from 'moment';
-import { isEmpty } from 'lodash';
 
-import { cache, CACHE_TYPES, invalidate } from '../../utils/cache';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalText from '../../component-library/Global/GlobalText';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
-import GlobalButton from '../../component-library/Global/GlobalButton';
 import CardButtonTransaction from '../../component-library/CardButton/CardButtonTransaction';
 import Header from '../../component-library/Layout/Header';
 import theme from '../../component-library/Global/theme';
@@ -41,48 +38,25 @@ const styles = StyleSheet.create({
 });
 
 const TransactionsListPage = ({ t }) => {
-  const pageSize = 8;
+  const pageSize = 10;
 
   const navigate = useNavigation();
   const onDetail = id => navigate(ROUTES_MAP.TRANSACTIONS_DETAIL, { id });
 
   const [{ activeBlockchainAccount }] = useContext(AppContext);
   const [transactions, setTransactions] = useState([]);
-  const [paging, setPaging] = useState({});
   const [loaded, setLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useAnalyticsEventTracker(SECTIONS_MAP.TRANSACTIONS_LIST);
 
   useEffect(() => {
     activeBlockchainAccount
       .getRecentTransactions({ pageSize })
-      .then(({ data, meta }) => {
+      .then(({ data }) => {
         setTransactions(data);
-        setPaging(meta);
       })
       .finally(() => setLoaded(true));
   }, [activeBlockchainAccount]);
-
-  const onLoadMore = useCallback(() => {
-    setLoading(true);
-
-    const cacheKey = `${
-      activeBlockchainAccount.network.id
-    }-${activeBlockchainAccount.getReceiveAddress()}`;
-    activeBlockchainAccount.base
-      .getRecentTransactions({ ...paging, pageSize })
-      .then(({ data, meta }) => {
-        invalidate(CACHE_TYPES.TRANSACTIONS);
-        cache(cacheKey, CACHE_TYPES.TRANSACTIONS, () => ({
-          data: transactions.concat(data),
-          meta,
-        }));
-        setPaging(meta);
-        setTransactions(transactions.concat(data));
-      })
-      .finally(() => setLoading(false));
-  }, [activeBlockchainAccount, transactions, paging]);
 
   const showDate = (recTrans, i) => {
     let lastTransDate;
@@ -144,14 +118,6 @@ const TransactionsListPage = ({ t }) => {
                 style={styles.emptyStyle}>
                 {t('transactions.empty')}
               </GlobalText>
-            )}
-            {loaded && loading && <GlobalSkeleton type="ActivityList" />}
-            {loaded && !loading && !isEmpty(paging) && (
-              <GlobalButton
-                type="text"
-                title="Load more"
-                onPress={onLoadMore}
-              />
             )}
           </View>
         </GlobalLayout.Header>
