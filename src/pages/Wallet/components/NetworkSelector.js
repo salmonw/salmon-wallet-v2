@@ -9,6 +9,7 @@ import IconSolanaVector from '../../../assets/images/IconSolanaVector.png';
 import IconNearVector from '../../../assets/images/IconNearVector.png';
 import IconEthereumVector from '../../../assets/images/IconEthereumVector.png';
 import IconBitcoinVector from '../../../assets/images/IconBitcoinVector.png';
+import IconEclipseVector from '../../../assets/images/IconEclipseVector.png';
 import IconSalmon from '../../../assets/images/IconSalmon.png';
 
 const styles = StyleSheet.create({
@@ -46,6 +47,8 @@ const getNetworkIcon = ({ blockchain }) => {
       return IconSolanaVector;
     case BLOCKCHAINS.NEAR:
       return IconNearVector;
+    case BLOCKCHAINS.ECLIPSE:
+      return IconEclipseVector;
     default:
       return IconSalmon;
   }
