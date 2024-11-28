@@ -1,0 +1,13 @@
+diff --git a/node_modules/@solana/spl-token-group/package.json b/node_modules/@solana/spl-token-group/package.json
+index 634a8e4..b3190a7 100644
+--- a/node_modules/@solana/spl-token-group/package.json
++++ b/node_modules/@solana/spl-token-group/package.json
+@@ -24,7 +24,7 @@
+   "types": "./lib/types/index.d.ts",
+   "exports": {
+     "types": "./lib/types/index.d.ts",
+-    "require": "./lib/cjs/index.js",
++    "require": "./lib/esm/index.js",
+     "import": "./lib/esm/index.js"
+   },
+   "peerDependencies": {

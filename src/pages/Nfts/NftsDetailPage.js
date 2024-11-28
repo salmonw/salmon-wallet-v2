@@ -26,6 +26,17 @@ import IconHyperspace from '../../assets/images/IconHyperspace.jpeg';
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
 
+import { PublicKey } from '@solana/web3.js';
+
+import {
+  TOKEN_2022_PROGRAM_ID,
+  getExtensionData,
+  ExtensionType,
+  getMint,
+} from '@solana/spl-token';
+
+import fetch from 'node-fetch';
+
 const styles = StyleSheet.create({
   renderItemStyle: {
     width: '49%',
@@ -58,6 +69,60 @@ const styles = StyleSheet.create({
   },
 });
 
+function decodeTokenMetadata(hexData) {
+  const buffer = Buffer.from(hexData, 'hex');
+  let offset = 64;
+
+  const nameLength = buffer.readUInt32LE(offset);
+  offset += 4;
+  const name = buffer.slice(offset, offset + nameLength).toString();
+  offset += nameLength;
+
+  const symbolLength = buffer.readUInt32LE(offset);
+  offset += 4;
+  const symbol = buffer.slice(offset, offset + symbolLength).toString();
+  offset += symbolLength;
+
+  const uriLength = buffer.readUInt32LE(offset);
+  offset += 4;
+  const uri = buffer.slice(offset, offset + uriLength).toString();
+
+  return { name, symbol, uri };
+}
+
+const getMetadata = async (mintAddress, connection) => {
+  const mintInfo = await getMint(
+    connection,
+    new PublicKey(mintAddress),
+    'confirmed',
+    TOKEN_2022_PROGRAM_ID,
+  );
+  const tokenMetadataRaw = getExtensionData(
+    ExtensionType.TokenMetadata,
+    mintInfo.tlvData,
+  );
+  if (tokenMetadataRaw) {
+    const metadata = decodeTokenMetadata(
+      Buffer.from(tokenMetadataRaw).toString('hex'),
+    );
+    if (metadata.uri) {
+      try {
+        metadata.uri = metadata.uri.replace(
+          /^ipfs:\/\//,
+          'https://ipfs.io/ipfs/',
+        );
+        const response = await fetch(metadata.uri);
+        const jsonMetadata = await response.json();
+        metadata.json = jsonMetadata;
+      } catch (e) {
+        metadata.jsonError = `Error fetching JSON metadata: ${e.message}`;
+      }
+    }
+    return metadata;
+  }
+  return null;
+};
+
 const NftsDetailPage = ({ params, t }) => {
   useAnalyticsEventTracker(SECTIONS_MAP.NFT_DETAIL);
   const navigate = useNavigation();
@@ -79,6 +144,10 @@ const NftsDetailPage = ({ params, t }) => {
       activeBlockchainAccount.getAllNfts().then(async nfts => {
         const nft = nfts.find(n => n.mint === params.id);
         if (nft) {
+          nft.metadata = await getMetadata(
+            nft.mint,
+            await activeBlockchainAccount.getConnection(),
+          );
           setNftDetail(nft);
         }
         if (activeBlockchainAccount.network.blockchain === BLOCKCHAINS.SOLANA) {
@@ -153,7 +222,15 @@ const NftsDetailPage = ({ params, t }) => {
       </View>
     );
   };
-  const title = nftDetail.name ? nftDetail.name : nftDetail.symbol;
+  const image =
+    nftDetail.metadata?.json?.image ||
+    getMediaRemoteUrl(nftDetail.metadata?.uri);
+  //nftDetail.metadata?.json?.name || nftDetail.metadata?.name || nftDetail.symbol
+  //nftDetail.metadata?.json?.description
+  const title =
+    nftDetail.metadata?.json?.name ||
+    nftDetail.metadata?.name ||
+    nftDetail.symbol;
 
   return (
     (loaded && (
@@ -177,7 +254,7 @@ const NftsDetailPage = ({ params, t }) => {
 
             <View style={styles.imageContainer}>
               <GlobalImage
-                source={getMediaRemoteUrl(nftDetail.media)}
+                source={image}
                 style={styles.nftImage}
                 square
                 squircle
@@ -245,7 +322,7 @@ const NftsDetailPage = ({ params, t }) => {
           <GlobalPadding size="sm" />
 
           <GlobalText type="body1" color="secondary">
-            {nftDetail.description}
+            {nftDetail.metadata?.json?.description}
           </GlobalText>
 
           <GlobalPadding size="xl" />
