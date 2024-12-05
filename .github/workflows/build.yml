@@ -23,10 +23,10 @@ jobs:
         uses: rlespinasse/github-slug-action@v3.x
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Use Node.js 16
+      - name: Use Node.js 18
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 18
           cache: 'npm'
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
