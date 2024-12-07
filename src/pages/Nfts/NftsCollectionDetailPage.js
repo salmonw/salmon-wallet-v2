@@ -66,10 +66,10 @@ const NftsCollectionDetailPage = ({ params, t }) => {
   const [selectedNft, setSelectedNft] = useState(
     params.nftId
       ? {
-        project_id: params.id,
-        token_address: params.nftId,
-        page_number: params.pageNumber,
-      }
+          project_id: params.id,
+          token_address: params.nftId,
+          page_number: params.pageNumber,
+        }
       : {},
   );
 
@@ -101,7 +101,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
   const perc = Math.round(collectionDetail.percentage_of_token_listed * 100);
   const totalSupply = Math.round(
     collectionDetail.num_of_token_listed /
-    collectionDetail.percentage_of_token_listed,
+      collectionDetail.percentage_of_token_listed,
   );
 
   const goToBack = () => {

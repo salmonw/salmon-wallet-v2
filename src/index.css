@@ -40,6 +40,9 @@ code {
   margin-right: auto;
 }
 
-div, input, button, a {
+div,
+input,
+button,
+a {
   outline: none;
 }
