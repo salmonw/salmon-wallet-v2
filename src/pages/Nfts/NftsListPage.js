@@ -17,8 +17,6 @@ import Header from '../../component-library/Layout/Header';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
-import NftCollections from './components/NftCollections';
-import NftOffersMade from './components/NftOffersMade';
 
 const styles = StyleSheet.create({
   container: {
@@ -84,9 +82,6 @@ const NftsListPage = ({ t }) => {
               <GlobalText center type="headline2">
                 {t(`wallet.nfts`)}
               </GlobalText>
-            </View>
-            {switches?.list_in_marketplace?.active && <NftCollections t />}
-            <View>
               <GlobalText type="headline3">{t(`wallet.my_nfts`)}</GlobalText>
             </View>
             <GlobalNftList
@@ -94,13 +89,6 @@ const NftsListPage = ({ t }) => {
               listedInfo={listedInfo}
               onClick={onClick}
             />
-            {switches?.list_in_marketplace?.active && (
-              <NftOffersMade
-                isModalOpen={isModalOpen}
-                setIsModalOpen={setIsModalOpen}
-                t
-              />
-            )}
           </GlobalLayout.Header>
         )}
         {!loaded && <GlobalSkeleton type="NftListScreen" />}

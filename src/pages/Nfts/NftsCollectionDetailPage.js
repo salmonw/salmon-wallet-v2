@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, FlatList, Modal } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
@@ -17,7 +17,6 @@ import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import CardButton from '../../component-library/CardButton/CardButton';
 import Header from '../../component-library/Layout/Header';
-import NftsBuyDetailPage from './NftsBuyDetailPage';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
@@ -67,10 +66,10 @@ const NftsCollectionDetailPage = ({ params, t }) => {
   const [selectedNft, setSelectedNft] = useState(
     params.nftId
       ? {
-          project_id: params.id,
-          token_address: params.nftId,
-          page_number: params.pageNumber,
-        }
+        project_id: params.id,
+        token_address: params.nftId,
+        page_number: params.pageNumber,
+      }
       : {},
   );
 
@@ -102,7 +101,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
   const perc = Math.round(collectionDetail.percentage_of_token_listed * 100);
   const totalSupply = Math.round(
     collectionDetail.num_of_token_listed /
-      collectionDetail.percentage_of_token_listed,
+    collectionDetail.percentage_of_token_listed,
   );
 
   const goToBack = () => {
@@ -246,19 +245,6 @@ const NftsCollectionDetailPage = ({ params, t }) => {
           )}
           style={{ height: 550 }}
         />
-
-        <Modal
-          transparent
-          animationType="fade"
-          onRequestClose={() => setIsModalOpen(false)}
-          visible={isModalOpen}>
-          <NftsBuyDetailPage
-            id={selectedNft.project_id}
-            nftId={selectedNft.token_address}
-            pageNumber={selectedNft.page_number}
-            setIsModalOpen={setIsModalOpen}
-          />
-        </Modal>
       </GlobalLayout.Header>
     </GlobalLayout>
   ) : (

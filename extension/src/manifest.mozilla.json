@@ -37,6 +37,5 @@
     "file://*/*",
     "http://*/*",
     "https://*/*"
-  ],
-  "content_security_policy": "script-src 'self' https://www.googletagmanager.com; object-src 'self'"
+  ]
 }
