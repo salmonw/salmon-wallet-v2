@@ -13,16 +13,6 @@ import Blacklisted from '../../assets/images/Blacklisted.jpeg';
 import IconSolana from '../../assets/images/IconSolana.png';
 import IconHyperspace from '../../assets/images/IconHyperspace.jpeg';
 
-import { PublicKey } from '@solana/web3.js';
-
-import {
-  TOKEN_2022_PROGRAM_ID,
-  getExtensionData,
-  ExtensionType,
-  getMint,
-} from '@solana/spl-token';
-
-import fetch from 'node-fetch';
 import { AppContext } from '../../AppProvider';
 
 const styles = StyleSheet.create({
@@ -61,80 +51,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function decodeTokenMetadata(hexData) {
-  const buffer = Buffer.from(hexData, 'hex');
-  let offset = 64;
-
-  const nameLength = buffer.readUInt32LE(offset);
-  offset += 4;
-  const name = buffer.slice(offset, offset + nameLength).toString();
-  offset += nameLength;
-
-  const symbolLength = buffer.readUInt32LE(offset);
-  offset += 4;
-  const symbol = buffer.slice(offset, offset + symbolLength).toString();
-  offset += symbolLength;
-
-  const uriLength = buffer.readUInt32LE(offset);
-  offset += 4;
-  const uri = buffer.slice(offset, offset + uriLength).toString();
-
-  return { name, symbol, uri };
-}
-
-const getMetadata = async (mintAddress, connection) => {
-  const mintInfo = await getMint(
-    connection,
-    new PublicKey(mintAddress),
-    'confirmed',
-    TOKEN_2022_PROGRAM_ID,
-  );
-  const tokenMetadataRaw = getExtensionData(
-    ExtensionType.TokenMetadata,
-    mintInfo.tlvData,
-  );
-  if (tokenMetadataRaw) {
-    const metadata = decodeTokenMetadata(
-      Buffer.from(tokenMetadataRaw).toString('hex'),
-    );
-    if (metadata.uri) {
-      try {
-        metadata.uri = metadata.uri.replace(
-          /^ipfs:\/\//,
-          'https://ipfs.io/ipfs/',
-        );
-        const response = await fetch(metadata.uri);
-        const jsonMetadata = await response.json();
-        metadata.json = jsonMetadata;
-      } catch (e) {
-        metadata.jsonError = `Error fetching JSON metadata: ${e.message}`;
-      }
-    }
-    return metadata;
-  }
-  return null;
-};
-
 const GlobalNft = ({ nft, onClick = () => {}, t }) => {
   const [completeNft, setCompleteNft] = useState(nft);
   const [{ activeBlockchainAccount }] = useContext(AppContext);
 
-  useEffect(() => {
-    const load = async () => {
-      if (!nft.metadata) {
-        try {
-          const metadata = await getMetadata(
-            nft.mint,
-            await activeBlockchainAccount.getConnection(),
-          );
-          setCompleteNft({ ...nft, metadata });
-        } catch (error) {
-          console.error('Error updating NFTs after display:', error);
-        }
-      }
-    };
-    load();
-  }, [nft, activeBlockchainAccount]);
   return (
     <>
       <TouchableOpacity
