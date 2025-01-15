@@ -80,7 +80,7 @@ const EXPLORERS = {
     testnet: {
       ECLIPSE_SCAN: {
         name: 'Eclipsescan',
-        url: 'https://eclipsescan.xyz/tx/{txId}',
+        url: 'https://eclipsescan.xyz/tx/{txId}?cluster=testnet',
       },
       ECLIPSE_EXPLORER: {
         name: 'Eclipse Explorer',
@@ -90,7 +90,7 @@ const EXPLORERS = {
     devnet: {
       ECLIPSE_SCAN: {
         name: 'Eclipsescan',
-        url: 'https://eclipsescan.xyz/tx/{txId}',
+        url: 'https://eclipsescan.xyz/tx/{txId}?cluster=devnet',
       },
       ECLIPSE_EXPLORER: {
         name: 'Eclipse Explorer',
