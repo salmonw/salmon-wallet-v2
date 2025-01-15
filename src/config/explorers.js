@@ -68,33 +68,33 @@ const EXPLORERS = {
   },
   ECLIPSE: {
     mainnet: {
+      ECLIPSE_SCAN: {
+        name: 'Eclipsescan',
+        url: 'https://eclipsescan.xyz/tx/{txId}',
+      },
       ECLIPSE_EXPLORER: {
         name: 'Eclipse Explorer',
         url: 'https://explorer.dev.eclipsenetwork.xyz/tx/{txId}',
       },
     },
     testnet: {
+      ECLIPSE_SCAN: {
+        name: 'Eclipsescan',
+        url: 'https://eclipsescan.xyz/tx/{txId}',
+      },
       ECLIPSE_EXPLORER: {
         name: 'Eclipse Explorer',
         url: 'https://explorer.dev.eclipsenetwork.xyz/tx/{txId}?cluster=testnet',
       },
-      SOLSCAN: {
-        name: 'Solscan',
-        url: 'https://solscan.io/tx/{txId}?cluster=custom&customUrl=https://testnet.dev2.eclipsenetwork.xyz',
-      },
-      MODULAR_CLOUD: {
-        name: 'Modular Cloud Testnet',
-        url: 'https://explorer.modular.cloud/eclipse-testnet/transactions/{txId}',
-      },
     },
     devnet: {
+      ECLIPSE_SCAN: {
+        name: 'Eclipsescan',
+        url: 'https://eclipsescan.xyz/tx/{txId}',
+      },
       ECLIPSE_EXPLORER: {
         name: 'Eclipse Explorer',
         url: 'https://explorer.dev.eclipsenetwork.xyz/tx/{txId}?cluster=devnet',
-      },
-      SOLSCAN: {
-        name: 'Solscan',
-        url: 'https://solscan.io/tx/{txId}?cluster=custom&customUrl=https://staging-rpc.dev2.eclipsenetwork.xyz',
       },
     },
   },
@@ -105,7 +105,7 @@ const DEFAULT_EXPLORERS = {
   NEAR: 'NEAR_EXPLORER',
   ETHEREUM: 'ETHERSCAN',
   BITCOIN: 'BLOCKCYPHER',
-  ECLIPSE: 'ECLIPSE_EXPLORER',
+  ECLIPSE: 'ECLIPSE_SCAN',
 };
 
 export { EXPLORERS, DEFAULT_EXPLORERS };
