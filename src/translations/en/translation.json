@@ -104,6 +104,7 @@
     }
   },
   "token": {
+    "nonTransferable": "Non transferable",
     "action": {
       "addToken": "Add Custom Token",
       "add": "Add",

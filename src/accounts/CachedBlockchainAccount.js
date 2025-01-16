@@ -112,6 +112,14 @@ class CachedBlockchainAccount {
     return this.base.estimateTransferFee(...args);
   }
 
+  async requiresMemo(...args) {
+    return this.base.requiresMemo(...args);
+  }
+
+  async calculateTransferFee(...args) {
+    return this.base.calculateTransferFee(...args);
+  }
+
   async createTransferTransaction(...args) {
     return this.base.createTransferTransaction(...args);
   }

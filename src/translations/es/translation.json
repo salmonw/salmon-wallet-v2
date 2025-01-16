@@ -91,6 +91,7 @@
     }
   },
   "token": {
+    "nonTransferable": "No transferible",
     "action": {
       "addToken": "Añadir Token",
       "add": "Añadir",

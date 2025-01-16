@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
 import { BLOCKCHAINS } from 'salmon-wallet-adapter';
 import { pick } from 'lodash';
@@ -6,7 +6,6 @@ import { pick } from 'lodash';
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
 import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
-import { ROUTES_MAP as TOKEN_ROUTES_MAP } from './routes';
 import { withTranslation } from '../../hooks/useTranslations';
 import { getTransactionImage, TRANSACTION_STATUS } from '../../utils/wallet';
 import useToken from '../../hooks/useToken';
@@ -35,6 +34,7 @@ import useUserConfig from '../../hooks/useUserConfig';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 import storage from '../../utils/storage';
 import STORAGE_KEYS from '../../utils/storageKeys';
+import TextArea from '../../component-library/Input/TextArea';
 
 const styles = StyleSheet.create({
   buttonStyle: {
@@ -81,6 +81,7 @@ const TokenSendPage = ({ params, t }) => {
   const [addressEmpty, setAddressEmpty] = useState(false);
   const [sending, setSending] = useState(false);
   const [fee, setFee] = useState(null);
+  const [transferFee, setTransferFee] = useState(null);
   const [transactionId, setTransactionId] = useState();
   const [status, setStatus] = useState();
   const [showScan, setShowScan] = useState(false);
@@ -90,6 +91,8 @@ const TokenSendPage = ({ params, t }) => {
     params.toAddress || '',
   );
   const [recipientAmount, setRecipientAmount] = useState('');
+  const [requiresMemo, setRequiresMemo] = useState(false);
+  const [memo, setMemo] = useState(undefined);
   const isBitcoin = useMemo(
     () => activeBlockchainAccount.network.blockchain === BLOCKCHAINS.BITCOIN,
     [activeBlockchainAccount],
@@ -116,16 +119,27 @@ const TokenSendPage = ({ params, t }) => {
   };
 
   const onNext = async () => {
-    if (step === 2) {
+    if (step === 1) {
+      const required = await activeBlockchainAccount.requiresMemo(
+        recipientAddress,
+        token.address,
+      );
+      setRequiresMemo(required);
+    } else if (step === 2) {
       if (!addressEmpty) {
         const feeSend = await activeBlockchainAccount.estimateTransferFee(
           recipientAddress,
           token.address,
           recipientAmount,
-          { ...pick(token, 'decimals') },
+          { ...pick(token, 'decimals'), memo },
         );
         setFee(feeSend);
       }
+      const trnsFee = await activeBlockchainAccount.calculateTransferFee(
+        token.address,
+        recipientAmount,
+      );
+      setTransferFee(trnsFee);
     }
     setStep(step + 1);
   };
@@ -139,7 +153,7 @@ const TokenSendPage = ({ params, t }) => {
           recipientAddress,
           token.address,
           recipientAmount,
-          { ...pick(token, 'decimals') },
+          { ...pick(token, 'decimals'), memo },
         );
       setTransactionId(txId);
       setStatus(TRANSACTION_STATUS.SENDING);
@@ -385,6 +399,14 @@ const TokenSendPage = ({ params, t }) => {
                 </GlobalText>
               )}
               <GlobalPadding size="md" />
+              {requiresMemo && (
+                <TextArea
+                  value={memo}
+                  setValue={setMemo}
+                  lines={3}
+                  label="Memo"
+                />
+              )}
             </GlobalLayout.Header>
 
             <GlobalLayout.Footer inlineFlex>
@@ -400,7 +422,7 @@ const TokenSendPage = ({ params, t }) => {
               <GlobalButton
                 type="primary"
                 flex
-                disabled={!validAmount}
+                disabled={!validAmount || (requiresMemo && !memo)}
                 title={t('token.send.next')}
                 onPress={onNext}
                 style={[globalStyles.button, globalStyles.buttonRight]}
@@ -468,6 +490,17 @@ const TokenSendPage = ({ params, t }) => {
                   <GlobalText type="caption" center color={'warning'}>
                     {t(`token.send.empty_account_fee`)}
                   </GlobalText>
+                )}
+                {transferFee && (
+                  <View style={globalStyles.inlineWell}>
+                    <GlobalText type="caption" color="tertiary">
+                      Transfer Fee
+                    </GlobalText>
+
+                    <GlobalText type="body2">
+                      {formatCurrency(transferFee, token)}
+                    </GlobalText>
+                  </View>
                 )}
               </View>
             </GlobalLayout.Header>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { get } from 'lodash';
 import { BLOCKCHAINS, getSwitches } from 'salmon-wallet-adapter';
@@ -19,6 +19,7 @@ import GlobalFloatingBadge from '../../component-library/Global/GlobalFloatingBa
 import GlobalSendReceive from '../../component-library/Global/GlobalSendReceive';
 import CardButton from '../../component-library/CardButton/CardButton';
 import Header from '../../component-library/Layout/Header';
+import IconInfo from '../../assets/images/IconInfo.png';
 import IconSolana from '../../assets/images/IconSolana.png';
 import IconHyperspaceWhite from '../../assets/images/IconHyperspaceWhite.png';
 import IconHyperspace from '../../assets/images/IconHyperspace.jpeg';
@@ -159,6 +160,14 @@ const NftsDetailPage = ({ params, t }) => {
       });
     }
   }, [activeBlockchainAccount, params.id]);
+
+  const transferable = useMemo(
+    () =>
+      !nftDetail?.extensions
+        ?.map(({ extension }) => extension)
+        ?.includes('nonTransferableAccount'),
+    [nftDetail],
+  );
 
   const getListBtnTitle = () =>
     !listedLoaded ? (
@@ -305,7 +314,7 @@ const NftsDetailPage = ({ params, t }) => {
           <View style={globalStyles.inlineFlexButtons}>
             <GlobalSendReceive
               goToSend={goToSend}
-              canSend={switches?.send}
+              canSend={switches?.send && transferable}
               goToList={goToListing}
               canList={switches?.list_in_marketplace?.active}
               titleList={getListBtnTitle()}
@@ -314,6 +323,17 @@ const NftsDetailPage = ({ params, t }) => {
               canBurn={switches?.burn}
             />
           </View>
+
+          <GlobalPadding size="sm" />
+
+          {!transferable && (
+            <View style={globalStyles.inlineCentered}>
+              <GlobalImage source={IconInfo} size="xxs" circle />
+              <GlobalText type="caption" bold>
+                {t('token.nonTransferable')}
+              </GlobalText>
+            </View>
+          )}
 
           <GlobalPadding size="lg" />
 

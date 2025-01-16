@@ -33,6 +33,7 @@ import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import useUserConfig from '../../hooks/useUserConfig';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 import { formatCurrency } from '../../utils/amount';
+import TextArea from '../../component-library/Input/TextArea';
 
 const styles = StyleSheet.create({
   mediumSizeImage: {
@@ -69,6 +70,7 @@ const NftsSendPage = ({ params, t }) => {
   const [nftDetail, setNftDetail] = useState({});
   const [transactionId, setTransactionId] = useState();
   const [fee, setFee] = useState(null);
+  const [transferFee, setTransferFee] = useState(null);
   const [
     {
       accounts,
@@ -84,6 +86,7 @@ const NftsSendPage = ({ params, t }) => {
   const [addressEmpty, setAddressEmpty] = useState(false);
   const [showScan, setShowScan] = useState(false);
   const [inputAddress, setInputAddress] = useState('');
+  const [memo, setMemo] = useState(undefined);
   const { explorer } = useUserConfig();
 
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.NFT_SEND);
@@ -103,7 +106,7 @@ const NftsSendPage = ({ params, t }) => {
   const goToBack = () => {
     if (step === 1) {
       navigate(NFTS_ROUTES_MAP.NFTS_DETAIL, { id: params.id });
-    } else if (step === 3) {
+    } else if (step === 4) {
       navigate(APP_ROUTES_MAP.WALLET);
     } else {
       setStep(step - 1);
@@ -114,20 +117,46 @@ const NftsSendPage = ({ params, t }) => {
     navigate(NFTS_ROUTES_MAP.NFTS_DETAIL, { id: params.id });
 
   const onNext = async () => {
-    setLoaded(false);
-    setStep(2);
-    try {
-      const feeSend = await activeBlockchainAccount.estimateTransferFee(
-        recipientAddress,
-        nftDetail.mint,
-        1,
-        { ...pick(nftDetail, ['contract', 'standard']) },
-      );
-      setFee(feeSend);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoaded(true);
+    if (step === 1) {
+      setLoaded(false);
+      setStep(2);
+      try {
+        const required = await activeBlockchainAccount.requiresMemo(
+          recipientAddress,
+          nftDetail.mint,
+        );
+        if (!required) {
+          setStep(3);
+        }
+      } catch (e) {
+        console.error(e);
+        setStep(3);
+      }
+      try {
+        const trnsFee = await activeBlockchainAccount.calculateTransferFee(
+          nftDetail.mint,
+          1,
+        );
+        setTransferFee(trnsFee);
+      } catch (e) {
+        console.error(e);
+      }
+
+      try {
+        const feeSend = await activeBlockchainAccount.estimateTransferFee(
+          recipientAddress,
+          nftDetail.mint,
+          1,
+          { ...pick(nftDetail, ['contract', 'standard']), memo },
+        );
+        setFee(feeSend);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoaded(true);
+      }
+    } else {
+      setStep(step + 1);
     }
   };
 
@@ -135,12 +164,12 @@ const NftsSendPage = ({ params, t }) => {
     setSending(true);
     try {
       setStatus(TRANSACTION_STATUS.CREATING);
-      setStep(3);
+      setStep(4);
       const { txId } = await activeBlockchainAccount.createTransferTransaction(
         recipientAddress,
         nftDetail.mint,
         1,
-        { ...pick(nftDetail, ['contract', 'standard']) },
+        { ...pick(nftDetail, ['contract', 'standard']), memo },
       );
       setTransactionId(txId);
       setStatus(TRANSACTION_STATUS.SENDING);
@@ -153,7 +182,7 @@ const NftsSendPage = ({ params, t }) => {
       console.error(e);
       setStatus(TRANSACTION_STATUS.FAIL);
       trackEvent(EVENTS_MAP.NFT_SEND_FAILED);
-      setStep(3);
+      setStep(4);
       setSending(false);
     }
   };
@@ -342,6 +371,47 @@ const NftsSendPage = ({ params, t }) => {
               {nftDetail.name || nftDetail.symbol}
             </GlobalText>
 
+            <TextArea value={memo} setValue={setMemo} lines={3} label="Memo" />
+          </GlobalLayout.Header>
+
+          <GlobalPadding />
+
+          <GlobalLayout.Footer inlineFlex>
+            <GlobalButton
+              type="secondary"
+              flex
+              title={t(`actions.cancel`)}
+              onPress={onCancel}
+              style={[globalStyles.button, globalStyles.buttonLeft]}
+              touchableStyles={globalStyles.buttonTouchable}
+            />
+
+            <GlobalButton
+              disabled={!memo}
+              type="primary"
+              flex
+              title={t(`token.send.next`)}
+              onPress={onNext}
+              style={[globalStyles.button, globalStyles.buttonRight]}
+              touchableStyles={globalStyles.buttonTouchable}
+            />
+          </GlobalLayout.Footer>
+        </>
+      )}
+
+      {step === 3 && (
+        <>
+          <GlobalLayout.Header>
+            <GlobalBackTitle
+              onBack={goToBack}
+              inlineTitle={activeAccount.name}
+              inlineAddress={activeBlockchainAccount.getReceiveAddress()}
+            />
+
+            <GlobalText type="headline2" center>
+              {nftDetail.name || nftDetail.symbol}
+            </GlobalText>
+
             <View style={globalStyles.centered}>
               <View style={[globalStyles.squareRatio, styles.mediumSizeImage]}>
                 <GlobalImage
@@ -395,6 +465,19 @@ const NftsSendPage = ({ params, t }) => {
                   {t(`token.send.empty_account_fee`)}
                 </GlobalText>
               )}
+              {transferFee && (
+                <View style={globalStyles.inlineWell}>
+                  <GlobalText type="caption" color="tertiary">
+                    Transfer Fee
+                  </GlobalText>
+                  <GlobalText type="body2">
+                    {formatCurrency(
+                      transferFee,
+                      activeBlockchainAccount.network.currency,
+                    )}
+                  </GlobalText>
+                </View>
+              )}
             </View>
           </GlobalLayout.Header>
 
@@ -422,7 +505,7 @@ const NftsSendPage = ({ params, t }) => {
           </GlobalLayout.Footer>
         </>
       )}
-      {step === 3 && (
+      {step === 4 && (
         <>
           <GlobalLayout.Header>
             <GlobalPadding size="4xl" />

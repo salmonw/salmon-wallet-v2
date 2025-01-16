@@ -21,12 +21,18 @@ import {
   showValue,
 } from '../../utils/amount';
 
+import IconInfo from '../../assets/images/IconInfo.png';
+
 import TransactionsListComponent from '../Transactions/TransactionsListComponent';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalSendReceive from '../../component-library/Global/GlobalSendReceive';
+import GlobalText from '../../component-library/Global/GlobalText';
 import WalletBalanceCard from '../../component-library/Global/GlobalBalance';
+import GlobalImage from '../../component-library/Global/GlobalImage';
+import { View } from 'react-native';
+import { globalStyles } from '../../component-library/Global/theme';
 
 const TokenDetailPage = ({ params, t }) => {
   const navigate = useNavigation();
@@ -87,6 +93,14 @@ const TokenDetailPage = ({ params, t }) => {
     [token],
   );
 
+  const transferable = useMemo(
+    () =>
+      !token?.extensions
+        ?.map(({ extension }) => extension)
+        ?.includes('nonTransferableAccount'),
+    [token],
+  );
+
   return (
     <GlobalLayout fullscreen>
       <GlobalLayout.Header>
@@ -115,11 +129,19 @@ const TokenDetailPage = ({ params, t }) => {
             <GlobalSendReceive
               goToSend={goToSend}
               goToReceive={goToReceive}
-              canSend={switches?.features?.send}
-              canReceive={switches?.features?.receive}
+              canSend={switches?.features?.send && transferable}
+              canReceive={switches?.features?.receive && transferable}
             />
           }
         />
+        {!transferable && (
+          <View style={globalStyles.inlineCentered}>
+            <GlobalImage source={IconInfo} size="xxs" circle />
+            <GlobalText type="caption" bold>
+              {t('token.nonTransferable')}
+            </GlobalText>
+          </View>
+        )}
         <GlobalPadding size="lg" />
         <TransactionsListComponent t={t} />
       </GlobalLayout.Header>
