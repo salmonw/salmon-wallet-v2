@@ -1,6 +1,6 @@
 {
   "name": "salmon-app",
-  "version": "0.6.2",
+  "version": "0.6.4",
   "private": true,
   "license": "GPL-3.0-only",
   "dependencies": {
