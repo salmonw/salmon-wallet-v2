@@ -5,8 +5,7 @@ import { getSwitches } from 'salmon-wallet-adapter';
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
-import { ROUTES_MAP as NFTS_ROUTES_MAP } from './routes';
-import { isMoreThanOne, updatePendingNfts } from '../../utils/nfts';
+import { updatePendingNfts } from '../../utils/nfts';
 
 import theme from '../../component-library/Global/theme';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
@@ -14,6 +13,7 @@ import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalText from '../../component-library/Global/GlobalText';
 import Header from '../../component-library/Layout/Header';
+import NftDetail from './components/NftDetail';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
@@ -33,13 +33,13 @@ const NftsListPage = ({ t }) => {
   const [nftsGroup, setNftsGroup] = useState([]);
   const [switches, setSwitches] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedNft, setSelectedNft] = useState(null);
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
       setSwitches(allSwitches[networkId].sections.nfts),
     );
   }, [networkId]);
-
   useEffect(() => {
     const load = async () => {
       if (activeBlockchainAccount) {
@@ -62,20 +62,22 @@ const NftsListPage = ({ t }) => {
 
   const onClick = nft => {
     if (!nft.pending) {
-      if (isMoreThanOne(nft)) {
-        navigate(NFTS_ROUTES_MAP.NFTS_COLLECTION, { id: nft.collection });
-      } else {
-        navigate(NFTS_ROUTES_MAP.NFTS_DETAIL, {
-          id: nft.mint || nft.items[0].mint,
-        });
-      }
+      setSelectedNft(nft);
+      setIsModalOpen(true);
     }
   };
 
   return (
-    (
+    <>
       <GlobalLayout style={isModalOpen && styles.container}>
-        {loaded && (
+        {selectedNft && (
+          <NftDetail
+            nftDetail={selectedNft}
+            switches={switches}
+            onClose={() => setSelectedNft(null)}
+          />
+        )}
+        {loaded && !selectedNft && (
           <GlobalLayout.Header>
             <Header />
             <View>
@@ -93,7 +95,7 @@ const NftsListPage = ({ t }) => {
         )}
         {!loaded && <GlobalSkeleton type="NftListScreen" />}
       </GlobalLayout>
-    ) || null
+    </>
   );
 };
 
