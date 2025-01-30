@@ -87,7 +87,8 @@ const NftsListingPage = ({ params, t }) => {
         if (nft) {
           setNftDetail(nft);
         }
-        const listed = await activeBlockchainAccount.getListedNfts();
+        //const listed = await activeBlockchainAccount.getListedNfts();
+        const listed = [];
         setPrice(
           listed.find(l => l.token_address === params.id)?.market_place_state
             ?.price || null,

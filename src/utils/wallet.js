@@ -88,8 +88,7 @@ export const getNonListedTokens = (balance, nfts) =>
     tok => !tok.name && !!Object.values(nfts).includes(tok.mint),
   );
 
-export const getListedTokens = balance =>
-  balance.items?.filter(tok => tok.name);
+export const getListedTokens = balance => balance.items.filter(tok => tok.name);
 
 export const mergeImportedTokens = (tokens, activeTokens) =>
   tokens.filter(token => {

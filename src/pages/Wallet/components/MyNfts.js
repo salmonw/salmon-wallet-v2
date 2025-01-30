@@ -21,7 +21,8 @@ const MyNfts = ({ t }) => {
         setLoading(true);
         const nfts = await activeBlockchainAccount.getAllNftsGrouped();
         setNftsList(await updatePendingNfts(nfts));
-        const listed = await activeBlockchainAccount.getListedNfts();
+        //const listed = await activeBlockchainAccount.getListedNfts();
+        const listed = [];
         setListedInfo(listed);
       } catch (e) {
         console.error(e);

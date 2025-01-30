@@ -48,7 +48,8 @@ const NftsListPage = ({ t }) => {
           const nfts = await activeBlockchainAccount.getAllNftsGrouped();
           setNftsGroup(await updatePendingNfts(nfts));
           if (switches?.list_in_marketplace?.active) {
-            const listed = await activeBlockchainAccount.getListedNfts();
+            //const listed = await activeBlockchainAccount.getListedNfts();
+            const listed = [];
             setListedInfo(listed);
           }
         } finally {
