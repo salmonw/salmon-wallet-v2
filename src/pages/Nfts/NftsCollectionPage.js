@@ -28,7 +28,8 @@ const NftsCollectionPage = ({ params }) => {
         if (collection) {
           setNftsCollection(collection.items);
         }
-        const listed = await activeBlockchainAccount.getListedNfts();
+        //const listed = await activeBlockchainAccount.getListedNfts();
+        const listed = [];
         setListedInfo(listed);
       } finally {
         setLoaded(true);

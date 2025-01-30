@@ -142,7 +142,7 @@ const NftsSendPage = ({ nftDetail, t, onClose }) => {
       setStep(4);
       const { txId } = await activeBlockchainAccount.createTransferTransaction(
         recipientAddress,
-        nftDetail.mint,
+        nftDetail.mint.toBase58(),
         1,
         { ...pick(nftDetail, ['contract', 'standard']), memo },
       );

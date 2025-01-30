@@ -192,6 +192,10 @@ class CachedBlockchainAccount {
       this.base.getFeaturedTokens(),
     );
   }
+
+  async getMetadata(mintAddress, programId) {
+    return this.base.getMetadata(mintAddress, programId);
+  }
 }
 
 module.exports = CachedBlockchainAccount;
