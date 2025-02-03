@@ -11,10 +11,11 @@ const buildRouteWithParams = (route, params) =>
 
 export const useNavigation = () => {
   const navigate = useNavigate();
-  return (to, params = {}) => {
+  return (to, params = {}, state = null) => {
     const toRoute = getRoute(globalRoutes, to);
     if (toRoute) {
-      navigate(buildRouteWithParams(toRoute.route, params));
+      console.log(state);
+      navigate(buildRouteWithParams(toRoute.route, params), { state });
     } else {
       console.warn(`route not found ${to}`);
     }

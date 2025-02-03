@@ -91,33 +91,7 @@ const GlobalNft = ({ nft, onClick = () => {}, t }) => {
           <GlobalFloatingBadge
             {...(isCollection(completeNft) && completeNft.length > 1
               ? { number: completeNft.length }
-              : {
-                  title:
-                    completeNft.lowest_listing_mpa?.price ||
-                    completeNft.marketInfo?.price ? (
-                      <>
-                        <Text>
-                          {completeNft.lowest_listing_mpa?.price?.toFixed(2) ||
-                            completeNft.marketInfo?.price}
-                        </Text>
-                        <GlobalImage
-                          source={IconSolana}
-                          circle
-                          size="xxs"
-                          style={styles.badgeIcon}
-                        />
-                      </>
-                    ) : (
-                      completeNft.metadata?.json?.description && (
-                        <GlobalText
-                          type="caption"
-                          color="tertiary"
-                          numberOfLines={1}>
-                          {completeNft.metadata?.json?.description}
-                        </GlobalText>
-                      )
-                    ),
-                })}
+              : {})}
           />
         </View>
       </TouchableOpacity>

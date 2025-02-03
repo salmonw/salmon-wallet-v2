@@ -58,7 +58,7 @@ const routes = [
     key: ROUTES_MAP.NFTS_DETAIL,
     name: 'nftsDetail',
     path: ':id',
-    route: '/wallet/nfts/:id/',
+    route: '/wallet/nfts/:id',
     Component: NftsDetailPage,
     default: false,
   },

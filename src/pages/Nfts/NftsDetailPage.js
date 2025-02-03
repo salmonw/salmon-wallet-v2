@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { get } from 'lodash';
 import { BLOCKCHAINS, getSwitches } from 'salmon-wallet-adapter';
@@ -70,96 +71,33 @@ const styles = StyleSheet.create({
   },
 });
 
-function decodeTokenMetadata(hexData) {
-  const buffer = Buffer.from(hexData, 'hex');
-  let offset = 64;
+const NftsDetailPage = ({ route, params, t }) => {
+  const location = useLocation();
 
-  const nameLength = buffer.readUInt32LE(offset);
-  offset += 4;
-  const name = buffer.slice(offset, offset + nameLength).toString();
-  offset += nameLength;
-
-  const symbolLength = buffer.readUInt32LE(offset);
-  offset += 4;
-  const symbol = buffer.slice(offset, offset + symbolLength).toString();
-  offset += symbolLength;
-
-  const uriLength = buffer.readUInt32LE(offset);
-  offset += 4;
-  const uri = buffer.slice(offset, offset + uriLength).toString();
-
-  return { name, symbol, uri };
-}
-
-const getMetadata = async (mintAddress, connection) => {
-  const mintInfo = await getMint(
-    connection,
-    new PublicKey(mintAddress),
-    'confirmed',
-    TOKEN_2022_PROGRAM_ID,
-  );
-  const tokenMetadataRaw = getExtensionData(
-    ExtensionType.TokenMetadata,
-    mintInfo.tlvData,
-  );
-  if (tokenMetadataRaw) {
-    const metadata = decodeTokenMetadata(
-      Buffer.from(tokenMetadataRaw).toString('hex'),
-    );
-    if (metadata.uri) {
-      try {
-        metadata.uri = metadata.uri.replace(
-          /^ipfs:\/\//,
-          'https://ipfs.io/ipfs/',
-        );
-        const response = await fetch(metadata.uri);
-        const jsonMetadata = await response.json();
-        metadata.json = jsonMetadata;
-      } catch (e) {
-        metadata.jsonError = `Error fetching JSON metadata: ${e.message}`;
-      }
-    }
-    return metadata;
-  }
-  return null;
-};
-
-const NftsDetailPage = ({ params, t }) => {
   useAnalyticsEventTracker(SECTIONS_MAP.NFT_DETAIL);
   const navigate = useNavigation();
   const [loaded, setLoaded] = useState(false);
   const [listedLoaded, setListedLoaded] = useState(false);
   const [nftDetail, setNftDetail] = useState({});
   const [listedInfo, setListedInfo] = useState([]);
-  const [{ activeBlockchainAccount, networkId }] = useContext(AppContext);
+  const [{ networkId }] = useContext(AppContext);
   const [switches, setSwitches] = useState(null);
+
+  useEffect(() => {
+    const { nft } = location?.state || {};
+    if (!nft) {
+      navigate(ROUTES_MAP.NFTS_LIST);
+      return;
+    }
+    setNftDetail(nft);
+    setLoaded(true);
+  }, [location.state, navigate]);
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
       setSwitches(allSwitches[networkId].sections.nfts),
     );
   }, [networkId]);
-
-  useEffect(() => {
-    if (activeBlockchainAccount) {
-      activeBlockchainAccount.getAllNfts().then(async nfts => {
-        const nft = nfts.find(n => n.mint === params.id);
-        if (nft) {
-          nft.metadata = await getMetadata(
-            nft.mint,
-            await activeBlockchainAccount.getConnection(),
-          );
-          setNftDetail(nft);
-        }
-        if (activeBlockchainAccount.network.blockchain === BLOCKCHAINS.SOLANA) {
-          const listed = await activeBlockchainAccount.getListedNfts();
-          setListedInfo(listed.find(l => l.token_address === params.id));
-          setListedLoaded(true);
-        }
-        setLoaded(true);
-      });
-    }
-  }, [activeBlockchainAccount, params.id]);
 
   const transferable = useMemo(
     () =>
@@ -203,7 +141,7 @@ const NftsDetailPage = ({ params, t }) => {
   };
 
   const goToSend = () => {
-    navigate(ROUTES_MAP.NFTS_SEND, { id: params.id });
+    navigate(ROUTES_MAP.NFTS_SEND, { id: params.id }, { nft: nftDetail });
   };
 
   const goToBurn = () => {

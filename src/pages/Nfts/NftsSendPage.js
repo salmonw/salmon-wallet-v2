@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
 import { pick } from 'lodash';
-
+import { useLocation } from 'react-router-dom';
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
 import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
@@ -32,6 +32,7 @@ import STORAGE_KEYS from '../../utils/storageKeys';
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import useUserConfig from '../../hooks/useUserConfig';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
+import { ROUTES_MAP } from './routes';
 import { formatCurrency } from '../../utils/amount';
 import TextArea from '../../component-library/Input/TextArea';
 
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
 
 const NftsSendPage = ({ params, t }) => {
   const navigate = useNavigation();
+  const location = useLocation();
   const [loaded, setLoaded] = useState(false);
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState();
@@ -92,20 +94,22 @@ const NftsSendPage = ({ params, t }) => {
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.NFT_SEND);
 
   useEffect(() => {
-    if (activeBlockchainAccount) {
-      activeBlockchainAccount.getAllNfts().then(nfts => {
-        const nft = nfts.find(n => n.mint === params.id);
-        if (nft) {
-          setNftDetail(nft);
-        }
-        setLoaded(true);
-      });
+    const { nft } = location?.state || {};
+    if (!nft) {
+      navigate(ROUTES_MAP.NFTS_LIST);
+      return;
     }
-  }, [activeBlockchainAccount, params.id]);
+    setNftDetail(nft);
+    setLoaded(true);
+  }, [location.state, navigate]);
 
   const goToBack = () => {
     if (step === 1) {
-      navigate(NFTS_ROUTES_MAP.NFTS_DETAIL, { id: params.id });
+      navigate(
+        NFTS_ROUTES_MAP.NFTS_DETAIL,
+        { id: params.id },
+        { nft: nftDetail },
+      );
     } else if (step === 4) {
       navigate(APP_ROUTES_MAP.WALLET);
     } else {
