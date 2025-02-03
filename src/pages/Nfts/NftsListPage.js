@@ -7,22 +7,15 @@ import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
 import { updatePendingNfts } from '../../utils/nfts';
 
-import theme from '../../component-library/Global/theme';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalText from '../../component-library/Global/GlobalText';
 import Header from '../../component-library/Layout/Header';
-import NftDetail from './components/NftDetail';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.black300,
-  },
-});
+import { ROUTES_MAP as NFTS_ROUTES_MAP } from '../../pages/Nfts/routes';
 
 const NftsListPage = ({ t }) => {
   useAnalyticsEventTracker(SECTIONS_MAP.NFT_LIST);
@@ -32,8 +25,6 @@ const NftsListPage = ({ t }) => {
   const [listedInfo, setListedInfo] = useState([]);
   const [nftsGroup, setNftsGroup] = useState([]);
   const [switches, setSwitches] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedNft, setSelectedNft] = useState(null);
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
@@ -62,22 +53,14 @@ const NftsListPage = ({ t }) => {
 
   const onClick = nft => {
     if (!nft.pending) {
-      setSelectedNft(nft);
-      setIsModalOpen(true);
+      navigate(NFTS_ROUTES_MAP.NFTS_DETAIL, { id: nft.mint }, { nft });
     }
   };
 
   return (
     <>
-      <GlobalLayout style={isModalOpen && styles.container}>
-        {selectedNft && (
-          <NftDetail
-            nftDetail={selectedNft}
-            switches={switches}
-            onClose={() => setSelectedNft(null)}
-          />
-        )}
-        {loaded && !selectedNft && (
+      <GlobalLayout>
+        {loaded && (
           <GlobalLayout.Header>
             <Header />
             <View>

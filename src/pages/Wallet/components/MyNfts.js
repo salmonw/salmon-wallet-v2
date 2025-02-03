@@ -4,13 +4,11 @@ import { getSwitches } from 'salmon-wallet-adapter';
 import { AppContext } from '../../../AppProvider';
 import GlobalCollapse from '../../../component-library/Global/GlobalCollapse';
 import GlobalNftList from '../../../component-library/Global/GlobalNftList';
-import GlobalLayout from '../../../component-library/Global/GlobalLayout';
 import { useNavigation } from '../../../routes/hooks';
 import { withTranslation } from '../../../hooks/useTranslations';
 import { isMoreThanOne, updatePendingNfts } from '../../../utils/nfts';
 import { ROUTES_MAP as WALLET_ROUTES_MAP } from '../../../pages/Wallet/routes';
 import { ROUTES_MAP as NFTS_ROUTES_MAP } from '../../../pages/Nfts/routes';
-import NftDetail from '../../Nfts/components/NftDetail';
 import theme from '../../../component-library/Global/theme';
 
 const styles = StyleSheet.create({
@@ -86,28 +84,14 @@ const MyNfts = ({ t }) => {
   };
 */
   return (
-    <>
-      <GlobalLayout style={isModalOpen && styles.container}>
-        {selectedNft && (
-          <NftDetail
-            nftDetail={selectedNft}
-            switches={switches}
-            onClose={() => setSelectedNft(null)}
-          />
-        )}
-      </GlobalLayout>
-      <GlobalCollapse
-        title={t('wallet.my_nfts')}
-        viewAllAction={goToNFTs}
-        isOpen>
-        <GlobalNftList
-          loading={loading}
-          nonFungibleTokens={nftsList}
-          listedInfo={listedInfo}
-          onClick={onNftClick}
-        />
-      </GlobalCollapse>
-    </>
+    <GlobalCollapse title={t('wallet.my_nfts')} viewAllAction={goToNFTs} isOpen>
+      <GlobalNftList
+        loading={loading}
+        nonFungibleTokens={nftsList}
+        listedInfo={listedInfo}
+        onClick={onNftClick}
+      />
+    </GlobalCollapse>
   );
 };
 
