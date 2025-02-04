@@ -88,6 +88,7 @@ const NftsSendPage = ({ params, t }) => {
   const [addressEmpty, setAddressEmpty] = useState(false);
   const [showScan, setShowScan] = useState(false);
   const [inputAddress, setInputAddress] = useState('');
+  const [requiresMemo, setRequiresMemo] = useState(undefined);
   const [memo, setMemo] = useState(undefined);
   const { explorer } = useUserConfig();
 
@@ -103,6 +104,27 @@ const NftsSendPage = ({ params, t }) => {
     setLoaded(true);
   }, [location.state, navigate]);
 
+  useEffect(() => {
+    const update = async () => {
+      try {
+        if (recipientAddress && nftDetail?.mint) {
+          const required = await activeBlockchainAccount.requiresMemo(
+            recipientAddress,
+            nftDetail.mint,
+          );
+          setRequiresMemo(required);
+        }
+      } catch (e) {
+        console.error(e);
+        setRequiresMemo(false);
+      }
+    };
+
+    setRequiresMemo(undefined);
+
+    update();
+  }, [activeBlockchainAccount, recipientAddress, nftDetail]);
+
   const goToBack = () => {
     if (step === 1) {
       navigate(
@@ -112,6 +134,8 @@ const NftsSendPage = ({ params, t }) => {
       );
     } else if (step === 4) {
       navigate(APP_ROUTES_MAP.WALLET);
+    } else if (step === 3 && !requiresMemo) {
+      setStep(1);
     } else {
       setStep(step - 1);
     }
@@ -123,17 +147,9 @@ const NftsSendPage = ({ params, t }) => {
   const onNext = async () => {
     if (step === 1) {
       setLoaded(false);
-      setStep(2);
-      try {
-        const required = await activeBlockchainAccount.requiresMemo(
-          recipientAddress,
-          nftDetail.mint,
-        );
-        if (!required) {
-          setStep(3);
-        }
-      } catch (e) {
-        console.error(e);
+      if (requiresMemo) {
+        setStep(2);
+      } else {
         setStep(3);
       }
       try {
@@ -349,7 +365,7 @@ const NftsSendPage = ({ params, t }) => {
             <GlobalButton
               type="primary"
               flex
-              disabled={!validAddress}
+              disabled={!validAddress || requiresMemo === undefined}
               title={t('token.send.next')}
               onPress={onNext}
               style={[globalStyles.button, globalStyles.buttonRight]}
