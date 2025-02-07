@@ -33,6 +33,7 @@ import WalletBalanceCard from '../../component-library/Global/GlobalBalance';
 import GlobalImage from '../../component-library/Global/GlobalImage';
 import { View } from 'react-native';
 import { globalStyles } from '../../component-library/Global/theme';
+import AvatarImage from '../../component-library/Image/AvatarImage';
 
 const TokenDetailPage = ({ params, t }) => {
   const navigate = useNavigation();
@@ -109,6 +110,10 @@ const TokenDetailPage = ({ params, t }) => {
           inlineTitle={token.name}
           inlineAddress={token.type !== 'native' ? token.address : undefined}
         />
+
+        <View style={globalStyles.centered}>
+          <AvatarImage url={token?.logo} size={100} />
+        </View>
 
         <WalletBalanceCard
           loading={loading}
