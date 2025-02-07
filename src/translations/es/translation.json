@@ -280,7 +280,8 @@
     "failed": "Fallido",
     "from": "De",
     "to": "Para",
-    "fee": "Comisión"
+    "fee": "Comisión",
+    "memo": "Memo"
   },
   "nft": {
     "description": "Descripción",

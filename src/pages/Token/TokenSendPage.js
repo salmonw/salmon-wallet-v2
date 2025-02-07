@@ -253,7 +253,7 @@ const TokenSendPage = ({ params, t }) => {
                 onQR={toggleScan}
               />
 
-              {accounts.length > 0 && (
+              {accounts.length > 1 && (
                 <>
                   <GlobalPadding />
 

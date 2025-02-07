@@ -204,7 +204,8 @@ const TransactionDetail = ({
   goToWallet,
   onCopy,
 }) => {
-  const { id, type, timestamp, status, fee, inputs, outputs } = transaction;
+  const { id, type, timestamp, status, fee, inputs, outputs, extras } =
+    transaction;
 
   const [{ hiddenBalance }] = useContext(AppContext);
 
@@ -321,6 +322,14 @@ const TransactionDetail = ({
           <GlobalText type="body2">
             {`${formatAmount(fee.amount, fee.decimals)} ${fee.symbol || ''}`}
           </GlobalText>
+        </View>
+      )}
+      {extras?.memo && (
+        <View style={styles.inlineWell}>
+          <GlobalText type="caption" color="tertiary">
+            {t('transactions.memo')}
+          </GlobalText>
+          <GlobalText type="body2">{extras.memo}</GlobalText>
         </View>
       )}
       <GlobalPadding size="2xl" />

@@ -298,7 +298,8 @@
     "failed": "Failed",
     "from": "From",
     "to": "To",
-    "fee": "Fee"
+    "fee": "Fee",
+    "memo": "Memo"
   },
   "nft": {
     "description": "Description",
