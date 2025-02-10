@@ -16733,10 +16733,10 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-salmon-wallet-adapter@0.2.9:
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/salmon-wallet-adapter/-/salmon-wallet-adapter-0.2.9.tgz#cd7b805ebc335db11794b4a434ad712d34eb1c8e"
-  integrity sha512-TuIOkg07NFp6pKO4NvW1Y2G+vVwGsA+vDgvjBRrCh4rqRc+t2bpmI84tMVW2VcpboKdKKa3xF4VHTcV6ge4a5A==
+salmon-wallet-adapter@0.2.11:
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/salmon-wallet-adapter/-/salmon-wallet-adapter-0.2.11.tgz#3dc88aa645dd6cfbb80466207c358f79588bd943"
+  integrity sha512-pJeqiramEf3zog7Mi4x0M0MEp8CwOolFCMjmv4oo8CBk+J2S7Zizl1R36USmoo8MFKCLGlVBwWsGCD/9a4yCyg==
   dependencies:
     "@onsol/tldparser" "^0.6.5"
     "@solana/spl-memo" "^0.2.5"
