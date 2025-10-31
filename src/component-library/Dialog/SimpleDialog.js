@@ -5,8 +5,16 @@ import { globalStyles } from '../../component-library/Global/theme';
 import GlobalButton from '../Global/GlobalButton';
 import GlobalPadding from '../Global/GlobalPadding';
 import IconClose from '../../assets/images/IconClose.png';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { withTranslation } from '../../hooks/useTranslations';
+
+const styles = StyleSheet.create({
+  closeButton: {
+    position: 'absolute',
+    bottom: -26,
+    right: -24,
+  },
+});
 
 const SimpleDialog = ({
   type,
@@ -36,11 +44,7 @@ const SimpleDialog = ({
               transparent
               icon={IconClose}
               onPress={onClose}
-              style={{
-                position: 'absolute',
-                bottom: -26,
-                right: -24,
-              }}
+              style={styles.closeButton}
             />
             <GlobalPadding />
           </>

@@ -112,6 +112,7 @@ const GlobalInput = ({
         ? setValue(
             event.nativeEvent.text
               .replace(',', '.')
+              // eslint-disable-next-line no-useless-escape
               .replace(/[^\d\.]/g, '')
               .replace(/\./, 'x')
               .replace(/\./g, '')

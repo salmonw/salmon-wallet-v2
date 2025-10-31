@@ -1,5 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { Linking, StyleSheet } from 'react-native';
+// PRIMEROS AJUSTES - No usado (función comentada)
+// import { Linking, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { withTranslation } from '../../hooks/useTranslations';
 import { AppContext } from '../../AppProvider';
@@ -85,8 +87,9 @@ const SettingsOptionsPage = ({ t }) => {
   const goToTrustedApps = () =>
     navigate(ROUTES_SETTINGS_MAP.SETTINGS_TRUSTEDAPPS);
 
-  const goToHelpSupport = () =>
-    Linking.openURL(`https://salmonwallet.io/support.html`);
+  // PRIMEROS AJUSTES - No usado (botón comentado)
+  // const goToHelpSupport = () =>
+  //   Linking.openURL(`https://salmonwallet.io/support.html`);
 
   return (
     <GlobalLayout>
@@ -148,11 +151,13 @@ const SettingsOptionsPage = ({ t }) => {
           onPress={goToTrustedApps}
         />
 
-        <CardButton
+        {/* PRIMEROS AJUSTES - Roadmap: Quitar Help & Support */}
+        {/* Fecha: 2025-10-31 */}
+        {/* <CardButton
           title={t(`settings.help_support`)}
           actionIcon="right"
           onPress={goToHelpSupport}
-        />
+        /> */}
       </GlobalLayout.Header>
 
       <GlobalLayout.Footer>

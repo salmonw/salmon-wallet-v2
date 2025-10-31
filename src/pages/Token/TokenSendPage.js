@@ -1,4 +1,6 @@
-import React, { useState, useContext, useMemo, useEffect } from 'react';
+// LINT FIX - useEffect no usado
+// import React, { useState, useContext, useMemo, useEffect } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
 import { BLOCKCHAINS } from 'salmon-wallet-adapter';
 import { pick } from 'lodash';

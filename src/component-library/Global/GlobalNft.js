@@ -1,5 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+// LINT FIX - useEffect no usado
+// import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
+// LINT FIX - Text no usado
+// import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { withTranslation } from '../../hooks/useTranslations';
 import theme, { globalStyles } from './theme';
@@ -10,7 +14,8 @@ import GlobalFloatingBadge from './GlobalFloatingBadge';
 import { getMediaRemoteUrl } from '../../utils/media';
 import { isCollection, isBlacklisted } from '../../utils/nfts';
 import Blacklisted from '../../assets/images/Blacklisted.jpeg';
-import IconSolana from '../../assets/images/IconSolana.png';
+// LINT FIX - No usado
+// import IconSolana from '../../assets/images/IconSolana.png';
 import IconHyperspace from '../../assets/images/IconHyperspace.jpeg';
 
 import { AppContext } from '../../AppProvider';
@@ -49,10 +54,15 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     paddingHorizontal: theme.gutters.paddingXS,
   },
+  pendingImage: {
+    filter: 'blur(3px)',
+  },
 });
 
 const GlobalNft = ({ nft, onClick = () => {}, t }) => {
+  // eslint-disable-next-line no-unused-vars
   const [completeNft, setCompleteNft] = useState(nft);
+  // eslint-disable-next-line no-unused-vars
   const [{ activeBlockchainAccount }] = useContext(AppContext);
 
   return (
@@ -86,7 +96,7 @@ const GlobalNft = ({ nft, onClick = () => {}, t }) => {
                   getMediaRemoteUrl(completeNft.metadata?.uri)
             }
             size="block"
-            style={completeNft.pending && { filter: 'blur(3px)' }}
+            style={completeNft.pending && styles.pendingImage}
           />
           <GlobalFloatingBadge
             {...(isCollection(completeNft) && completeNft.length > 1

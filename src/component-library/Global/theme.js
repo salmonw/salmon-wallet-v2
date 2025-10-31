@@ -1,5 +1,8 @@
-import { rgbToHex } from '@mui/material';
-import { Platform, Dimensions, Appearance, StyleSheet } from 'react-native';
+// LINT FIX - No usado
+// import { rgbToHex } from '@mui/material';
+// LINT FIX - Appearance no usado
+// import { Platform, Dimensions, Appearance, StyleSheet } from 'react-native';
+import { Platform, Dimensions, StyleSheet } from 'react-native';
 
 const calculateResponsivePadding = () => {
   let padding = 10;

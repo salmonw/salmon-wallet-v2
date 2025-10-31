@@ -83,12 +83,14 @@ const SelectOptionsPage = ({ t }) => {
     navigate(action);
   };
 
+  // PRIMEROS AJUSTES - Roadmap: Eliminar páginas de bienvenida
+  // Fecha: 2025-10-31
   const onHomeBack = () => {
     if (accounts.length) {
       navigate(ROUTES_MAP_APP.WALLET);
-    } else {
-      navigate(ROUTES_MAP_APP.WELCOME);
     }
+    // Eliminado: navigate(ROUTES_MAP_APP.WELCOME) - Ya no existe página de bienvenida
+    // Si no hay accounts, no navega a ninguna parte (se queda en onboarding)
   };
   return (
     <GlobalLayout fullscreen>

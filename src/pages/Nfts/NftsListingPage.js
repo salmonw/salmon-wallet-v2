@@ -47,6 +47,14 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     textTransform: 'none',
   },
+  buttonPadding: {
+    paddingRight: 6,
+    paddingLeft: 6,
+  },
+  zeroPaddingMargin: {
+    paddingBottom: 0,
+    marginBottom: 0,
+  },
 });
 
 const NftsListingPage = ({ params, t }) => {
@@ -60,9 +68,11 @@ const NftsListingPage = ({ params, t }) => {
   const [step, setStep] = useState(isListed ? 2 : 1);
   const [nftDetail, setNftDetail] = useState({});
   const [transactionId, setTransactionId] = useState();
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(false);
   const [solBalance, setSolBalance] = useState(null);
   const [price, setPrice] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [fee, setFee] = useState(5000);
   const [
     { activeAccount, activeBlockchainAccount, hiddenValue, activeTokens },
@@ -213,7 +223,7 @@ const NftsListingPage = ({ params, t }) => {
                   image={activeBlockchainAccount.network.icon}
                   imageSize="xs"
                   onPress={() => {}}
-                  buttonStyle={{ paddingRight: 6, paddingLeft: 6 }}
+                  buttonStyle={styles.buttonPadding}
                   keyboardType="numeric"
                   nospace
                 />
@@ -241,20 +251,13 @@ const NftsListingPage = ({ params, t }) => {
 
             <GlobalPadding size="lg" />
 
-            <View
-              style={[
-                globalStyles.inlineWell,
-                { paddingBottom: 0, marginBottom: 0 },
-              ]}>
+            <View style={[globalStyles.inlineWell, styles.zeroPaddingMargin]}>
               <GlobalText type="caption" color="tertiary">
                 {t('nft.marketplace_fee')}
               </GlobalText>
               <View>
                 <View
-                  style={[
-                    globalStyles.inlineWell,
-                    { paddingBottom: 0, marginBottom: 0 },
-                  ]}>
+                  style={[globalStyles.inlineWell, styles.zeroPaddingMargin]}>
                   <GlobalImage
                     style={[
                       globalStyles.centeredSmall,
@@ -345,10 +348,7 @@ const NftsListingPage = ({ params, t }) => {
                 </GlobalText>
                 <View>
                   <View
-                    style={[
-                      globalStyles.inlineWell,
-                      { paddingBottom: 0, marginBottom: 0 },
-                    ]}>
+                    style={[globalStyles.inlineWell, styles.zeroPaddingMargin]}>
                     <GlobalText type="body1" nospace>
                       {price} SOL
                     </GlobalText>
@@ -376,10 +376,7 @@ const NftsListingPage = ({ params, t }) => {
                 </GlobalText>
                 <View>
                   <View
-                    style={[
-                      globalStyles.inlineWell,
-                      { paddingBottom: 0, marginBottom: 0 },
-                    ]}>
+                    style={[globalStyles.inlineWell, styles.zeroPaddingMargin]}>
                     <GlobalImage
                       style={[
                         globalStyles.centeredSmall,

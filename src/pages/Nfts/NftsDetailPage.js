@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { get } from 'lodash';
-import { BLOCKCHAINS, getSwitches } from 'salmon-wallet-adapter';
+// LINT FIX - No usado
+// import { BLOCKCHAINS, getSwitches } from 'salmon-wallet-adapter';
+import { getSwitches } from 'salmon-wallet-adapter';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
@@ -28,16 +30,19 @@ import IconHyperspace from '../../assets/images/IconHyperspace.jpeg';
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
 
-import { PublicKey } from '@solana/web3.js';
+// LINT FIX - No usado
+// import { PublicKey } from '@solana/web3.js';
 
-import {
-  TOKEN_2022_PROGRAM_ID,
-  getExtensionData,
-  ExtensionType,
-  getMint,
-} from '@solana/spl-token';
+// LINT FIX - No usado
+// import {
+//   TOKEN_2022_PROGRAM_ID,
+//   getExtensionData,
+//   ExtensionType,
+//   getMint,
+// } from '@solana/spl-token';
 
-import fetch from 'node-fetch';
+// LINT FIX - No usado
+// import fetch from 'node-fetch';
 
 const styles = StyleSheet.create({
   renderItemStyle: {
@@ -69,6 +74,9 @@ const styles = StyleSheet.create({
   topPriceIcon: {
     marginLeft: theme.gutters.paddingXXS,
   },
+  iconMarginBottom: {
+    marginBottom: -2,
+  },
 });
 
 const NftsDetailPage = ({ route, params, t }) => {
@@ -77,8 +85,10 @@ const NftsDetailPage = ({ route, params, t }) => {
   useAnalyticsEventTracker(SECTIONS_MAP.NFT_DETAIL);
   const navigate = useNavigation();
   const [loaded, setLoaded] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [listedLoaded, setListedLoaded] = useState(false);
   const [nftDetail, setNftDetail] = useState({});
+  // eslint-disable-next-line no-unused-vars
   const [listedInfo, setListedInfo] = useState([]);
   const [{ networkId }] = useContext(AppContext);
   const [switches, setSwitches] = useState(null);
@@ -117,7 +127,7 @@ const NftsDetailPage = ({ route, params, t }) => {
         <GlobalImage
           source={IconHyperspaceWhite}
           size="xxs"
-          style={{ marginBottom: -2 }}
+          style={styles.iconMarginBottom}
         />
       </>
     ) : (
@@ -127,7 +137,7 @@ const NftsDetailPage = ({ route, params, t }) => {
         <GlobalImage
           source={IconHyperspaceWhite}
           size="xxs"
-          style={{ marginBottom: -2 }}
+          style={styles.iconMarginBottom}
         />
       </>
     );

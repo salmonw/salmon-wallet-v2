@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+// LINT FIX - ScrollView no usado
+// import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { withTheme } from 'react-native-paper';
 import Button from '../Button/Button';
 

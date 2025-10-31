@@ -17,6 +17,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  actionsContainer: {
+    alignItems: 'end',
+  },
+  iconMarginRight: {
+    marginRight: 5,
+  },
 });
 
 const PendingTxs = ({ t }) => {
@@ -67,7 +73,7 @@ const PendingTxs = ({ t }) => {
               address={transaction.recipient}
               key={i}
               actions={
-                <View style={{ alignItems: 'end' }}>
+                <View style={styles.actionsContainer}>
                   <GlobalText
                     key={'amount-action'}
                     type="body2"
@@ -79,7 +85,7 @@ const PendingTxs = ({ t }) => {
                       source={getTransactionImage(transaction.status)}
                       size={'xxs'}
                       circle
-                      style={{ marginRight: 5 }}
+                      style={styles.iconMarginRight}
                     />
                     <GlobalText
                       key={'amount-action'}

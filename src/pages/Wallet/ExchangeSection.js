@@ -3,7 +3,8 @@ import { StyleSheet } from 'react-native';
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
-import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
+// PRIMEROS AJUSTES - No usado (función comentada)
+// import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
 import { ROUTES_MAP } from './routes';
 import theme from '../../component-library/Global/theme';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
@@ -14,7 +15,8 @@ import CardButton from '../../component-library/CardButton/CardButton';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalText from '../../component-library/Global/GlobalText';
 import Header from '../../component-library/Layout/Header';
-import IconBridge from '../../assets/images/IconBridge.png';
+// PRIMEROS AJUSTES - No usado
+// import IconBridge from '../../assets/images/IconBridge.png';
 
 const styles = StyleSheet.create({
   cardBtn: {
@@ -27,14 +29,17 @@ const ExchangeSection = ({ t }) => {
   const [{ activeBlockchainAccount }, {}] = useContext(AppContext);
   const [optSelected, setOptSelected] = useState(0);
 
-  const goToBack = () => {
-    navigate(APP_ROUTES_MAP.WALLET);
-  };
+  // PRIMEROS AJUSTES - No usado
+  // const goToBack = () => {
+  //   navigate(APP_ROUTES_MAP.WALLET);
+  // };
 
+  // PRIMEROS AJUSTES - Roadmap: Ocultar Bridge
+  // Fecha: 2025-10-31
   const goToSwapRoute = type =>
     type === 0
       ? navigate(ROUTES_MAP.WALLET_SWAP)
-      : navigate(ROUTES_MAP.WALLET_BRIDGE);
+      : navigate(ROUTES_MAP.WALLET_BRIDGE); // Bridge comentado en routes
   return (
     <GlobalLayout>
       <GlobalLayout.Header>
@@ -59,7 +64,8 @@ const ExchangeSection = ({ t }) => {
           ]}
         />
         <GlobalPadding size="xxs" />
-        <CardButton
+        {/* BRIDGE OPTION - Comentado temporalmente */}
+        {/* <CardButton
           buttonStyle={styles.cardBtn}
           onPress={() => setOptSelected(1)}
           title={t('swap.other_blockchain')}
@@ -67,7 +73,7 @@ const ExchangeSection = ({ t }) => {
           actions={[
             <AvatarImage key="bridge-icon" url={IconBridge} size={30} />,
           ]}
-        />
+        /> */}
       </GlobalLayout.Header>
 
       <GlobalLayout.Footer>

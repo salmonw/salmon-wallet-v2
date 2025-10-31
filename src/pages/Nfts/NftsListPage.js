@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+// LINT FIX - StyleSheet no usado
+// import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { getSwitches } from 'salmon-wallet-adapter';
 
 import { AppContext } from '../../AppProvider';

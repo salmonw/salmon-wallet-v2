@@ -27,6 +27,10 @@ import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 
 const styles = StyleSheet.create({
+  buttonPadding: {
+    paddingRight: 6,
+    paddingLeft: 6,
+  },
   mediumSizeImage: {
     width: 234,
     height: 234,
@@ -66,9 +70,11 @@ const NftsBiddingPageModal = ({
   const [step, setStep] = useState(isBidded ? 2 : 1);
   const [nftDetail, setNftDetail] = useState({});
   const [transactionId, setTransactionId] = useState();
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(false);
   const [solBalance, setSolBalance] = useState(null);
   const [price, setPrice] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [fee, setFee] = useState(5000);
   const [{ activeBlockchainAccount }] = useContext(AppContext);
   const [bidsLoaded, setBidsLoaded] = useState(false);
@@ -225,7 +231,7 @@ const NftsBiddingPageModal = ({
                   image={IconSolana}
                   imageSize="xs"
                   onPress={() => {}}
-                  buttonStyle={{ paddingRight: 6, paddingLeft: 6 }}
+                  buttonStyle={styles.buttonPadding}
                   keyboardType="numeric"
                   nospace
                 />

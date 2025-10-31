@@ -93,6 +93,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: theme.gutters.paddingXXS,
   },
+  iconOpacity: {
+    opacity: 0.5,
+  },
 });
 
 const getChipColor = type => {
@@ -259,7 +262,7 @@ const CardButton = ({
         <GlobalImage
           source={IconChevronRight}
           size="sm"
-          style={{ opacity: 0.5 }}
+          style={styles.iconOpacity}
         />
       )}
 
@@ -267,7 +270,7 @@ const CardButton = ({
         <GlobalImage
           source={IconExpandMore}
           size="sm"
-          style={{ opacity: 0.5 }}
+          style={styles.iconOpacity}
         />
       )}
 

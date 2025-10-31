@@ -93,12 +93,13 @@ const TokenSelectPage = ({ params, t }) => {
     }
   };
 
-  const goToAddToken = () => {
-    navigate(TOKEN_ROUTES_MAP.TOKEN_ADD, {
-      action: params.action,
-      walletAddress: activeBlockchainAccount.getReceiveAddress(),
-    });
-  };
+  // LINT FIX - No usado
+  // const goToAddToken = () => {
+  //   navigate(TOKEN_ROUTES_MAP.TOKEN_ADD, {
+  //     action: params.action,
+  //     walletAddress: activeBlockchainAccount.getReceiveAddress(),
+  //   });
+  // };
 
   return loaded ? (
     <GlobalLayout fullscreen>

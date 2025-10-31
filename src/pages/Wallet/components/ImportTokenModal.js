@@ -12,7 +12,8 @@ import GlobalPadding from '../../../component-library/Global/GlobalPadding';
 import GlobalButton from '../../../component-library/Global/GlobalButton';
 import theme, { globalStyles } from '../../../component-library/Global/theme';
 import { getShortAddress } from '../../../utils/wallet';
-import { isNative } from '../../../utils/platform';
+// LINT FIX - No usado
+// import { isNative } from '../../../utils/platform';
 
 const MAX_PAG = 20;
 const getFilterItems = (items, search) =>

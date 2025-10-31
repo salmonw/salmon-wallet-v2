@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { isExtension } from '../utils/platform';
+// LINT FIX - No usado (código comentado)
+// import { isExtension } from '../utils/platform';
 
 const useAnalyticsEventTracker = section => {
   useEffect(() => {
