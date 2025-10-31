@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContext } from '../AppProvider';
-import { getRouteComponent } from './utils';
+import { getRoute } from './utils';
 import { ROUTES_MAP } from './app-routes';
 import { useNavigation } from './hooks';
 
@@ -20,11 +20,13 @@ const RoutesBuilder = ({
     }
   }, [requireOnboarding, navigate, accounts]);
 
-  const EntryComponent = entry ? getRouteComponent(routes, entry) : null;
+  const entryRoute = entry ? getRoute(routes, entry) : null;
 
   return !requireOnboarding || (requireOnboarding && accounts.length > 0) ? (
     <Routes>
-      {EntryComponent && <Route path="/" element={<EntryComponent />} />}
+      {entryRoute && (
+        <Route path="/" element={<Navigate to={entryRoute.route} replace />} />
+      )}
       {routes.map(({ key, name, path, Component }) => (
         <Route
           key={`route-${key}`}

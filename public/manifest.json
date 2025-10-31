@@ -3,10 +3,18 @@
   "version": "0.4.0",
   "short_name": "Salmon Wallet",
   "name": "Salmon Token Wallet",
-  "icons": {
-    "192": "logo192.png",
-    "512": "logo512.png"
-  },
+  "icons": [
+    {
+      "src": "logo192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "action": {
     "default_popup": "index.html",
     "default_icon": {
