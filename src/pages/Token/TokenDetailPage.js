@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { getSwitches } from 'salmon-wallet-adapter';
+import { getSwitches } from '../../adapter';
 import { get } from 'lodash';
 
 import { AppContext } from '../../AppProvider';

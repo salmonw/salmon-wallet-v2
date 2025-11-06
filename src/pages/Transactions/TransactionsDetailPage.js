@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, View, Linking, TouchableOpacity } from 'react-native';
-import { formatAmount } from 'salmon-wallet-adapter';
+import { formatAmount } from '../../adapter';
 import moment from 'moment';
 
 import theme from '../../component-library/Global/theme';

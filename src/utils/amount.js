@@ -1,5 +1,5 @@
 import { round, isNil } from 'lodash';
-import { formatAmount } from 'salmon-wallet-adapter';
+import { formatAmount } from '../adapter';
 
 export const showAmount = (amount, decimals = 2) =>
   !isNil(amount) ? `$${round(amount, decimals).toFixed(decimals)}` : '-';

@@ -29,7 +29,7 @@ import {
   getBridgeEstimatedAmount,
   getBridgeMinimalAmount,
   createBridgeExchange,
-} from 'salmon-wallet-adapter';
+} from '../../adapter';
 import Header from '../../component-library/Layout/Header';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import BasicRadios from '../../component-library/Radios/BasicRadios';

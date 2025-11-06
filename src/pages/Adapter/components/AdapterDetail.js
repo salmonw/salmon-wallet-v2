@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import { getMetadata } from 'salmon-wallet-adapter';
+import { getMetadata } from '../../../adapter';
 
 import GlobalSkeleton from '../../../component-library/Global/GlobalSkeleton';
 
