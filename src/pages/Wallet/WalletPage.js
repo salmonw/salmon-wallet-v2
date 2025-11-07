@@ -31,7 +31,6 @@ const WalletPage = () => {
       const exchangeRoute = routes.find(r => r.name === 'Exchange');
 
       if (collectiblesRoute) {
-        // TODO-COLLECTIBLES-CHANGE: Cambiar 'switches.nfts?.active' por 'switches.collectibles?.active' cuando pruebes el nuevo backend
         if (!switches.collectibles?.active) {
           collectiblesRoute.Component = UnavailablePage;
         } else {

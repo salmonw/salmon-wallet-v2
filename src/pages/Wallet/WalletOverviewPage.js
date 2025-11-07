@@ -194,8 +194,7 @@ const WalletOverviewPage = ({ cfgs, t }) => {
         )}
         {/* PRIMEROS AJUSTES - Roadmap: Quitar NFTs de la home */}
         {/* Fecha: 2025-10-31 */}
-        {/* TODO-COLLECTIBLES-CHANGE: Si descomentas esto, cambiar 'switches?.features.nfts' por 'switches?.features.collectibles' cuando pruebes el nuevo backend */}
-        {/* {switches?.features.nfts && (
+        {/* {switches?.features.collectibles && (
           <>
             <GlobalPadding />
             <MyNfts />

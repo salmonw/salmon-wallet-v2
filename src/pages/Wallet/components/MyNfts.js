@@ -42,7 +42,7 @@ const MyNfts = ({ t }) => {
   // LINT FIX - switches no usado
   // useEffect(() => {
   //   getSwitches().then(allSwitches =>
-  //     setSwitches(allSwitches[networkId].sections.nfts),
+  //     setSwitches(allSwitches[networkId].sections.collectibles),
   //   );
   // }, [networkId]);
 

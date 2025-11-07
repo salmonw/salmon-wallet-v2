@@ -29,7 +29,7 @@ const NftsListPage = ({ t }) => {
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
-      setSwitches(allSwitches[networkId].sections.nfts),
+      setSwitches(allSwitches[networkId].sections.collectibles),
     );
   }, [networkId]);
   useEffect(() => {

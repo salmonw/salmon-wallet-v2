@@ -104,7 +104,7 @@ const NftsDetailPage = ({ route, params, t }) => {
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
-      setSwitches(allSwitches[networkId].sections.nfts),
+      setSwitches(allSwitches[networkId].sections.collectibles),
     );
   }, [networkId]);
 
