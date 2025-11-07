@@ -4,7 +4,8 @@ import AccountSelectPage from './AccountSelectPage';
 import AccountEditPage from './AccountEditPage';
 import AccountEditProfilePage from './AccountEditProfilePage';
 import AccountEditNamePage from './AccountEditNamePage';
-import AccountEditNotificationsPage from './AccountEditNotificationsPage';
+// PRIMEROS AJUSTES - No usado
+// import AccountEditNotificationsPage from './AccountEditNotificationsPage';
 import AccountEditSeedPhrasePage from './AccountEditSeedPhrasePage';
 
 import AddressBookPage from './AddressBookPage';
@@ -15,9 +16,10 @@ import ChangeNetworkPage from './ChangeNetworkPage';
 import ChangeExplorerPage from './ChangeExplorerPage';
 import ChangeLanguagePage from './ChangeLanguagePage';
 import SecurityPage from './SecurityPage';
-import NotificationsPage from './NotificationsPage';
+// PRIMEROS AJUSTES - No usado
+// import NotificationsPage from './NotificationsPage';
 import TrustedAppsPage from './TrustedAppsPage';
-import HelpSupportPage from './HelpSupportPage';
+// import HelpSupportPage from './HelpSupportPage'; // PRIMEROS AJUSTES - Comentado
 import AccountEditProfileNftsPage from './AccountEditProfileNftsPage';
 import AccountEditProfileNftsDetailPage from './AccountEditProfileNftsDetailPage';
 import AccountEditProfileAvatarsPage from './AccountEditProfileAvatarsPage';
@@ -203,14 +205,16 @@ const routes = [
     Component: TrustedAppsPage,
     default: false,
   },
-  {
-    key: ROUTES_MAP.SETTINGS_HELPSUPPORT,
-    name: 'settingsHelpSupport',
-    path: 'help',
-    route: '/wallet/settings/help',
-    Component: HelpSupportPage,
-    default: false,
-  },
+  // PRIMEROS AJUSTES - Roadmap: Quitar Help & Support
+  // Fecha: 2025-10-31
+  // {
+  //   key: ROUTES_MAP.SETTINGS_HELPSUPPORT,
+  //   name: 'settingsHelpSupport',
+  //   path: 'help',
+  //   route: '/wallet/settings/help',
+  //   Component: HelpSupportPage,
+  //   default: false,
+  // },
 ];
 
 export default routes;

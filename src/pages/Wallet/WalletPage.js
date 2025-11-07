@@ -26,24 +26,31 @@ const WalletPage = () => {
 
   useEffect(() => {
     if (switches) {
-      const nftsRoute = routes.find(r => r.name === 'NFT');
+      const collectiblesRoute = routes.find(r => r.name === 'Collectibles');
       const swapRoute = routes.find(r => r.name === 'Swap');
       const exchangeRoute = routes.find(r => r.name === 'Exchange');
 
-      if (!switches.nfts?.active) {
-        nftsRoute.Component = UnavailablePage;
-      } else {
-        nftsRoute.Component = NftsSection;
+      if (collectiblesRoute) {
+        // TODO-COLLECTIBLES-CHANGE: Cambiar 'switches.nfts?.active' por 'switches.collectibles?.active' cuando pruebes el nuevo backend
+        if (!switches.collectibles?.active) {
+          collectiblesRoute.Component = UnavailablePage;
+        } else {
+          collectiblesRoute.Component = NftsSection;
+        }
       }
-      if (!switches.swap?.active) {
-        swapRoute.Component = UnavailablePage;
-      } else {
-        swapRoute.Component = SwapPage;
+      if (swapRoute) {
+        if (!switches.swap?.active) {
+          swapRoute.Component = UnavailablePage;
+        } else {
+          swapRoute.Component = SwapPage;
+        }
       }
-      if (!switches.exchange?.active) {
-        exchangeRoute.Component = UnavailablePage;
-      } else {
-        exchangeRoute.Component = ExchangeSection;
+      if (exchangeRoute) {
+        if (!switches.exchange?.active) {
+          exchangeRoute.Component = UnavailablePage;
+        } else {
+          exchangeRoute.Component = ExchangeSection;
+        }
       }
     }
   }, [switches]);

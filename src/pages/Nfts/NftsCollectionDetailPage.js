@@ -48,8 +48,9 @@ const styles = StyleSheet.create({
   topPriceIcon: {
     marginBottom: -3,
     marginLeft: 2,
-    position: 'absolute',
-    right: 8,
+  },
+  flatListHeight: {
+    height: 550,
   },
 });
 
@@ -63,6 +64,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(params.nftId ? true : false);
+  // eslint-disable-next-line no-unused-vars
   const [selectedNft, setSelectedNft] = useState(
     params.nftId
       ? {
@@ -243,7 +245,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
               onClick={onClick}
             />
           )}
-          style={{ height: 550 }}
+          style={styles.flatListHeight}
         />
       </GlobalLayout.Header>
     </GlobalLayout>

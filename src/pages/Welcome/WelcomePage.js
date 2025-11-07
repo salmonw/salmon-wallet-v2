@@ -1,3 +1,9 @@
+// PRIMEROS AJUSTES - Roadmap: Eliminar páginas de bienvenida
+// Fecha: 2025-10-31
+// ESTA PÁGINA ESTÁ DESHABILITADA - La ruta está comentada en app-routes.js
+// Los usuarios van directamente a la página de onboarding
+// Se mantiene el código por si se necesita restaurar en el futuro
+
 import React, { useState } from 'react';
 import { Linking, View, TouchableOpacity } from 'react-native';
 

@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+// LINT FIX - TouchableOpacity no usado
+// import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import theme from './theme';
 import GlobalImage from './GlobalImage';

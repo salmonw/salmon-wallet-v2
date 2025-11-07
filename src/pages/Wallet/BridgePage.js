@@ -175,6 +175,7 @@ const BridgePage = ({ t }) => {
   const [recipientAddress, setRecipientAddress] = useState('');
   const [recipientType, setRecipientType] = useState('own');
   const [validAddress, setValidAddress] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [addressEmpty, setAddressEmpty] = useState(false);
   const [checkingAddress, setCheckingAddress] = useState(false);
   const [result, setResult] = useState(false);

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+// LINT FIX - StyleSheet no usado
+import { View } from 'react-native';
 import { getSwitches } from '../../adapter';
 
 import { AppContext } from '../../AppProvider';

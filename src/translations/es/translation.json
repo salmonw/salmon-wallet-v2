@@ -157,6 +157,7 @@
     "copied": "Copiado al portapapeles!",
     "create_wallet": "Crear Cuenta",
     "recover_wallet": "Recuperar Cuenta",
+    "access_existing_account": "Acceder a Cuenta Existente",
     "select_token": "Seleccionar Token",
     "new_token": "Agregar token",
     "is_coming_soon": "próximamente",

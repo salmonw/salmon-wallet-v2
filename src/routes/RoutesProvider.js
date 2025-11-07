@@ -6,7 +6,13 @@ const RoutesProvider = ({ children }) =>
   isExtension() ? (
     <MemoryRouter>{children}</MemoryRouter>
   ) : (
-    <BrowserRouter>{children}</BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}>
+      {children}
+    </BrowserRouter>
   );
 
 export default RoutesProvider;

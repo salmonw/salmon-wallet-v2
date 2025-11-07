@@ -1,27 +1,33 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
-const Grid = ({ items = [], spacing = 12, columns = 1 }) => (
-  <View
-    style={{
+const createStyles = (spacing, columns) =>
+  StyleSheet.create({
+    container: {
       flex: 1,
       flexDirection: 'row',
       flexWrap: 'wrap',
       marginTop: -(8 * spacing),
       marginLeft: -(8 * spacing),
-    }}>
-    {items.map((item, index) => (
-      <View
-        key={index}
-        style={{
-          paddingTop: 8 * spacing,
-          paddingLeft: 8 * spacing,
-          width: `${100 / columns}%`,
-        }}>
-        {item}
-      </View>
-    ))}
-  </View>
-);
+    },
+    item: {
+      paddingTop: 8 * spacing,
+      paddingLeft: 8 * spacing,
+      width: `${100 / columns}%`,
+    },
+  });
+
+const Grid = ({ items = [], spacing = 12, columns = 1 }) => {
+  const styles = createStyles(spacing, columns);
+  return (
+    <View style={styles.container}>
+      {items.map((item, index) => (
+        <View key={index} style={styles.item}>
+          {item}
+        </View>
+      ))}
+    </View>
+  );
+};
 
 export default Grid;

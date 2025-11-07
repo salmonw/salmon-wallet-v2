@@ -1,11 +1,26 @@
 import React from 'react';
 import { View } from 'react-native';
-import theme, { globalStyles } from '../../component-library/Global/theme';
+// LINT FIX - theme no usado
+// import theme, { globalStyles } from '../../component-library/Global/theme';
+import { globalStyles } from '../../component-library/Global/theme';
 import { withTranslation } from '../../hooks/useTranslations';
 import GlobalButton from '../Global/GlobalButton';
 import GlobalPadding from '../Global/GlobalPadding';
 
 import { Paragraph, Dialog, Portal } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  dialog: {
+    backgroundColor: 'rgba(22,28,45, 0.9)',
+  },
+  title: {
+    textAlign: 'center',
+  },
+  paragraph: {
+    textAlign: 'center',
+  },
+});
 
 const SimpleDialog = ({
   type,
@@ -19,13 +34,10 @@ const SimpleDialog = ({
   t,
 }) => (
   <Portal>
-    <Dialog
-      visible={isOpen}
-      onDismiss={onClose}
-      style={{ backgroundColor: 'rgba(22,28,45, 0.9)' }}>
-      <Dialog.Title style={{ textAlign: 'center' }}>{title}</Dialog.Title>
+    <Dialog visible={isOpen} onDismiss={onClose} style={styles.dialog}>
+      <Dialog.Title style={styles.title}>{title}</Dialog.Title>
       <Dialog.Content>
-        <Paragraph style={{ textAlign: 'center' }}>{text}</Paragraph>
+        <Paragraph style={styles.paragraph}>{text}</Paragraph>
         {action && (
           <View>
             <GlobalPadding size="sm" />
