@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { getNetworks, getSwitches } from 'salmon-wallet-adapter';
+import { getNetworks, getSwitches } from '../../adapter';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';

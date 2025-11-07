@@ -7,7 +7,7 @@ import {
   getTopTokensByPlatform,
   BLOCKCHAINS,
   PLATFORMS,
-} from 'salmon-wallet-adapter';
+} from '../../adapter';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';

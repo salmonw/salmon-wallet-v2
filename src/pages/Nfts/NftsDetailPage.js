@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { get } from 'lodash';
-import { BLOCKCHAINS, getSwitches } from 'salmon-wallet-adapter';
+import { BLOCKCHAINS, getSwitches } from '../../adapter';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';

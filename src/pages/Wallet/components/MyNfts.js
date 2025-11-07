@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { getSwitches } from 'salmon-wallet-adapter';
+import { getSwitches } from '../../../adapter';
 import { AppContext } from '../../../AppProvider';
 import GlobalCollapse from '../../../component-library/Global/GlobalCollapse';
 import GlobalNftList from '../../../component-library/Global/GlobalNftList';

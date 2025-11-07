@@ -1,6 +1,6 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
-import { BLOCKCHAINS } from 'salmon-wallet-adapter';
+import { BLOCKCHAINS } from '../../adapter';
 import { pick } from 'lodash';
 
 import { AppContext } from '../../AppProvider';

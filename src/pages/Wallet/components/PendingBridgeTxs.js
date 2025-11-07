@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getBridgeTransaction } from 'salmon-wallet-adapter';
+import { getBridgeTransaction } from '../../../adapter';
 import { withTranslation } from '../../../hooks/useTranslations';
 import GlobalCollapse from '../../../component-library/Global/GlobalCollapse';
 import CardButtonPendingTx from '../../../component-library/CardButton/CardButtonPendingTx';
