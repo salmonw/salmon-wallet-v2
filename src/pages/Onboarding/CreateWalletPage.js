@@ -3,10 +3,10 @@ import { View } from 'react-native';
 import { random as randomNumber } from 'lodash';
 import {
   AccountFactory,
-  getNetworks,
-  getTopTokensByPlatform,
-  BLOCKCHAINS,
-  PLATFORMS,
+  // getNetworks, // Comentado - No se usa en esta versión
+  // getTopTokensByPlatform, // Comentado - No se usa en esta versión
+  // BLOCKCHAINS, // Comentado - No se usa en esta versión
+  // PLATFORMS, // Comentado - No se usa en esta versión
 } from '../../adapter';
 
 import { AppContext } from '../../AppProvider';
@@ -214,7 +214,7 @@ const CreateWalletPage = ({ t }) => {
   const navigate = useNavigation();
   const [
     { counter, requiredLock, isAdapter },
-    { addAccount, checkPassword, importTokens },
+    { addAccount, checkPassword /* , importTokens */ }, // importTokens comentado - No se usa en esta versión
   ] = useContext(AppContext);
   const [step, setStep] = useState(1);
   const [account, setAccount] = useState(null);
@@ -238,20 +238,22 @@ const CreateWalletPage = ({ t }) => {
 
   const handleOnPasswordComplete = async password => {
     setWaiting(true);
-    try {
-      const networks = (await getNetworks()).filter(
-        ({ blockchain, environment }) =>
-          blockchain === BLOCKCHAINS.ETHEREUM && environment === 'mainnet',
-      );
-      if (networks.length > 0) {
-        const tokens = await getTopTokensByPlatform(PLATFORMS.ETHEREUM);
-        for (const network of networks) {
-          await importTokens(network.id, tokens);
-        }
-      }
-    } catch (e) {
-      console.error('Could not import tokens', e);
-    }
+    // PRIMEROS AJUSTES - Roadmap: Comentar importación de tokens Ethereum
+    // Fecha: 2025-10-31
+    // try {
+    //   const networks = (await getNetworks()).filter(
+    //     ({ blockchain, environment }) =>
+    //       blockchain === BLOCKCHAINS.ETHEREUM && environment === 'mainnet',
+    //   );
+    //   if (networks.length > 0) {
+    //     const tokens = await getTopTokensByPlatform(PLATFORMS.ETHEREUM);
+    //     for (const network of networks) {
+    //       await importTokens(network.id, tokens);
+    //     }
+    //   }
+    // } catch (e) {
+    //   console.error('Could not import tokens', e);
+    // }
     await addAccount(account, password);
     trackEvent(EVENTS_MAP.PASSWORD_COMPLETED);
     setStep(5);

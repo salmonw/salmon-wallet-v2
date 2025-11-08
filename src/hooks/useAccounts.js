@@ -174,7 +174,12 @@ const useAccounts = () => {
         const account = newAccounts[0];
 
         newAccountId = account.id;
-        newNetworkId = Object.keys(account.pathIndexes)[0];
+        // PRIMEROS AJUSTES - Roadmap: Priorizar solana-mainnet como default
+        // Fecha: 2025-10-31
+        const availableNetworks = Object.keys(account.pathIndexes);
+        newNetworkId = availableNetworks.includes('solana-mainnet')
+          ? 'solana-mainnet'
+          : availableNetworks[0];
         newPathIndex = account.pathIndexes[newNetworkId].find(Number.isInteger);
       }
 

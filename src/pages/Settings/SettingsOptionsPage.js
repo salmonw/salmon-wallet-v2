@@ -46,7 +46,8 @@ const SettingsOptionsPage = ({ t }) => {
   const [showAllDialog, setShowAllDialog] = useState(false);
   const { version } = packageInfo;
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.SETTINGS);
-  const { explorer } = useUserConfig();
+  const { explorer, developerNetworks, toggleDeveloperNetworks } =
+    useUserConfig();
 
   const toggleSingleDialog = () => {
     setShowSingleDialog(!showSingleDialog);
@@ -128,6 +129,15 @@ const SettingsOptionsPage = ({ t }) => {
           onPress={goToExplorer}>
           {explorer && <GlobalText type="caption">{explorer.name}</GlobalText>}
         </CardButton>
+
+        {/* PRIMEROS AJUSTES - Roadmap: Agregar toggle Developer Networks */}
+        {/* Fecha: 2025-10-31 */}
+        <CardButton
+          title={t(`settings.developer_networks`)}
+          description={t(`settings.developer_networks_description`)}
+          actionIcon={developerNetworks ? 'ToggleOn' : 'ToggleOff'}
+          onPress={toggleDeveloperNetworks}
+        />
 
         {/*Not implemented yet
         <CardButton

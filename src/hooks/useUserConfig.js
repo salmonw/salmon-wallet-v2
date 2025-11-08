@@ -10,6 +10,7 @@ const useUserConfig = () => {
   const [userConfig, setUserConfig] = useState(null);
   const [explorer, setExplorer] = useState();
   const [explorers, setExplorers] = useState();
+  const [developerNetworks, setDeveloperNetworks] = useState(false);
 
   const environment = useMemo(
     () => activeBlockchainAccount.network.environment,
@@ -31,12 +32,15 @@ const useUserConfig = () => {
     storage.getItem(STORAGE_KEYS.USER_CONFIG).then(config => {
       if (!config) config = {};
       if (!config.explorers) config.explorers = DEFAULT_EXPLORERS;
+      if (config.developerNetworks === undefined)
+        config.developerNetworks = false;
       storage.setItem(STORAGE_KEYS.USER_CONFIG, config);
       setUserConfig(config);
       setExplorer(
         EXPLORERS[blockchain][environment][config.explorers[blockchain]],
       );
       setExplorers(toArray(EXPLORERS[blockchain][environment]));
+      setDeveloperNetworks(config.developerNetworks);
     });
   }, [blockchain, environment]);
 
@@ -48,7 +52,21 @@ const useUserConfig = () => {
     storage.setItem(STORAGE_KEYS.USER_CONFIG, userConfig);
   };
 
-  return { userConfig, explorer, explorers, changeExplorer };
+  const toggleDeveloperNetworks = async () => {
+    const newValue = !developerNetworks;
+    userConfig.developerNetworks = newValue;
+    setDeveloperNetworks(newValue);
+    storage.setItem(STORAGE_KEYS.USER_CONFIG, userConfig);
+  };
+
+  return {
+    userConfig,
+    explorer,
+    explorers,
+    changeExplorer,
+    developerNetworks,
+    toggleDeveloperNetworks,
+  };
 };
 
 export default useUserConfig;
