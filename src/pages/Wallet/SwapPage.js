@@ -300,11 +300,8 @@ const SwapPage = ({ t }) => {
       setProcessing(false);
     }
   };
-  const onExpire = async () => {
-    if (quote) {
-      await activeBlockchainAccount.expireSwapQuote(quote);
-    }
-  };
+  const onExpire = async () => {};
+
   const onConfirm = async () => {
     setError(false);
     setProcessing(true);
@@ -312,12 +309,7 @@ const SwapPage = ({ t }) => {
     setStatus(TRANSACTION_STATUS.SWAPPING);
     setStep(3);
     try {
-      const txs = await activeBlockchainAccount.createSwapTransaction(
-        quote,
-        inToken.mint || inToken.address,
-        outToken.address,
-        parseFloat(inAmount),
-      );
+      const txs = await activeBlockchainAccount.createSwapTransaction(quote);
 
       if (activeBlockchainAccount.network.blockchain === BLOCKCHAINS.ETHEREUM) {
         try {

@@ -10,8 +10,7 @@ import NftsSection from '../Nfts';
 
 import IconWallet from '../../assets/images/IconWallet.png';
 import IconNFT from '../../assets/images/IconNFT.png';
-// PRIMEROS AJUSTES - No usado
-// import IconSwap from '../../assets/images/IconSwap.png';
+import IconSwap from '../../assets/images/IconSwap.png';
 import IconBalance from '../../assets/images/IconBalance.png';
 import IconSettings from '../../assets/images/IconSettings.png';
 import { getDefaultRouteKey, getRoutesWithParent } from '../../routes/utils';
@@ -61,8 +60,6 @@ const routes = [
     default: false,
     icon: IconNFT,
   },
-  // PRIMEROS AJUSTES - Roadmap: Ocultar Exchange/Swaps hasta reparar
-  // Fecha: 2025-10-31
   {
     key: ROUTES_MAP.WALLET_SWAP,
     name: 'Swap',
@@ -70,6 +67,7 @@ const routes = [
     route: '/wallet/swap',
     Component: SwapPage,
     default: false,
+    icon: IconSwap,
   },
   // EXCHANGE (con Bridge) - Comentado para ocultarlo del footer
   // {
