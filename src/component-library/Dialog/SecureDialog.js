@@ -5,10 +5,21 @@ import theme, { globalStyles } from '../../component-library/Global/theme';
 import GlobalButton from '../Global/GlobalButton';
 import GlobalPadding from '../Global/GlobalPadding';
 import IconClose from '../../assets/images/IconClose.png';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { withTranslation } from '../../hooks/useTranslations';
 import GlobalText from '../Global/GlobalText';
 import GlobalInputWithButton from '../Global/GlobalInputWithButton';
+
+const styles = StyleSheet.create({
+  closeButton: {
+    position: 'absolute',
+    bottom: -26,
+    right: -24,
+  },
+  errorText: {
+    paddingHorizontal: theme.gutters.paddingXS,
+  },
+});
 
 const SecureDialog = ({
   type,
@@ -83,11 +94,7 @@ const SecureDialog = ({
                 transparent
                 icon={IconClose}
                 onPress={onClose}
-                style={{
-                  position: 'absolute',
-                  bottom: -26,
-                  right: -24,
-                }}
+                style={styles.closeButton}
               />
               <GlobalPadding />
             </>
@@ -115,7 +122,7 @@ const SecureDialog = ({
               <GlobalText
                 type="body1"
                 color="negative"
-                style={{ paddingHorizontal: theme.gutters.paddingXS }}>
+                style={styles.errorText}>
                 {t('wallet.create.invalid_password')}
               </GlobalText>
             )}

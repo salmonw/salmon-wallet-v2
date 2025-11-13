@@ -174,7 +174,12 @@ const useAccounts = () => {
         const account = newAccounts[0];
 
         newAccountId = account.id;
-        newNetworkId = Object.keys(account.pathIndexes)[0];
+        // PRIMEROS AJUSTES - Roadmap: Priorizar solana-mainnet como default
+        // Fecha: 2025-10-31
+        const availableNetworks = Object.keys(account.pathIndexes);
+        newNetworkId = availableNetworks.includes('solana-mainnet')
+          ? 'solana-mainnet'
+          : availableNetworks[0];
         newPathIndex = account.pathIndexes[newNetworkId].find(Number.isInteger);
       }
 
@@ -220,12 +225,32 @@ const useAccounts = () => {
     }));
 
     setCounter((await storage.getItem(STORAGE_KEYS.COUNTER)) || 0);
-    setAccounts(await AccountFactory.createMany(data));
-    setAccounId(await storage.getItem(STORAGE_KEYS.ACCOUNT_ID));
-    setNetworkId(await storage.getItem(STORAGE_KEYS.NETWORK_ID));
+    const loadedAccounts = await AccountFactory.createMany(data);
+    setAccounts(loadedAccounts);
+    const storedAccountId = await storage.getItem(STORAGE_KEYS.ACCOUNT_ID);
+    const storedNetworkId = await storage.getItem(STORAGE_KEYS.NETWORK_ID);
+
+    // Default a Solana mainnet si no hay networkId guardado
+    let defaultNetworkId = storedNetworkId;
+    if (!defaultNetworkId && loadedAccounts.length > 0) {
+      const firstAccount = loadedAccounts[0];
+      const availableNetworks = Object.keys(firstAccount.networksAccounts);
+      defaultNetworkId = availableNetworks.includes('solana-mainnet')
+        ? 'solana-mainnet'
+        : availableNetworks[0];
+    }
+
+    setAccounId(storedAccountId);
+    setNetworkId(defaultNetworkId);
     setPathIndex(await storage.getItem(STORAGE_KEYS.PATH_INDEX));
     setTrustedApps((await storage.getItem(STORAGE_KEYS.TRUSTED_APPS)) || {});
     setTokens((await storage.getItem(STORAGE_KEYS.TOKENS)) || {});
+
+    // Guardar el networkId default si no existía
+    if (!storedNetworkId && defaultNetworkId) {
+      await storage.setItem(STORAGE_KEYS.NETWORK_ID, defaultNetworkId);
+    }
+
     setLoaded(true);
   };
 
@@ -403,7 +428,13 @@ const useAccounts = () => {
     const newCounter = counter + 1;
     const newAccounts = [...accounts, account];
     const newAccountId = account.id;
-    const newNetworkId = networkId || Object.keys(account.networksAccounts)[0];
+    const availableNetworks = Object.keys(account.networksAccounts);
+    // Default a Solana mainnet si está disponible, sino usar el primero
+    const newNetworkId =
+      networkId ||
+      (availableNetworks.includes('solana-mainnet')
+        ? 'solana-mainnet'
+        : availableNetworks[0]);
     const newMnemonics = newAccounts.reduce((mnemonics, { id, mnemonic }) => {
       mnemonics[id] = mnemonic;
       return mnemonics;

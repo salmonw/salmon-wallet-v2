@@ -34,6 +34,14 @@ const styles = StyleSheet.create({
     flex: isNative() ? 0.7 : undefined,
     marginVertical: theme.gutters.paddingXS,
   },
+  buttonPadding: {
+    paddingRight: 0,
+    paddingLeft: 6,
+  },
+  featuredTokenButton: {
+    width: 112,
+    marginRight: 10,
+  },
 });
 
 const InputWithTokenSelector = ({
@@ -93,7 +101,7 @@ const InputWithTokenSelector = ({
             imageSize="xs"
             actionIcon="disclose"
             onPress={() => setIsVisible(true)}
-            buttonStyle={{ paddingRight: 0, paddingLeft: 6 }}
+            buttonStyle={styles.buttonPadding}
             imageStyle={description && { marginTop: theme.gutters.paddingXS }}
             keyboardType="numeric"
             nospace
@@ -131,7 +139,7 @@ const InputWithTokenSelector = ({
                       size="sm"
                       icon={<GlobalImage url={token.logo} size="xs" circle />}
                       caption={token.symbol.toUpperCase() || token.name}
-                      buttonStyle={{ width: 112, marginRight: 10 }}
+                      buttonStyle={styles.featuredTokenButton}
                     />
                   </View>
                 ))}

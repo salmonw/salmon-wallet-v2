@@ -35,6 +35,10 @@ const styles = StyleSheet.create({
     bottom: 4,
     backgroundColor: 'transparent',
   },
+  safeArea: {
+    flex: 1,
+    paddingBottom: 50,
+  },
 });
 
 const GlobalSlider = ({ items, renderItem, isExpanded, setIsExpanded }) => {
@@ -63,7 +67,7 @@ const GlobalSlider = ({ items, renderItem, isExpanded, setIsExpanded }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, paddingBottom: 50 }}>
+    <SafeAreaView style={styles.safeArea}>
       <View>
         <Carousel
           pagingEnabled

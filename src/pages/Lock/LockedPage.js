@@ -1,8 +1,17 @@
 import React, { useContext, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { AppContext } from '../../AppProvider';
 
 import theme from '../../component-library/Global/theme';
+
 import GlobalText from '../../component-library/Global/GlobalText';
+
+const styles = StyleSheet.create({
+  forgotButtonText: {
+    fontFamily: theme.fonts.dmSansMedium,
+    textTransform: 'none',
+  },
+});
 import GlobalButton from '../../component-library/Global/GlobalButton';
 import GlobalInput from '../../component-library/Global/GlobalInput';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
@@ -85,10 +94,7 @@ const LockedPage = ({ t }) => {
         <GlobalPadding size="lg" />
         <GlobalButton
           type="text"
-          textStyle={{
-            fontFamily: theme.fonts.dmSansMedium,
-            textTransform: 'none',
-          }}
+          textStyle={styles.forgotButtonText}
           size="medium"
           title={t('lock.forgot')}
           onPress={() => setShowDialog(true)}

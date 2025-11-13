@@ -1,5 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { Linking, StyleSheet } from 'react-native';
+// PRIMEROS AJUSTES - No usado (función comentada)
+// import { Linking, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { withTranslation } from '../../hooks/useTranslations';
 import { AppContext } from '../../AppProvider';
@@ -44,7 +46,8 @@ const SettingsOptionsPage = ({ t }) => {
   const [showAllDialog, setShowAllDialog] = useState(false);
   const { version } = packageInfo;
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.SETTINGS);
-  const { explorer } = useUserConfig();
+  const { explorer, developerNetworks, toggleDeveloperNetworks } =
+    useUserConfig();
 
   const toggleSingleDialog = () => {
     setShowSingleDialog(!showSingleDialog);
@@ -85,8 +88,9 @@ const SettingsOptionsPage = ({ t }) => {
   const goToTrustedApps = () =>
     navigate(ROUTES_SETTINGS_MAP.SETTINGS_TRUSTEDAPPS);
 
-  const goToHelpSupport = () =>
-    Linking.openURL(`https://salmonwallet.io/support.html`);
+  // PRIMEROS AJUSTES - No usado (botón comentado)
+  // const goToHelpSupport = () =>
+  //   Linking.openURL(`https://salmonwallet.io/support.html`);
 
   return (
     <GlobalLayout>
@@ -126,6 +130,15 @@ const SettingsOptionsPage = ({ t }) => {
           {explorer && <GlobalText type="caption">{explorer.name}</GlobalText>}
         </CardButton>
 
+        {/* PRIMEROS AJUSTES - Roadmap: Agregar toggle Developer Networks */}
+        {/* Fecha: 2025-10-31 */}
+        <CardButton
+          title={t(`settings.developer_networks`)}
+          description={t(`settings.developer_networks_description`)}
+          actionIcon={developerNetworks ? 'ToggleOn' : 'ToggleOff'}
+          onPress={toggleDeveloperNetworks}
+        />
+
         {/*Not implemented yet
         <CardButton
           title={t(`settings.security`)}
@@ -148,11 +161,13 @@ const SettingsOptionsPage = ({ t }) => {
           onPress={goToTrustedApps}
         />
 
-        <CardButton
+        {/* PRIMEROS AJUSTES - Roadmap: Quitar Help & Support */}
+        {/* Fecha: 2025-10-31 */}
+        {/* <CardButton
           title={t(`settings.help_support`)}
           actionIcon="right"
           onPress={goToHelpSupport}
-        />
+        /> */}
       </GlobalLayout.Header>
 
       <GlobalLayout.Footer>

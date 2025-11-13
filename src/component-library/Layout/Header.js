@@ -24,6 +24,7 @@ import { withTranslation } from '../../hooks/useTranslations';
 import QRScan from '../../features/QRScan/QRScan';
 import Tooltip from '../Tooltip/Tooltip';
 import NetworkSelector from '../../pages/Wallet/components/NetworkSelector';
+import useUserConfig from '../../hooks/useUserConfig';
 
 import WhitelistBackground from '../../assets/images/WhitelistBackground.png';
 import IconWhitelist from '../../assets/images/IconWhitelist.png';
@@ -114,6 +115,7 @@ const Header = ({ isHome, t }) => {
   const [isConnected, setIsConnected] = useState(null);
   const [hostname, setHostname] = useState(null);
   const [networks, setNetworks] = useState([]);
+  const { developerNetworks } = useUserConfig();
 
   const navigate = useNavigation();
 
@@ -142,11 +144,34 @@ const Header = ({ isHome, t }) => {
     const load = async () => {
       const switches = await getSwitches();
       const allNetworks = await getNetworks();
-      setNetworks(allNetworks.filter(({ id }) => switches[id]?.enable));
+      // PRIMEROS AJUSTES - Roadmap: Filtrar por Developer Networks toggle
+      // Fecha: 2025-10-31
+      const filteredNetworks = allNetworks.filter(({ id, environment }) => {
+        // Primero verificar si está habilitado en switches
+        if (!switches[id]?.enable) return false;
+        // Si developerNetworks está OFF, solo mostrar mainnet
+        if (!developerNetworks && environment !== 'mainnet') return false;
+        return true;
+      });
+      setNetworks(filteredNetworks);
+
+      // Si la red actual no está en las redes filtradas, cambiar a solana-mainnet
+      const currentNetworkAvailable = filteredNetworks.some(
+        net => net.id === networkId,
+      );
+      if (!currentNetworkAvailable && filteredNetworks.length > 0) {
+        // Buscar solana-mainnet primero
+        const solanaMainnet = filteredNetworks.find(
+          net => net.id === 'solana-mainnet',
+        );
+        const targetNetwork = solanaMainnet || filteredNetworks[0];
+        changeNetwork(targetNetwork.id);
+      }
     };
 
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [developerNetworks]);
 
   const toggleScan = () => {
     setShowScan(!showScan);

@@ -16,6 +16,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  actionsContainer: {
+    alignItems: 'end',
+  },
+  iconMarginRight: {
+    marginRight: 5,
+  },
 });
 
 const PendingBridgeTxs = ({ t }) => {
@@ -43,7 +49,6 @@ const PendingBridgeTxs = ({ t }) => {
         setTransactions(nonExpiredTxs);
       }, 1000);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (transactions) {
@@ -67,7 +72,7 @@ const PendingBridgeTxs = ({ t }) => {
               tokenImg2={tokensInfo[1].image}
               key={i}
               actions={
-                <View style={{ alignItems: 'end' }}>
+                <View style={styles.actionsContainer}>
                   <GlobalText
                     key={'amount-action'}
                     type="body2"
@@ -79,7 +84,7 @@ const PendingBridgeTxs = ({ t }) => {
                       source={getTransactionImage(transaction.status)}
                       size={'xxs'}
                       circle
-                      style={{ marginRight: 5 }}
+                      style={styles.iconMarginRight}
                     />
                     <GlobalText
                       key={'amount-action'}

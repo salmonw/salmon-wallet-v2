@@ -12,7 +12,7 @@ const AppRoutes = () => {
     } else if (accounts.length) {
       return ROUTES_MAP.WALLET;
     } else {
-      return ROUTES_MAP.WELCOME;
+      return ROUTES_MAP.ONBOARDING;
     }
   }, [isAdapter, accounts.length]);
 

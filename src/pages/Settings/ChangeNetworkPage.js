@@ -5,6 +5,7 @@ import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';
 import { ROUTES_MAP } from './routes';
 import { withTranslation } from '../../hooks/useTranslations';
+import useUserConfig from '../../hooks/useUserConfig';
 
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import CardButton from '../../component-library/CardButton/CardButton';
@@ -14,6 +15,7 @@ const ChangeNetworkPage = ({ t }) => {
   const navigate = useNavigation();
   const [{ networkId }, { changeNetwork }] = useContext(AppContext);
   const onSelect = targetId => changeNetwork(targetId);
+  const { developerNetworks } = useUserConfig();
 
   const onBack = () => navigate(ROUTES_MAP.SETTINGS_OPTIONS);
   const [switches, setSwitches] = useState([]);
@@ -21,12 +23,36 @@ const ChangeNetworkPage = ({ t }) => {
 
   useEffect(() => {
     const load = async () => {
-      setSwitches(await getSwitches());
-      setNetworks(await getNetworks());
+      const allSwitches = await getSwitches();
+      const allNetworks = await getNetworks();
+      // PRIMEROS AJUSTES - Roadmap: Filtrar por Developer Networks toggle
+      // Fecha: 2025-10-31
+      const filteredNetworks = allNetworks.filter(({ id, environment }) => {
+        // Primero verificar si está habilitado en switches
+        if (!allSwitches[id]?.enable) return false;
+        // Si developerNetworks está OFF, solo mostrar mainnet
+        if (!developerNetworks && environment !== 'mainnet') return false;
+        return true;
+      });
+      setSwitches(allSwitches);
+      setNetworks(filteredNetworks);
+
+      // Si la red actual no está disponible, cambiar a solana-mainnet
+      const currentNetworkAvailable = filteredNetworks.some(
+        net => net.id === networkId,
+      );
+      if (!currentNetworkAvailable && filteredNetworks.length > 0) {
+        const solanaMainnet = filteredNetworks.find(
+          net => net.id === 'solana-mainnet',
+        );
+        const targetNetwork = solanaMainnet || filteredNetworks[0];
+        onSelect(targetNetwork.id);
+      }
     };
 
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [developerNetworks]);
 
   return (
     <GlobalLayout>

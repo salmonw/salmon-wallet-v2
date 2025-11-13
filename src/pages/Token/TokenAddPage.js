@@ -20,6 +20,7 @@ import GlobalPadding from '../../component-library/Global/GlobalPadding';
 const TokenAddPage = ({ params, t }) => {
   const navigate = useNavigation();
   const [loaded, setloaded] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [token, setToken] = useState({});
 
   const [{ activeBlockchainAccount, activeTokens }] = useContext(AppContext);

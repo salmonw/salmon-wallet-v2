@@ -9,7 +9,7 @@ const getPricesByIds = async ids => getPrices({ ids: ids.join(',') });
 
 const getPrices = async params => {
   const { data } = await axios.get(`${SALMON_API_URL}/v1/coins`, { params });
-  return data;
+  return Array.isArray(data) ? data : null;
 };
 
 const getTopTokensByPlatform = async platform => getTopTokens({ platform });

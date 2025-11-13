@@ -5,10 +5,13 @@
  * See https://github.com/satoshilabs/slips/blob/master/slip-0044.md
  */
 
+// PRIMEROS AJUSTES - Roadmap: Dejar únicamente Solana y BTC
+// Fecha: 2025-10-31
+
 const BTC = 0;
 const TESTNET = 1;
-const ETH = 60;
-const NEAR = 397;
+// const ETH = 60; // Comentado - No se usa en esta versión
+// const NEAR = 397; // Comentado - No se usa en esta versión
 const SOL = 501;
 
-module.exports = { BTC, TESTNET, ETH, NEAR, SOL };
+module.exports = { BTC, TESTNET, /* ETH, NEAR, */ SOL };

@@ -1,89 +1,59 @@
 const axios = require('axios').default;
-const { Transaction } = require('@solana/web3.js');
+const { VersionedTransaction } = require('@solana/web3.js');
 const { applyDecimals } = require('./solana-token-service');
 const { getTokenList } = require('./solana-token-list-service');
 const { SOL_ADDRESS } = require('../../constants/token-constants');
 const { SALMON_API_URL } = require('../../constants/environment');
 
-const quote = async (
+const createOrder = async (
   network,
-  inAdress,
-  outAdress,
+  inAddress,
+  outAddress,
   publicKey,
   amount,
   slippage,
 ) => {
   const tokens = await getTokenList();
-  const inValidAddress = inAdress === publicKey ? SOL_ADDRESS : inAdress;
-  const outValidAddress = outAdress === publicKey ? SOL_ADDRESS : outAdress;
+  const inValidAddress = inAddress === publicKey ? SOL_ADDRESS : inAddress;
+  const outValidAddress = outAddress === publicKey ? SOL_ADDRESS : outAddress;
   const inToken = tokens.find(t => t.address === inValidAddress);
   const inputAmount = applyDecimals(amount, inToken.decimals);
-  const url = `${SALMON_API_URL}/v1/${network.id}/ft/swap/quote`;
+  const url = `${SALMON_API_URL}/v1/${network.id}/ft/swap/order`;
   const params = {
     inputMint: inValidAddress,
     outputMint: outValidAddress,
     amount: inputAmount,
-    slippage,
+    publicKey,
   };
   const response = await axios.get(url, { params });
   return response.data;
 };
 
-const createTransaction = async (network, connection, keypair, routeId) => {
-  const url = `${SALMON_API_URL}/v1/${network.id}/ft/swap/transaction`;
-  const params = { id: routeId, publicKey: keypair.publicKey.toBase58() };
-  const response = await axios.get(url, {
-    params,
+const executeSwap = async (network, connection, keypair, order) => {
+  const transaction = VersionedTransaction.deserialize(
+    Buffer.from(order.custom.transaction, 'base64'),
+  );
+  transaction.sign([keypair]);
+
+  const url = `${SALMON_API_URL}/v1/${network.id}/ft/swap/execute`;
+  const response = await axios.post(url, {
+    signedTransaction: Buffer.from(transaction.serialize()).toString('base64'),
+    requestId: order.custom.requestId,
   });
-  const { setupTransaction, swapTransaction, cleanupTransaction } =
-    response.data;
 
-  const txids = [];
-  const transactions = [
-    { name: 'setupTransaction', value: setupTransaction },
-    { name: 'swapTransaction', value: swapTransaction },
-    { name: 'cleanupTransaction', value: cleanupTransaction },
-  ].filter(({ value }) => value);
-
-  for (let tx of transactions) {
-    // get transaction object from serialized transaction
-    const serializedTransaction = tx.value;
-    const transaction = Transaction.from(
-      Buffer.from(serializedTransaction, 'base64'),
+  if (response.data.status === 'Success') {
+    const confirmation = await connection.confirmTransaction(
+      response.data.signature,
+      'confirmed',
     );
-
-    // perform the swap
-    const txid = await connection.sendTransaction(transaction, [keypair], {
-      skipPreflight: true,
-    });
-
-    const confirmation = await connection.confirmTransaction(txid, 'confirmed');
     const status = confirmation?.value?.err ? 'fail' : 'success';
-
-    txids.push({ id: txid, name: tx.name, status });
-
-    if (status === 'fail') {
-      return txids;
-    }
+    return [{ id: response.data.signature, name: 'swap', status }];
   }
 
-  return txids;
-};
-
-const createAssociatedTokenAccount = async (network, routeId) => {
-  const url = `${SALMON_API_URL}/v1/${network.id}/account/ata`;
-  try {
-    const { data } = await axios.post(url, { route_id: routeId });
-
-    return data.address;
-  } catch (error) {
-    console.log(`Cannot create ATA for route id ${routeId}`);
-    return null;
-  }
+  return [{ id: null, name: 'swap', status: 'fail', error: response.data.error }];
 };
 
 module.exports = {
-  quote,
-  createTransaction,
-  createAssociatedTokenAccount,
+  createOrder,
+  executeSwap,
 };

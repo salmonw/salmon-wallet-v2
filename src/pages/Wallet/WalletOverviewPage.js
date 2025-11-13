@@ -12,7 +12,8 @@ import { AppContext } from '../../AppProvider';
 import TokenList from '../../features/TokenList/TokenList';
 import { useNavigation } from '../../routes/hooks';
 import { ROUTES_MAP as TOKEN_ROUTES_MAP } from '../../pages/Token/routes';
-import { ROUTES_MAP as WALLET_ROUTES_MAP } from './routes';
+// PRIMEROS AJUSTES - No usado
+// import { ROUTES_MAP as WALLET_ROUTES_MAP } from './routes';
 import {
   mergeImportedTokens,
   getListedTokens,
@@ -32,7 +33,8 @@ import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalSendReceive from '../../component-library/Global/GlobalSendReceive';
 import WalletBalanceCard from '../../component-library/Global/GlobalBalance';
 import Header from '../../component-library/Layout/Header';
-import MyNfts from './components/MyNfts';
+// PRIMEROS AJUSTES - No usado (componente comentado)
+// import MyNfts from './components/MyNfts';
 import PendingTxs from './components/PendingTxs';
 import PendingBridgeTxs from './components/PendingBridgeTxs';
 import ImportTokenModal from './components/ImportTokenModal';
@@ -190,12 +192,14 @@ const WalletOverviewPage = ({ cfgs, t }) => {
         {allowsImported && (
           <ImportTokenModal tokens={availableTokens} onChange={onImport} />
         )}
-        {switches?.features.nfts && (
+        {/* PRIMEROS AJUSTES - Roadmap: Quitar NFTs de la home */}
+        {/* Fecha: 2025-10-31 */}
+        {/* {switches?.features.collectibles && (
           <>
             <GlobalPadding />
             <MyNfts />
           </>
-        )}
+        )} */}
       </GlobalLayout.Header>
     </GlobalLayout>
   );

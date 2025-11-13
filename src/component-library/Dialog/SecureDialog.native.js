@@ -8,6 +8,22 @@ import GlobalText from '../Global/GlobalText';
 import GlobalInputWithButton from '../Global/GlobalInputWithButton';
 
 import { Paragraph, Dialog, Portal } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  dialog: {
+    backgroundColor: 'rgba(22,28,45, 0.9)',
+  },
+  title: {
+    textAlign: 'center',
+  },
+  paragraph: {
+    textAlign: 'center',
+  },
+  errorText: {
+    paddingHorizontal: theme.gutters.paddingXS,
+  },
+});
 
 const SecureDialog = ({
   type,
@@ -66,13 +82,10 @@ const SecureDialog = ({
 
   return (
     <Portal>
-      <Dialog
-        visible={isOpen}
-        onDismiss={onClose}
-        style={{ backgroundColor: 'rgba(22,28,45, 0.9)' }}>
-        <Dialog.Title style={{ textAlign: 'center' }}>{title}</Dialog.Title>
+      <Dialog visible={isOpen} onDismiss={onClose} style={styles.dialog}>
+        <Dialog.Title style={styles.title}>{title}</Dialog.Title>
         <Dialog.Content>
-          <Paragraph style={{ textAlign: 'center' }}>{text}</Paragraph>
+          <Paragraph style={styles.paragraph}>{text}</Paragraph>
           {showPasswordInput && (
             <>
               <GlobalInputWithButton
@@ -89,7 +102,7 @@ const SecureDialog = ({
                 <GlobalText
                   type="body1"
                   color="negative"
-                  style={{ paddingHorizontal: theme.gutters.paddingXS }}>
+                  style={styles.errorText}>
                   {t('wallet.create.invalid_password')}
                 </GlobalText>
               )}

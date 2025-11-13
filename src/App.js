@@ -2,7 +2,8 @@ import React from 'react';
 
 import AppProvider from './AppProvider';
 import AppRoutes from './AppRoutes';
-import { isExtension } from './utils/platform';
+// LINT FIX - No usado
+// import { isExtension } from './utils/platform';
 
 const App = () => {
   // Disallow rendering inside an iframe to prevent clickjacking.

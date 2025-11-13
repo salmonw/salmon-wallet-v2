@@ -1,6 +1,7 @@
 import OnboardingSection from '../pages/Onboarding';
 import WalletPage from '../pages/Wallet/WalletPage';
-import WelcomePage from '../pages/Welcome/WelcomePage';
+// PRIMEROS AJUSTES - No usado (ruta comentada)
+// import WelcomePage from '../pages/Welcome/WelcomePage';
 import AdapterPage from '../pages/Adapter/AdapterPage';
 import TokenSection from '../pages/Token';
 import { getRoutesWithParent } from './utils';
@@ -13,6 +14,8 @@ export const ROUTES_MAP = {
   ADAPTER: 'ADAPTER',
 };
 
+// PRIMEROS AJUSTES - Roadmap: Eliminar páginas de bienvenida
+// Fecha: 2025-10-31
 const routes = [
   {
     key: ROUTES_MAP.WALLET,
@@ -21,20 +24,22 @@ const routes = [
     route: '/wallet',
     Component: WalletPage,
   },
-  {
-    key: ROUTES_MAP.WELCOME,
-    name: 'welcome',
-    path: 'welcome',
-    route: '/welcome',
-    Component: WelcomePage,
-    default: true,
-  },
+  // WELCOME PAGE - Comentada - Se va directamente a ONBOARDING
+  // {
+  //   key: ROUTES_MAP.WELCOME,
+  //   name: 'welcome',
+  //   path: 'welcome',
+  //   route: '/welcome',
+  //   Component: WelcomePage,
+  //   default: true,
+  // },
   {
     key: ROUTES_MAP.ONBOARDING,
     name: 'onboarding',
     path: 'onboarding/*',
     route: '/onboarding',
     Component: OnboardingSection,
+    default: true, // Ahora ONBOARDING es la ruta por defecto
   },
   {
     key: ROUTES_MAP.TOKEN,

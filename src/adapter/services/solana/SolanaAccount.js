@@ -129,7 +129,7 @@ class SolanaAccount {
   }
 
   async getBestSwapQuote(inToken, outToken, amount, slippage = 0.5) {
-    return swapService.quote(
+    return swapService.createOrder(
       this.network,
       inToken,
       outToken,
@@ -138,8 +138,6 @@ class SolanaAccount {
       slippage,
     );
   }
-
-  async expireSwapQuote(quote) {}
 
   async estimateTransactionsFee(messages, commitment = 'confirmed') {
     const connection = await this.getConnection();
@@ -189,18 +187,14 @@ class SolanaAccount {
     return transferService.confirmTransaction(connection, txId);
   }
 
-  async createSwapTransaction(quote) {
-    swapService.createAssociatedTokenAccount(this.network, quote.custom.id);
-
+  async createSwapTransaction(order) {
     const connection = await this.getConnection();
-    const txIds = await swapService.createTransaction(
+    return swapService.executeSwap(
       this.network,
       connection,
       this.keyPair,
-      quote.custom.id,
+      order,
     );
-
-    return txIds;
   }
 
   async listNft(tokenAddress, price) {

@@ -41,15 +41,17 @@ const DerivedAccountsPage = ({ t }) => {
 
   useEffect(() => {
     const load = async () => {
-      const { ETHEREUM, SOLANA } = BLOCKCHAINS;
+      const { /* ETHEREUM, */ SOLANA } = BLOCKCHAINS; // ETHEREUM comentado - No se usa en esta versión
       const { mnemonic } = activeAccount;
 
       // Derived accounts with credit
       const data = await Promise.all(
         Object.values(activeAccount.networksAccounts)
           .flat()
+          // PRIMEROS AJUSTES - Roadmap: Remover ETHEREUM del filtro
+          // Fecha: 2025-10-31
           .filter(({ network }) =>
-            [ETHEREUM, SOLANA].includes(network.blockchain),
+            [/* ETHEREUM, */ SOLANA].includes(network.blockchain),
           )
           .flatMap(({ network }) =>
             Array.from({ length: 9 }, (_, i) => ({

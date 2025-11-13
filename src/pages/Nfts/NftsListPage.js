@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+// LINT FIX - StyleSheet no usado
+import { View } from 'react-native';
 import { getSwitches } from '../../adapter';
 
 import { AppContext } from '../../AppProvider';
@@ -28,7 +29,7 @@ const NftsListPage = ({ t }) => {
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
-      setSwitches(allSwitches[networkId].sections.nfts),
+      setSwitches(allSwitches[networkId].sections.collectibles),
     );
   }, [networkId]);
   useEffect(() => {
