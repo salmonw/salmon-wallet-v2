@@ -3,7 +3,6 @@
 const balanceService = require('./ethereum-balance-service');
 const nameService = require('./ethereum-name-service');
 const nftService = require('./ethereum-nft-service');
-const scanService = require('./ethereum-scan-service');
 const swapService = require('./ethereum-swap-service');
 const tokenListService = require('./ethereum-token-list-service');
 const transactionService = require('./ethereum-transaction-service');
@@ -214,14 +213,6 @@ class EthereumAccount {
     return nameService.getAddress(connection, domain);
   }
 
-  async scanTransactions(txObject, options = {}) {
-    return scanService.scanTransactions(
-      this.network,
-      this.getReceiveAddress(),
-      txObject,
-      options,
-    );
-  }
 
   async getAvailableTokens() {
     return tokenListService.getTokenList(this.network);

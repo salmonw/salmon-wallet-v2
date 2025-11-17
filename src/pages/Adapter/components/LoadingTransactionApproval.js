@@ -9,7 +9,7 @@ import { DAppCard } from './DAppCard';
 import { ActiveWalletCard } from './ActiveWalletCard';
 import { withTranslation } from '../../../hooks/useTranslations';
 
-const SimulatingTransactions = ({ t, origin, name, icon }) => (
+const LoadingTransactionApproval = ({ t, origin, name, icon }) => (
   <GlobalLayout fullscreen>
     <GlobalLayout.Header>
       <ActiveWalletCard showEnvironment />
@@ -23,4 +23,4 @@ const SimulatingTransactions = ({ t, origin, name, icon }) => (
   </GlobalLayout>
 );
 
-export default withTranslation()(SimulatingTransactions);
+export default withTranslation()(LoadingTransactionApproval);

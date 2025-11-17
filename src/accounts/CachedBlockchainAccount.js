@@ -175,10 +175,6 @@ class CachedBlockchainAccount {
     return this.base.getPublicKeyFromDomain(...args);
   }
 
-  async scanTransactions(...args) {
-    return this.base.scanTransactions(...args);
-  }
-
   async getAvailableTokens() {
     const key = this.network.id;
     return cache(key, CACHE_TYPES.AVAILABLE_TOKENS, () =>

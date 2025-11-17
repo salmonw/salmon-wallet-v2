@@ -220,9 +220,6 @@ class EclipseAccount {
     return nameService.getPublicKey(connection, domain);
   }
 
-  async scanTransactions(transactions, options = {}) {
-    throw new Error('Not supported by Eclipse');
-  }
 
   async getAvailableTokens() {
     throw new Error('Not supported by Eclipse');

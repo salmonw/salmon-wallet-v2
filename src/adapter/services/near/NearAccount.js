@@ -163,9 +163,6 @@ class NearAccount {
     throw 'method_not_supported';
   }
 
-  async scanTransactions(transactions, options) {
-    throw 'method_not_supported';
-  }
 
   async getAvailableTokens() {
     return tokenListService.getTokenList(this.network);

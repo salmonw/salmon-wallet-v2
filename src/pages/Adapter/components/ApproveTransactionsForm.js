@@ -6,15 +6,11 @@ import React, {
   useState,
 } from 'react';
 
-import bs58 from 'bs58';
-import { VersionedMessage, VersionedTransaction } from '@solana/web3.js';
+import { VersionedMessage } from '@solana/web3.js';
 
 import { AppContext } from '../../../AppProvider';
-import NonSimulatedTransactions from './NonSimulatedTransactions';
-import SimulatedTransactions from './SimulatedTransactions';
-import SimulatingTransactions from './SimulatingTransactions';
-import UnsafeTransactions from './UnsafeTransactions';
-import FailedTransactions from './FailedTransactions';
+import BasicTransactionApproval from './BasicTransactionApproval';
+import LoadingTransactionApproval from './LoadingTransactionApproval';
 
 const ApproveTransactionsForm = ({
   payloads = [],
@@ -24,28 +20,17 @@ const ApproveTransactionsForm = ({
   onApprove,
   onReject,
 }) => {
-  const [{ activeBlockchainAccount, selectedLanguage: language }] =
-    useContext(AppContext);
+  const [{ activeBlockchainAccount }] = useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
   const [fee, setFee] = useState(null);
-  const [simulation, setSimulation] = useState(null);
-  const [continueAnyway, setContinueAnyway] = useState(false);
 
   const messages = useMemo(
     () => payloads.map(payload => VersionedMessage.deserialize(payload)),
     [payloads],
   );
 
-  const transactions = useMemo(() => {
-    return messages.map(message => {
-      const transaction = new VersionedTransaction(message);
-      const bytes = transaction.serialize();
-      return bs58.encode(bytes);
-    });
-  }, [messages]);
-
-  const scanTransactions = useCallback(async () => {
+  const estimateFee = useCallback(async () => {
     setLoading(true);
 
     try {
@@ -53,71 +38,28 @@ const ApproveTransactionsForm = ({
     } catch (err) {
       console.error('Failed to get fee for message:', err);
       setFee(null);
-    }
-
-    try {
-      const options = { origin, language };
-      setSimulation(
-        await activeBlockchainAccount.scanTransactions(transactions, options),
-      );
-    } catch (err) {
-      console.error('Failed to simulate transactions', err);
-      setSimulation(null);
     } finally {
       setLoading(false);
     }
-  }, [transactions, messages, origin, activeBlockchainAccount, language]);
+  }, [messages, activeBlockchainAccount]);
 
   useEffect(() => {
-    scanTransactions();
-  }, [scanTransactions]);
+    estimateFee();
+  }, [estimateFee]);
 
   if (loading) {
-    return <SimulatingTransactions origin={origin} name={name} icon={icon} />;
-  }
-
-  if (!simulation) {
     return (
-      <NonSimulatedTransactions
-        origin={origin}
-        name={name}
-        icon={icon}
-        onRetry={scanTransactions}
-        onApprove={onApprove}
-        onReject={onReject}
-      />
-    );
-  }
-
-  if (simulation.action === 'BLOCK' && !continueAnyway) {
-    return (
-      <UnsafeTransactions
-        onApprove={() => setContinueAnyway(true)}
-        onReject={onReject}
-      />
-    );
-  }
-
-  if (simulation.simulationResults.error) {
-    return (
-      <FailedTransactions
-        origin={origin}
-        name={name}
-        icon={icon}
-        error={simulation.simulationResults.error}
-        onApprove={onApprove}
-        onReject={onReject}
-      />
+      <LoadingTransactionApproval origin={origin} name={name} icon={icon} />
     );
   }
 
   return (
-    <SimulatedTransactions
+    <BasicTransactionApproval
       origin={origin}
       name={name}
       icon={icon}
-      simulation={simulation}
       fee={fee}
+      network={activeBlockchainAccount.network}
       onApprove={onApprove}
       onReject={onReject}
     />

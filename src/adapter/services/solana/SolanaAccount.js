@@ -7,7 +7,6 @@ const balanceService = require('./solana-balance-service');
 const tokenListService = require('./solana-token-list-service');
 const transferService = require('./solana-transfer-service');
 const tokenService = require('./solana-token-service');
-const scanService = require('./solana-scan-service');
 const swapService = require('./solana-swap-service');
 const allDomainsNameService = require('./alldomains-name-service');
 const nameService = require('./solana-name-service');
@@ -292,14 +291,6 @@ class SolanaAccount {
     return allDomainsNameService.getPublicKey(connection, domain);
   }
 
-  async scanTransactions(transactions, options = {}) {
-    return scanService.scanTransactions(
-      this.network,
-      this.getReceiveAddress(),
-      transactions,
-      options,
-    );
-  }
 
   async getAvailableTokens() {
     return tokenListService.getTokenList();

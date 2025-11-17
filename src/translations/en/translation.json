@@ -266,14 +266,8 @@
       },
       "transaction": {
         "title": "Transaction Review",
-        "retry": "Retry Simulation",
-        "verified_by": "Transaction verified by",
-        "unsafe": "Unsafe transaction",
-        "warning": "Transaction could not be verified. You can try again or proceed without verification.",
-        "caution": "Salmon believes this transaction is malicious and unsafe to sign. We recommend not to proceed with it as it may result in fund loss.",
         "detail": "Detail",
-        "fee": "Network Fee",
-        "proceed_anyway": "I understand the risk, proceed anyway"
+        "fee": "Network Fee"
       }
     }
   },
