@@ -1,6 +1,6 @@
 import React from 'react';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
-const QRImage = ({ address, size }) => <QRCode value={address} size={size} />;
+const QRImage = ({ address, size }) => <QRCodeSVG value={address} size={size} />;
 
 export default QRImage;

@@ -1,6 +1,6 @@
 'use strict';
 
-const { isAddress } = require('ethers/lib/utils');
+const { isAddress } = require('ethers');
 
 const INVALID_ADDRESS = {
   type: 'ERROR',

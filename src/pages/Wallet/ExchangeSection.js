@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 
 const ExchangeSection = ({ t }) => {
   const navigate = useNavigation();
-  const [{ activeBlockchainAccount }, {}] = useContext(AppContext);
+  const [{ activeBlockchainAccount }] = useContext(AppContext);
   const [optSelected, setOptSelected] = useState(0);
 
   // PRIMEROS AJUSTES - No usado

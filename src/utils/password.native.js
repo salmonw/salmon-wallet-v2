@@ -20,7 +20,7 @@ export const lock = async (unlocked, password) => {
   const key = await deriveEncryptionKey(password, salt, iterations, digest);
   const nonce = randomBytes(secretbox.nonceLength);
   const encrypted = secretbox(
-    // eslint-disable-next-line no-undef
+     
     Buffer.from(JSON.stringify(unlocked)),
     nonce,
     key,
@@ -52,7 +52,7 @@ export const unlock = async (locked, password) => {
   if (!plaintext) {
     throw new Error('Incorrect password');
   }
-  // eslint-disable-next-line no-undef
+   
   const decodedPlaintext = Buffer.from(plaintext).toString();
   return JSON.parse(decodedPlaintext);
 };

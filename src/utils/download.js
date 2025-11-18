@@ -1,5 +1,5 @@
 const download = (content, filename) => {
-  // eslint-disable-next-line no-undef
+   
   const url = window.URL.createObjectURL(new Blob([content]));
   const link = document.createElement('a');
   link.href = url;

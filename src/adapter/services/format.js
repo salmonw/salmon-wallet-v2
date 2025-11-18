@@ -1,4 +1,4 @@
-const { formatUnits, parseUnits } = require('ethers/lib/utils');
+const { formatUnits, parseUnits } = require('ethers');
 
 const parseAmount = (amount, decimals) => {
   if (decimals) {
