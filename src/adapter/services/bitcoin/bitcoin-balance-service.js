@@ -1,6 +1,6 @@
 'use strict';
 
-const http = require('axios');
+const http = require('../axios-wrapper').default;
 const { getLast24HoursChange } = require('../common-balance-service');
 const { getPricesByPlatform } = require('../price-service');
 const { BITCOIN } = require('../../constants/platforms');

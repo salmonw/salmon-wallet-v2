@@ -1,6 +1,6 @@
 'use strict';
 
-const http = require('axios');
+const http = require('../axios-wrapper').default;
 const { formatAmount } = require('../format');
 const { SALMON_API_URL } = require('../../constants/environment');
 

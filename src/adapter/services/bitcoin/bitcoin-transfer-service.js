@@ -1,5 +1,5 @@
 const bitcore = require('bitcore-lib');
-const http = require('axios');
+const http = require('../axios-wrapper').default;
 const transactionService = require('./bitcoin-transaction-service');
 const { SALMON_API_URL } = require('../../constants/environment');
 
