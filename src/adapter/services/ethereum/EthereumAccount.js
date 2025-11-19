@@ -200,12 +200,22 @@ class EthereumAccount {
 
   async getDomain() {
     const connection = await this.getConnection();
-    return nameService.getDomainName(connection, this.wallet.address);
+    try {
+      return await nameService.getDomainName(connection, this.wallet.address);
+    } catch (error) {
+      // No domain registered for this account
+      return null;
+    }
   }
 
   async getDomainFromPublicKey(address) {
     const connection = await this.getConnection();
-    return nameService.getDomainName(connection, address);
+    try {
+      return await nameService.getDomainName(connection, address);
+    } catch (error) {
+      // No domain registered for this address
+      return null;
+    }
   }
 
   async getPublicKeyFromDomain(domain) {

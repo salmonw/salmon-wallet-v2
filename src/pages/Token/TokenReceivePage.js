@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 
 const TokenReceivePage = ({ t }) => {
   const navigate = useNavigation();
-  const { domain } = useDomain();
+  const { domain, isLoading } = useDomain();
 
   const [{ activeAccount, activeBlockchainAccount }] = useContext(AppContext);
 
@@ -43,9 +43,22 @@ const TokenReceivePage = ({ t }) => {
     navigate(ROUTES_MAP.WALLET);
   };
 
-  const onCopyAlias = () => clipboard.copy(address);
+  const onCopyAlias = () => clipboard.copy(domain);
 
   const onCopyAddress = () => clipboard.copy(address);
+
+  const onRegisterDomain = () => {
+    const blockchain = activeBlockchainAccount.network.blockchain;
+    let url = 'https://www.sns.id';
+
+    if (blockchain === 'solana') {
+      url = 'https://www.sns.id';
+    }
+
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank');
+    }
+  };
 
   return (
     <GlobalLayout fullscreen>
@@ -61,13 +74,29 @@ const TokenReceivePage = ({ t }) => {
           </View>
 
           <GlobalPadding size="2xl" />
-          {domain != null && (
+          {isLoading && (
             <View style={globalStyles.inlineWell}>
-              <GlobalText type="body2">{JSON.stringify(domain)}</GlobalText>
+              <GlobalText type="body2">Loading domain...</GlobalText>
+            </View>
+          )}
+
+          {!isLoading && domain != null && (
+            <View style={globalStyles.inlineWell}>
+              <GlobalText type="body2">{domain}</GlobalText>
 
               <GlobalButton onPress={onCopyAlias} size="medium">
                 <GlobalImage source={IconCopy} size="xs" />
                 <GlobalText type="button">Copy</GlobalText>
+              </GlobalButton>
+            </View>
+          )}
+
+          {!isLoading && domain === null && activeBlockchainAccount.network.blockchain === 'solana' && (
+            <View style={globalStyles.inlineWell}>
+              <GlobalText type="body2">No domain registered</GlobalText>
+
+              <GlobalButton onPress={onRegisterDomain} size="medium" type="accent">
+                <GlobalText type="button">Register Domain</GlobalText>
               </GlobalButton>
             </View>
           )}

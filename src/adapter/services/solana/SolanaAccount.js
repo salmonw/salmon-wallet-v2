@@ -264,23 +264,46 @@ class SolanaAccount {
 
   async getDomain() {
     const connection = await this.getConnection();
-    const domain = allDomainsNameService.getDomainName(
-      connection,
-      this.publicKey,
-    );
-    if (domain) {
-      return domain;
+    try {
+      const domain = await allDomainsNameService.getDomainName(
+        connection,
+        this.publicKey,
+      );
+      if (domain) {
+        return domain;
+      }
+    } catch (error) {
+      // AllDomains not registered, try .sol domains
     }
-    return nameService.getDomainName(connection, this.publicKey);
+
+    try {
+      return await nameService.getDomainName(connection, this.publicKey);
+    } catch (error) {
+      // No domain registered for this account
+      return null;
+    }
   }
 
   async getDomainFromPublicKey(publicKey) {
     const connection = await this.getConnection();
-    const domain = allDomainsNameService.getDomainName(connection, publicKey);
-    if (domain) {
-      return domain;
+    try {
+      const domain = await allDomainsNameService.getDomainName(
+        connection,
+        publicKey,
+      );
+      if (domain) {
+        return domain;
+      }
+    } catch (error) {
+      // AllDomains not registered, try .sol domains
     }
-    return nameService.getDomainName(connection, publicKey);
+
+    try {
+      return await nameService.getDomainName(connection, publicKey);
+    } catch (error) {
+      // No domain registered for this account
+      return null;
+    }
   }
 
   async getPublicKeyFromDomain(domain) {
@@ -288,7 +311,7 @@ class SolanaAccount {
     if (domain.endsWith('.sol')) {
       return nameService.getPublicKey(connection, domain);
     }
-    return allDomainsNameService.getPublicKey(connection, domain);
+    return await allDomainsNameService.getPublicKey(connection, domain);
   }
 
 
