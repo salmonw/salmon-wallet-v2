@@ -98,6 +98,8 @@
     "buffer": "^6.0.3",
     "esbuild": "^0.27.0",
     "eslint": "^9.39.1",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "events": "^3.3.0",
