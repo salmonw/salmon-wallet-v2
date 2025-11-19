@@ -1,6 +1,6 @@
 const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const { TOKEN_PROGRAM_ID } = require('../../constants/token-constants');
-const http = require('axios');
+const http = require('../axios-wrapper').default;
 
 const TOKEN_LIST_URL_JUP = 'https://cache.jup.ag/tokens';
 

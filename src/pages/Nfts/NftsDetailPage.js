@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { get } from 'lodash';
+import get from 'lodash-es/get';
 // LINT FIX - BLOCKCHAINS no usado
 import { getSwitches } from '../../adapter';
 

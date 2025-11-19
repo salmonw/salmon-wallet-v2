@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountFactory, getNetworks, getPathIndex } from '../adapter';
-import { mapValues, merge, omit } from 'lodash';
+import mapValues from 'lodash-es/mapValues';
+import merge from 'lodash-es/merge';
+import omit from 'lodash-es/omit';
 import http from 'axios';
 
 import CachedBlockchainAccount from '../accounts/CachedBlockchainAccount';

@@ -1,6 +1,6 @@
 'use strict';
 
-const bitcoinjs = require('bitcoinjs-lib');
+const bitcoinjs = require('../services/bitcoinjs-wrapper').default;
 const BitcoinAccount = require('../services/bitcoin/BitcoinAccount');
 const { generateChild } = require('../services/seed-service');
 const { BTC } = require('../constants/coin-types');

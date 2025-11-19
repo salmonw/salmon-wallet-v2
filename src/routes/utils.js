@@ -1,4 +1,5 @@
-import { find, get } from 'lodash';
+import find from 'lodash-es/find';
+import get from 'lodash-es/get';
 
 export const getRoute = (routes, routeKey) =>
   find(routes, route => route.key === routeKey);

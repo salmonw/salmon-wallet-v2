@@ -1,4 +1,4 @@
-const http = require('axios');
+const http = require('../axios-wrapper').default;
 
 const { SALMON_API_URL } = require('../../constants/environment');
 

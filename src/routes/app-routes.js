@@ -1,10 +1,13 @@
+import { lazy } from 'react';
 import OnboardingSection from '../pages/Onboarding';
-import WalletPage from '../pages/Wallet/WalletPage';
 // PRIMEROS AJUSTES - No usado (ruta comentada)
 // import WelcomePage from '../pages/Welcome/WelcomePage';
-import AdapterPage from '../pages/Adapter/AdapterPage';
-import TokenSection from '../pages/Token';
 import { getRoutesWithParent } from './utils';
+
+// Lazy loading de rutas principales (excepto Onboarding que es la ruta por defecto)
+const WalletPage = lazy(() => import('../pages/Wallet/WalletPage'));
+const TokenSection = lazy(() => import('../pages/Token'));
+const AdapterPage = lazy(() => import('../pages/Adapter/AdapterPage'));
 
 export const ROUTES_MAP = {
   WELCOME: 'WELCOME',
@@ -57,6 +60,8 @@ const routes = [
   },
 ];
 
+// Sub-routes cargadas de forma síncrona (se cargarán con las rutas principales)
+// Nota: Estas se cargan eager porque son parte de la configuración inicial de rutas
 export const globalRoutes = [
   ...routes,
   ...getRoutesWithParent(

@@ -1,5 +1,8 @@
-import TransactionsListPage from './TransactionsListPage';
-import TransactionsDetailPage from './TransactionsDetailPage';
+import { lazy } from 'react';
+
+// Lazy loading de sub-rutas de Transactions
+const TransactionsListPage = lazy(() => import('./TransactionsListPage'));
+const TransactionsDetailPage = lazy(() => import('./TransactionsDetailPage'));
 
 export const ROUTES_MAP = {
   TRANSACTIONS_LIST: 'TRANSACTIONS_LIST',

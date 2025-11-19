@@ -13,7 +13,7 @@ import { AppContext } from '../../AppProvider';
 
 const AccountEditProfileAvatarsPage = ({ params, t }) => {
   const navigate = useNavigation();
-  const [{}, { editAccount }] = useContext(AppContext);
+  const [, { editAccount }] = useContext(AppContext);
 
   const onBack = () =>
     navigate(ROUTES_SETTINGS_MAP.SETTINGS_ACCOUNT_EDIT_PROFILE, {

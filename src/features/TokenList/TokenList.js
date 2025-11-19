@@ -1,5 +1,6 @@
 import React from 'react';
-import { get, isNil } from 'lodash';
+import get from 'lodash-es/get';
+import isNil from 'lodash-es/isNil';
 import CardButton from '../../component-library/CardButton/CardButton';
 import GlobalText from '../../component-library/Global/GlobalText';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';

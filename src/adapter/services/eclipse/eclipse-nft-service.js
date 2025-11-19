@@ -1,4 +1,4 @@
-const axios = require('axios').default;
+const axios = require('../axios-wrapper').default;
 const { Transaction, PublicKey } = require('@solana/web3.js');
 const TransactionError = require('../../errors/TransactionError');
 const { SALMON_API_URL } = require('../../constants/environment');

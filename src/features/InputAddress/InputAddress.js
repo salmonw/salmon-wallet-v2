@@ -1,6 +1,6 @@
 import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
-import { debounce } from 'lodash';
+import debounce from 'lodash-es/debounce';
 
 import { AppContext } from '../../AppProvider';
 import { withTranslation } from '../../hooks/useTranslations';

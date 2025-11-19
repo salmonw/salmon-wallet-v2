@@ -1,6 +1,6 @@
 'use strict';
 
-const axios = require('axios').default;
+const axios = require('./axios-wrapper').default;
 const { SALMON_API_URL } = require('../constants/environment');
 
 const getBridgeTransaction = async id => {

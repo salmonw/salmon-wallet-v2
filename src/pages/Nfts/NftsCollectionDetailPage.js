@@ -163,7 +163,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
         newItems =>
           setCollectionItems([
             ...collectionItems,
-            ...newItems?.market_place_snapshots.map(v => ({
+            ...(newItems?.market_place_snapshots || []).map(v => ({
               ...v,
               page_number: pageNumber + 1,
             })),

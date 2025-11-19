@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import moment from 'moment';
+import { format, fromUnixTime, subDays } from 'date-fns';
 
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
@@ -62,14 +62,16 @@ const TransactionsListPage = ({ t }) => {
     let lastTransDate;
     i === 0
       ? (lastTransDate = null)
-      : (lastTransDate = moment
-          .unix(recTrans[i - 1].timestamp)
-          .format('MMM D, YYYY'));
-    const thisTransDate = moment
-      .unix(recTrans[i].timestamp)
-      .format('MMM D, YYYY');
-    const yesterday = moment().subtract(1, 'days').format('MMM D, YYYY');
-    const today = moment().format('MMM D, YYYY');
+      : (lastTransDate = format(
+          fromUnixTime(recTrans[i - 1].timestamp),
+          'MMM d, yyyy',
+        ));
+    const thisTransDate = format(
+      fromUnixTime(recTrans[i].timestamp),
+      'MMM d, yyyy',
+    );
+    const yesterday = format(subDays(new Date(), 1), 'MMM d, yyyy');
+    const today = format(new Date(), 'MMM d, yyyy');
     if (thisTransDate !== lastTransDate) {
       return thisTransDate === today
         ? t('transactions.today')

@@ -22,7 +22,7 @@ export const utf8 = {
     let byteString = '';
     for (let i = 0; i < data.length; ++i) {
       const byte = data[i];
-      // eslint-disable-next-line no-bitwise
+       
       byteString += '%' + (byte >> 4).toString(16) + (byte & 0xf).toString(16);
     }
 

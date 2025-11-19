@@ -207,12 +207,22 @@ class EclipseAccount {
 
   async getDomain() {
     const connection = await this.getConnection();
-    return nameService.getDomainName(connection, this.publicKey);
+    try {
+      return await nameService.getDomainName(connection, this.publicKey);
+    } catch (error) {
+      // No domain registered for this account
+      return null;
+    }
   }
 
   async getDomainFromPublicKey(publicKey) {
     const connection = await this.getConnection();
-    return nameService.getDomainName(connection, publicKey);
+    try {
+      return await nameService.getDomainName(connection, publicKey);
+    } catch (error) {
+      // No domain registered for this account
+      return null;
+    }
   }
 
   async getPublicKeyFromDomain(domain) {

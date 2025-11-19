@@ -1,4 +1,4 @@
-const axios = require('axios').default;
+const axios = require('../axios-wrapper').default;
 const { VersionedTransaction } = require('@solana/web3.js');
 const { applyDecimals } = require('./solana-token-service');
 const { getTokenList } = require('./solana-token-list-service');

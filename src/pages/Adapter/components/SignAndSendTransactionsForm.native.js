@@ -13,7 +13,7 @@ const SignAndSendTransactionsForm = ({ request, name, icon, origin }) => {
   const payloads = useMemo(
     () =>
       request.payloads.map(payload =>
-        // eslint-disable-next-line no-undef
+         
         Buffer.from(payload, 'base64'),
       ),
     [request],
@@ -45,7 +45,7 @@ const SignAndSendTransactionsForm = ({ request, name, icon, origin }) => {
               transaction,
               options,
             );
-            // eslint-disable-next-line no-undef
+             
             return Buffer.from(base58.decode(signature)).toString('base64');
           }),
         );
@@ -55,7 +55,7 @@ const SignAndSendTransactionsForm = ({ request, name, icon, origin }) => {
         console.error(e);
 
         const signedPayloads = signedTransactions.map(transaction =>
-          // eslint-disable-next-line no-undef
+           
           Buffer.from(transaction.signatures).toString('base64'),
         );
 

@@ -11,7 +11,7 @@ const SignMessagesForm = ({ request, name, icon, origin }) => {
   const [{ activeBlockchainAccount }] = useContext(AppContext);
 
   const payloads = useMemo(
-    // eslint-disable-next-line no-undef
+     
     () => request.payloads.map(payload => Buffer.from(payload, 'base64')),
     [request],
   );
@@ -36,7 +36,7 @@ const SignMessagesForm = ({ request, name, icon, origin }) => {
 
     const signedPayloads = payloads.map((payload, i) => {
       try {
-        // eslint-disable-next-line no-undef
+         
         const buffer = Buffer.concat([payload, createSignature(payload)]);
         return buffer.toString('base64');
       } catch (e) {

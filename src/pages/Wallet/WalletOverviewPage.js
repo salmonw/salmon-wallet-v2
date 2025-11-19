@@ -6,7 +6,8 @@ import React, {
   useState,
 } from 'react';
 import { getSwitches } from '../../adapter';
-import { get, isNil } from 'lodash';
+import get from 'lodash-es/get';
+import isNil from 'lodash-es/isNil';
 
 import { AppContext } from '../../AppProvider';
 import TokenList from '../../features/TokenList/TokenList';
