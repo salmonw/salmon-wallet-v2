@@ -26,6 +26,21 @@ module.exports = function override(config, env) {
             reuseExistingChunk: true,
           },
 
+          // Blockchain Adapters (Fase 4) - Se cargan lazy solo cuando el usuario usa la blockchain
+          solanaAdapter: {
+            test: /[\\/]src[\\/]adapter[\\/](services|factories)[\\/]solana[\\/]/,
+            name: 'solana-adapter',
+            priority: 45,
+            reuseExistingChunk: true,
+          },
+
+          bitcoinAdapter: {
+            test: /[\\/]src[\\/]adapter[\\/](services|factories)[\\/]bitcoin[\\/]/,
+            name: 'bitcoin-adapter',
+            priority: 44,
+            reuseExistingChunk: true,
+          },
+
           // Material-UI - usado en toda la app, mejor separado
           mui: {
             test: /[\\/]node_modules[\\/](@mui|@emotion)[\\/]/,
