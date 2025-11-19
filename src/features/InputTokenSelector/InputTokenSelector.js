@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, View, StyleSheet } from 'react-native';
+import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { withTranslation } from '../../hooks/useTranslations';
 import { hiddenValue } from '../../utils/amount';
@@ -38,9 +38,16 @@ const styles = StyleSheet.create({
     paddingRight: 0,
     paddingLeft: 6,
   },
+  featuredTokensContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    width: '100%',
+    justifyContent: 'space-between',
+  },
   featuredTokenButton: {
-    width: 112,
-    marginRight: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -131,17 +138,14 @@ const InputWithTokenSelector = ({
             />
             <GlobalPadding />
             {featuredTokens && (
-              <View style={theme.globalStyles.inline}>
+              <View style={styles.featuredTokensContainer}>
                 {featuredTokens?.map(token => (
-                  <View key={token.mint || token.address || token.symbol}>
-                    <CardButton
-                      onPress={() => onSelect(token)}
-                      size="sm"
-                      icon={<GlobalImage url={token.logo} size="xs" circle />}
-                      caption={token.symbol.toUpperCase() || token.name}
-                      buttonStyle={styles.featuredTokenButton}
-                    />
-                  </View>
+                  <TouchableOpacity
+                    key={token.mint || token.address || token.symbol}
+                    onPress={() => onSelect(token)}
+                    style={styles.featuredTokenButton}>
+                    <GlobalImage url={token.logo} size="md" circle />
+                  </TouchableOpacity>
                 ))}
               </View>
             )}

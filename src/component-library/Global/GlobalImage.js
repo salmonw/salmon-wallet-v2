@@ -98,6 +98,8 @@ const GlobalImage = ({
   style,
   ...props
 }) => {
+  const [imageError, setImageError] = React.useState(false);
+
   const imageStyles = {
     ...(size === 'xxxs' && styles.sizeXXXS),
     ...(size === 'xxs' && styles.sizeXXS),
@@ -116,13 +118,24 @@ const GlobalImage = ({
     ...(square && styles.square),
   };
 
+  // Reset error state when URL changes
+  React.useEffect(() => {
+    setImageError(false);
+  }, [url]);
+
   return (
     <>
       <Image
         // source={name ? getImage(name) : source}
-        source={url ? { uri: url } : source}
+        source={url && !imageError ? { uri: url } : source}
         resizeMode={resizeMode || 'contain'}
         style={[imageStyles, style]}
+        onError={() => {
+          if (url) {
+            console.warn(`Failed to load image: ${url}`);
+            setImageError(true);
+          }
+        }}
         {...props}
       />
 

@@ -9,6 +9,25 @@ const TOKEN_LIST_URL_CDN =
 
 let tokenList = [];
 
+// Helper function to fix problematic IPFS URLs
+const fixIPFSUrl = (url) => {
+  if (!url) return url;
+
+  // Fix cf-ipfs.com URLs (DNS issues)
+  if (url.includes('cf-ipfs.com/ipfs/')) {
+    const hash = url.split('/ipfs/')[1];
+    return `https://ipfs.io/ipfs/${hash}`;
+  }
+
+  // Fix ipfs.nftstorage.link URLs (SSL issues)
+  if (url.includes('.ipfs.nftstorage.link')) {
+    const hash = url.split('://')[1].split('.ipfs')[0];
+    return `https://ipfs.io/ipfs/${hash}`;
+  }
+
+  return url;
+};
+
 const retrieveTokenList = async () => {
   if (Array.isArray(tokenList) && tokenList.length > 0) {
     return tokenList;
@@ -37,12 +56,48 @@ async function getTokenList() {
     symbol: token.symbol,
     name: token.name,
     decimals: token.decimals,
-    logo: token.logoURI,
+    logo: fixIPFSUrl(token.logoURI),
     address: token.address,
     chainId: token.chainId,
     coingeckoId: token.extensions?.coingeckoId,
+    tags: token.tags || [],
   }));
-  return tokens;
+
+  // Deduplicate tokens by symbol, prioritizing verified/community tokens
+  const seenSymbols = new Map();
+  const deduplicatedTokens = [];
+
+  tokens.forEach(token => {
+    const key = token.symbol;
+    const existing = seenSymbols.get(key);
+
+    // Priority: verified > community > unknown
+    const isVerified = token.tags.includes('verified') || token.tags.includes('strict');
+    const isCommunity = token.tags.includes('community');
+    const existingIsVerified = existing?.tags.includes('verified') || existing?.tags.includes('strict');
+    const existingIsCommunity = existing?.tags.includes('community');
+
+    if (!existing) {
+      seenSymbols.set(key, token);
+      deduplicatedTokens.push(token);
+    } else if (isVerified && !existingIsVerified) {
+      // Replace with verified version
+      const index = deduplicatedTokens.findIndex(t => t.symbol === key);
+      if (index !== -1) {
+        deduplicatedTokens[index] = token;
+        seenSymbols.set(key, token);
+      }
+    } else if (isCommunity && !existingIsVerified && !existingIsCommunity) {
+      // Replace with community version if current is unknown
+      const index = deduplicatedTokens.findIndex(t => t.symbol === key);
+      if (index !== -1) {
+        deduplicatedTokens[index] = token;
+        seenSymbols.set(key, token);
+      }
+    }
+  });
+
+  return deduplicatedTokens;
 }
 
 async function getTokensByOwner(connection, publicKey) {
