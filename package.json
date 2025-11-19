@@ -126,11 +126,11 @@
     "cross-fetch": "^3.1.5"
   },
   "scripts": {
-    "start:web": "PORT=3006 DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "start:web:local": "PORT=3006 REACT_APP_SALMON_ENV=local DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "start:web:main": "REACT_APP_SALMON_ENV=main DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "start:web:prod": "REACT_APP_SALMON_ENV=production DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "start:web": "PORT=3006 DISABLE_ESLINT_PLUGIN=true react-app-rewired start",
+    "start:web:local": "PORT=3006 REACT_APP_SALMON_ENV=local DISABLE_ESLINT_PLUGIN=true react-app-rewired start",
+    "start:web:main": "REACT_APP_SALMON_ENV=main DISABLE_ESLINT_PLUGIN=true react-app-rewired start",
+    "start:web:prod": "REACT_APP_SALMON_ENV=production DISABLE_ESLINT_PLUGIN=true react-app-rewired start",
+    "build": "DISABLE_ESLINT_PLUGIN=true react-app-rewired build",
     "analyze": "node analyze.js",
     "build:local": "REACT_APP_SALMON_ENV=local npm run build",
     "build:develop": "REACT_APP_SALMON_ENV=development npm run build",
