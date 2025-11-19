@@ -1,12 +1,15 @@
+import { lazy } from 'react';
 import WalletOverview from './WalletOverviewPage';
-import SwapPage from './SwapPage';
-import TransactionsPage from '../Transactions/TransactionsPage';
-import SettingsSection from '../Settings';
-import NftsSection from '../Nfts';
 // PRIMEROS AJUSTES - No usado (ruta comentada)
 // import BridgePage from './BridgePage';
 // PRIMEROS AJUSTES - No usado (ruta comentada)
 // import ExchangeSection from './ExchangeSection';
+
+// Lazy loading de sub-secciones (se cargan solo cuando el usuario navega a ellas)
+const SwapPage = lazy(() => import('./SwapPage'));
+const TransactionsPage = lazy(() => import('../Transactions/TransactionsPage'));
+const SettingsSection = lazy(() => import('../Settings'));
+const NftsSection = lazy(() => import('../Nfts'));
 
 import IconWallet from '../../assets/images/IconWallet.png';
 import IconNFT from '../../assets/images/IconNFT.png';
