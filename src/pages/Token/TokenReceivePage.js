@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 
 const TokenReceivePage = ({ t }) => {
   const navigate = useNavigation();
-  const { domain, isLoading } = useDomain();
+  const { domain } = useDomain();
 
   const [{ activeAccount, activeBlockchainAccount }] = useContext(AppContext);
 
@@ -47,18 +47,18 @@ const TokenReceivePage = ({ t }) => {
 
   const onCopyAddress = () => clipboard.copy(address);
 
-  const onRegisterDomain = () => {
-    const blockchain = activeBlockchainAccount.network.blockchain;
-    let url = 'https://www.sns.id';
+  // const onRegisterDomain = () => {
+  //   const blockchain = activeBlockchainAccount.network.blockchain;
+  //   let url = 'https://www.sns.id';
 
-    if (blockchain === 'solana') {
-      url = 'https://www.sns.id';
-    }
+  //   if (blockchain === 'solana') {
+  //     url = 'https://www.sns.id';
+  //   }
 
-    if (typeof window !== 'undefined') {
-      window.open(url, '_blank');
-    }
-  };
+  //   if (typeof window !== 'undefined') {
+  //     window.open(url, '_blank');
+  //   }
+  // };
 
   return (
     <GlobalLayout fullscreen>
@@ -74,13 +74,13 @@ const TokenReceivePage = ({ t }) => {
           </View>
 
           <GlobalPadding size="2xl" />
-          {isLoading && (
+          {/* {isLoading && (
             <View style={globalStyles.inlineWell}>
               <GlobalText type="body2">Loading domain...</GlobalText>
             </View>
-          )}
+          )} */}
 
-          {!isLoading && domain != null && (
+          {domain && (
             <View style={globalStyles.inlineWell}>
               <GlobalText type="body2">{domain}</GlobalText>
 
@@ -91,7 +91,7 @@ const TokenReceivePage = ({ t }) => {
             </View>
           )}
 
-          {!isLoading && domain === null && activeBlockchainAccount.network.blockchain === 'solana' && (
+          {/* {!isLoading && domain === null && activeBlockchainAccount.network.blockchain === 'solana' && (
             <View style={globalStyles.inlineWell}>
               <GlobalText type="body2">No domain registered</GlobalText>
 
@@ -99,7 +99,7 @@ const TokenReceivePage = ({ t }) => {
                 <GlobalText type="button">Register Domain</GlobalText>
               </GlobalButton>
             </View>
-          )}
+          )} */}
 
           <View style={globalStyles.inlineWell}>
             <GlobalText type="body2">{getShortAddress(address)}</GlobalText>

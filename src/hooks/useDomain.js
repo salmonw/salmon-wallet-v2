@@ -1,8 +1,49 @@
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../AppProvider';
 
-// Cache to avoid repeated lookups
-const domainCache = new Map();
+class SmartCache {
+  constructor(maxSize = 50, ttl = 10 * 60 * 1000) {
+    this.maxSize = maxSize;
+    this.ttl = ttl;
+    this.cache = new Map();
+  }
+
+  get(key) {
+    const item = this.cache.get(key);
+    if (!item) return undefined;
+
+    if (Date.now() - item.timestamp > this.ttl) {
+      this.cache.delete(key);
+      return undefined;
+    }
+
+    this.cache.delete(key);
+    this.cache.set(key, item);
+    return item.value;
+  }
+
+  set(key, value) {
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    }
+
+    this.cache.set(key, {
+      value,
+      timestamp: Date.now()
+    });
+
+    if (this.cache.size > this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+  }
+
+  has(key) {
+    return this.get(key) !== undefined;
+  }
+}
+
+const domainCache = new SmartCache(50, 10 * 60 * 1000);
 
 const useDomain = () => {
   const [{ activeBlockchainAccount }] = useContext(AppContext);
@@ -19,7 +60,6 @@ const useDomain = () => {
 
     const address = activeBlockchainAccount.getReceiveAddress();
 
-    // Check cache first
     if (domainCache.has(address)) {
       setDomain(domainCache.get(address));
       setIsLoading(false);
@@ -33,7 +73,6 @@ const useDomain = () => {
       .getDomain()
       .then(result => {
         setDomain(result);
-        // Cache the result (null if no domain)
         domainCache.set(address, result);
         setIsLoading(false);
       })
@@ -41,7 +80,6 @@ const useDomain = () => {
         console.error('Error fetching domain:', err);
         setError(err);
         setDomain(null);
-        // Cache null to avoid repeated failed lookups
         domainCache.set(address, null);
         setIsLoading(false);
       });
