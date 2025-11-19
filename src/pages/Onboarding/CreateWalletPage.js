@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { random as randomNumber } from 'lodash';
+import randomNumber from 'lodash-es/random';
 import {
   AccountFactory,
   // getNetworks, // Comentado - No se usa en esta versión

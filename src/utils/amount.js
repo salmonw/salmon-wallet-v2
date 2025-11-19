@@ -1,4 +1,5 @@
-import { round, isNil } from 'lodash';
+import round from 'lodash-es/round';
+import isNil from 'lodash-es/isNil';
 import { formatAmount } from '../adapter';
 
 export const showAmount = (amount, decimals = 2) =>

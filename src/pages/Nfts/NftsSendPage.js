@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
-import { pick } from 'lodash';
+import pick from 'lodash-es/pick';
 import { useLocation } from 'react-router-dom';
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';

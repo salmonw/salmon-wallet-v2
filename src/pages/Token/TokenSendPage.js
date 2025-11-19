@@ -3,7 +3,7 @@
 import React, { useState, useContext, useMemo } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
 import { BLOCKCHAINS } from '../../adapter';
-import { pick } from 'lodash';
+import pick from 'lodash-es/pick';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, View, Linking, TouchableOpacity } from 'react-native';
 import { formatAmount } from '../../adapter';
-import moment from 'moment';
+import { format, fromUnixTime } from 'date-fns';
 
 import theme from '../../component-library/Global/theme';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
@@ -244,7 +244,7 @@ const TransactionDetail = ({
           {t('transactions.date')}
         </GlobalText>
         <GlobalText type="body2">
-          {moment.unix(timestamp).format('MMM D, YYYY - h.mm A')}
+          {format(fromUnixTime(timestamp), 'MMM d, yyyy - h.mm a')}
         </GlobalText>
       </View>
       <View style={styles.inlineWell}>

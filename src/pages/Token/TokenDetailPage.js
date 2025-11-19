@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import { getSwitches } from '../../adapter';
-import { get } from 'lodash';
+import get from 'lodash-es/get';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
