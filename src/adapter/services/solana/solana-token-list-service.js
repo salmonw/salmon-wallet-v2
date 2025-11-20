@@ -9,6 +9,76 @@ const TOKEN_LIST_URL_CDN =
 
 let tokenList = [];
 
+// List of known problematic/dead domains that should be skipped
+const DEAD_DOMAINS = [
+  'shdw-drive.genesysgo.net',
+  'chexbacca.com',
+  'cdn.bridgesplit.com',
+];
+
+/**
+ * Fix problematic IPFS URLs by redirecting to reliable gateways
+ * Handles multiple broken IPFS gateway patterns (2025)
+ *
+ * @param {string} url - The original logo URL
+ * @returns {string|null} Fixed URL or null if domain is known to be dead
+ */
+const fixIPFSUrl = (url) => {
+  if (!url) return url;
+
+  // Skip known dead domains to avoid unnecessary network requests
+  if (DEAD_DOMAINS.some(domain => url.includes(domain))) {
+    return null;
+  }
+
+  // Extract IPFS hash from various gateway patterns
+  let ipfsHash = null;
+
+  // Pattern 1: cf-ipfs.com URLs (DNS issues)
+  if (url.includes('cf-ipfs.com/ipfs/')) {
+    ipfsHash = url.split('/ipfs/')[1];
+  }
+
+  // Pattern 2: cloudflare-ipfs.com URLs (DNS issues)
+  else if (url.includes('cloudflare-ipfs.com/ipfs/')) {
+    ipfsHash = url.split('/ipfs/')[1];
+  }
+
+  // Pattern 3: *.ipfs.cf-ipfs.com subdomain format
+  else if (url.includes('.ipfs.cf-ipfs.com')) {
+    ipfsHash = url.split('://')[1]?.split('.ipfs.cf-ipfs.com')[0];
+  }
+
+  // Pattern 4: ipfs.nftstorage.link URLs (SSL issues)
+  else if (url.includes('.ipfs.nftstorage.link')) {
+    ipfsHash = url.split('://')[1]?.split('.ipfs')[0];
+  }
+
+  // Pattern 5: *.ipfs.dweb.link subdomain format
+  else if (url.includes('.ipfs.dweb.link')) {
+    ipfsHash = url.split('://')[1]?.split('.ipfs.dweb.link')[0];
+  }
+
+  // Pattern 6: gateway.pinata.cloud (sometimes slow/unreliable)
+  else if (url.includes('gateway.pinata.cloud/ipfs/')) {
+    ipfsHash = url.split('/ipfs/')[1];
+  }
+
+  // Pattern 7: ipfs.infura.io (deprecated)
+  else if (url.includes('ipfs.infura.io/ipfs/')) {
+    ipfsHash = url.split('/ipfs/')[1];
+  }
+
+  // If we extracted an IPFS hash, redirect to ipfs.io (most reliable gateway)
+  if (ipfsHash) {
+    // Clean up hash (remove query params, trailing slashes)
+    const cleanHash = ipfsHash.split('?')[0].split('#')[0];
+    return `https://ipfs.io/ipfs/${cleanHash}`;
+  }
+
+  return url;
+};
+
 const retrieveTokenList = async () => {
   if (Array.isArray(tokenList) && tokenList.length > 0) {
     return tokenList;
@@ -37,12 +107,48 @@ async function getTokenList() {
     symbol: token.symbol,
     name: token.name,
     decimals: token.decimals,
-    logo: token.logoURI,
+    logo: fixIPFSUrl(token.logoURI),
     address: token.address,
     chainId: token.chainId,
     coingeckoId: token.extensions?.coingeckoId,
+    tags: token.tags || [],
   }));
-  return tokens;
+
+  // Deduplicate tokens by symbol, prioritizing verified/community tokens
+  const seenSymbols = new Map();
+  const deduplicatedTokens = [];
+
+  tokens.forEach(token => {
+    const key = token.symbol;
+    const existing = seenSymbols.get(key);
+
+    // Priority: verified > community > unknown
+    const isVerified = token.tags.includes('verified') || token.tags.includes('strict');
+    const isCommunity = token.tags.includes('community');
+    const existingIsVerified = existing?.tags.includes('verified') || existing?.tags.includes('strict');
+    const existingIsCommunity = existing?.tags.includes('community');
+
+    if (!existing) {
+      seenSymbols.set(key, token);
+      deduplicatedTokens.push(token);
+    } else if (isVerified && !existingIsVerified) {
+      // Replace with verified version
+      const index = deduplicatedTokens.findIndex(t => t.symbol === key);
+      if (index !== -1) {
+        deduplicatedTokens[index] = token;
+        seenSymbols.set(key, token);
+      }
+    } else if (isCommunity && !existingIsVerified && !existingIsCommunity) {
+      // Replace with community version if current is unknown
+      const index = deduplicatedTokens.findIndex(t => t.symbol === key);
+      if (index !== -1) {
+        deduplicatedTokens[index] = token;
+        seenSymbols.set(key, token);
+      }
+    }
+  });
+
+  return deduplicatedTokens;
 }
 
 async function getTokensByOwner(connection, publicKey) {

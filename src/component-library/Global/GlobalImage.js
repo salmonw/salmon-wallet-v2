@@ -84,6 +84,29 @@ const styles = StyleSheet.create({
   },
 });
 
+// Known problematic URL patterns that shouldn't trigger console warnings
+const KNOWN_PROBLEMATIC_PATTERNS = [
+  'cf-ipfs.com',
+  'cloudflare-ipfs.com',
+  'ipfs.nftstorage.link',
+  'shdw-drive.genesysgo.net',
+  'chexbacca.com',
+  'cdn.bridgesplit.com',
+  'ipfs.dweb.link',
+  'gateway.pinata.cloud',
+  'ipfs.infura.io',
+];
+
+/**
+ * Check if URL is a known problematic domain
+ * @param {string} url - The image URL
+ * @returns {boolean} True if URL matches known problematic pattern
+ */
+const isKnownProblematicUrl = (url) => {
+  if (!url) return false;
+  return KNOWN_PROBLEMATIC_PATTERNS.some(pattern => url.includes(pattern));
+};
+
 const GlobalImage = ({
   name,
   source,
@@ -98,6 +121,8 @@ const GlobalImage = ({
   style,
   ...props
 }) => {
+  const [imageError, setImageError] = React.useState(false);
+
   const imageStyles = {
     ...(size === 'xxxs' && styles.sizeXXXS),
     ...(size === 'xxs' && styles.sizeXXS),
@@ -116,13 +141,27 @@ const GlobalImage = ({
     ...(square && styles.square),
   };
 
+  // Reset error state when URL changes
+  React.useEffect(() => {
+    setImageError(false);
+  }, [url]);
+
   return (
     <>
       <Image
         // source={name ? getImage(name) : source}
-        source={url ? { uri: url } : source}
+        source={url && !imageError ? { uri: url } : source}
         resizeMode={resizeMode || 'contain'}
         style={[imageStyles, style]}
+        onError={() => {
+          if (url) {
+            // Only log warnings for unexpected failures (not known problematic URLs)
+            if (!isKnownProblematicUrl(url)) {
+              console.warn(`Failed to load image: ${url}`);
+            }
+            setImageError(true);
+          }
+        }}
         {...props}
       />
 
