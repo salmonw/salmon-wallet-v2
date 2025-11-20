@@ -15,7 +15,6 @@ import GlobalImage from '../../component-library/Global/GlobalImage';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalText from '../../component-library/Global/GlobalText';
 import InputWithTokenSelector from '../../features/InputTokenSelector';
-import Header from '../../component-library/Layout/Header';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import { getMediaRemoteUrl } from '../../utils/media';
 import { showValue } from '../../utils/amount';
@@ -293,16 +292,6 @@ const SwapPage = ({ t }) => {
     parseFloat(inAmount) <= inToken.uiAmount &&
     parseFloat(inAmount) > 0;
 
-  const tokenSymbols = useMemo(
-    () => quote?.routeSymbols?.join(' → ') || '',
-    [quote],
-  );
-
-  const routesNames = useMemo(
-    () => quote?.routeNames?.join(' x ') || '',
-    [quote],
-  );
-
   const formattedFee = useMemo(() => {
     if (!quote?.fee) {
       return '';
@@ -394,7 +383,6 @@ const SwapPage = ({ t }) => {
       {step === 1 && (
         <>
           <GlobalLayout.Header>
-            <Header />
             <GlobalBackTitle title={t('swap.swap_tokens')} />
 
             <GlobalPadding />
@@ -502,15 +490,65 @@ const SwapPage = ({ t }) => {
               value={formattedOutput}
             />
             <GlobalPadding size="2xl" />
-            {quote && (
-              <RouteDetailItem
-                names={routesNames}
-                symbols={tokenSymbols}
-                t={t}
-              />
-            )}
             {formattedFee && (
               <DetailItem title={t('swap.total_fee')} value={formattedFee} />
+            )}
+            <GlobalPadding size="xs" />
+            <GlobalText type="caption" color="tertiary" center>
+              {t('swap.platform_fee_disclaimer')}
+            </GlobalText>
+            <GlobalPadding size="md" />
+            {quote?.custom?.priceImpact !== undefined && (
+              <DetailItem
+                title={t('swap.price_impact')}
+                value={`${quote.custom.priceImpact.toFixed(2)}%`}
+                color={quote.custom.priceImpact > 1 ? 'negative' : 'primary'}
+              />
+            )}
+            {quote?.custom?.router && (
+              <DetailItem
+                title={t('swap.router')}
+                value={quote.custom.router.toUpperCase()}
+              />
+            )}
+            {quote?.custom?.gasless && (
+              <DetailItem
+                title={t('swap.gasless')}
+                value={t('swap.yes')}
+                color="positive"
+              />
+            )}
+            {quote?.custom?.prioritizationFeeLamports > 0 && (
+              <DetailItem
+                title={t('swap.priority_fee')}
+                value={`${(quote.custom.prioritizationFeeLamports / 1e9).toFixed(6)} SOL`}
+              />
+            )}
+            {quote?.custom?.rentFeeLamports > 0 && (
+              <DetailItem
+                title={t('swap.rent_fee')}
+                value={`${(quote.custom.rentFeeLamports / 1e9).toFixed(6)} SOL`}
+                color="tertiary"
+              />
+            )}
+            {quote?.custom?.slippageBps !== undefined && (
+              <DetailItem
+                title={t('swap.slippage_tolerance')}
+                value={`${(quote.custom.slippageBps / 100).toFixed(2)}%`}
+              />
+            )}
+            {quote?.custom?.otherAmountThreshold && outToken && (
+              <DetailItem
+                title={t('swap.minimum_received')}
+                value={`${formatAmount(quote.custom.otherAmountThreshold, outToken.decimals)} ${outToken.symbol}`}
+              />
+            )}
+            {quote?.custom?.swapMode && (
+              <DetailItem
+                title={t('swap.swap_mode')}
+                value={quote.custom.swapMode}
+                color="tertiary"
+              />
             )}
           </GlobalLayout.Header>
           <GlobalLayout.Footer inlineFlex>
