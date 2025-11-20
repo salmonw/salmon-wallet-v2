@@ -490,66 +490,66 @@ const SwapPage = ({ t }) => {
               value={formattedOutput}
             />
             <GlobalPadding size="2xl" />
-            {formattedFee && (
+            {formattedFee ? (
               <DetailItem title={t('swap.total_fee')} value={formattedFee} />
-            )}
+            ) : null}
             <GlobalPadding size="xs" />
             <GlobalText type="caption" color="tertiary" center>
               {t('swap.platform_fee_disclaimer')}
             </GlobalText>
             <GlobalPadding size="md" />
-            {quote?.custom?.priceImpact !== undefined && (
+            {quote?.custom?.priceImpact !== undefined ? (
               <DetailItem
                 title={t('swap.price_impact')}
                 value={`${quote.custom.priceImpact.toFixed(2)}%`}
                 color={quote.custom.priceImpact > 1 ? 'negative' : 'primary'}
               />
-            )}
-            {quote?.custom?.router && (
+            ) : null}
+            {quote?.custom?.router ? (
               <DetailItem
                 title={t('swap.router')}
                 value={quote.custom.router.toUpperCase()}
               />
-            )}
-            {quote?.custom?.gasless && (
+            ) : null}
+            {quote?.custom?.gasless ? (
               <DetailItem
                 title={t('swap.gasless')}
                 value={t('swap.yes')}
                 color="positive"
               />
-            )}
-            {quote?.custom?.prioritizationFeeLamports > 0 && (
+            ) : null}
+            {quote?.custom?.prioritizationFeeLamports > 0 ? (
               <DetailItem
                 title={t('swap.priority_fee')}
                 value={`${(quote.custom.prioritizationFeeLamports / 1e9).toFixed(6)} SOL`}
               />
-            )}
-            {quote?.custom?.rentFeeLamports > 0 && (
+            ) : null}
+            {quote?.custom?.rentFeeLamports > 0 ? (
               <DetailItem
                 title={t('swap.rent_fee')}
                 value={`${(quote.custom.rentFeeLamports / 1e9).toFixed(6)} SOL`}
                 color="tertiary"
               />
-            )}
-            {quote?.custom?.slippageBps !== undefined && (
+            ) : null}
+            {quote?.custom?.slippageBps !== undefined ? (
               <DetailItem
                 title={t('swap.slippage_tolerance')}
                 value={`${(quote.custom.slippageBps / 100).toFixed(2)}%`}
               />
-            )}
-            {quote?.custom?.otherAmountThreshold && outToken && (
+            ) : null}
+            {quote?.custom?.otherAmountThreshold && outToken ? (
               <DetailItem
                 title={t('swap.minimum_received')}
                 value={`${formatAmount(quote.custom.otherAmountThreshold, outToken.decimals)} ${outToken.symbol}`}
               />
-            )}
-            {quote?.custom?.swapMode && (
+            ) : null}
+            {quote?.custom?.swapMode ? (
               <DetailItem
                 title={t('swap.swap_mode')}
                 value={quote.custom.swapMode}
                 color="tertiary"
               />
-            )}
+            ) : null}
           </GlobalLayout.Header>
           <GlobalLayout.Footer inlineFlex>
             <GlobalButton
