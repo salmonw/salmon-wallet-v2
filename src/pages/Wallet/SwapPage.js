@@ -6,6 +6,8 @@ import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
 import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
 import theme, { globalStyles } from '../../component-library/Global/theme';
+import { getTransactionImage, TRANSACTION_STATUS } from '../../utils/wallet';
+import { CACHE_TYPES, invalidate } from '../../utils/cache';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalButton from '../../component-library/Global/GlobalButton';
@@ -13,15 +15,14 @@ import GlobalImage from '../../component-library/Global/GlobalImage';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalText from '../../component-library/Global/GlobalText';
 import InputWithTokenSelector from '../../features/InputTokenSelector';
-import { getTransactionImage, TRANSACTION_STATUS } from '../../utils/wallet';
-import { CACHE_TYPES, invalidate } from '../../utils/cache';
-import { getMediaRemoteUrl } from '../../utils/media';
-import { showValue } from '../../utils/amount';
 import Header from '../../component-library/Layout/Header';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
+import { getMediaRemoteUrl } from '../../utils/media';
+import { showValue } from '../../utils/amount';
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import useUserConfig from '../../hooks/useUserConfig';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
+import { getSolanaTokenPrice } from '../../adapter/services/price-service';
 
 const styles = StyleSheet.create({
   viewTxLink: {
@@ -192,6 +193,8 @@ const SwapPage = ({ t }) => {
   const [featuredTokens, setFeaturedTokens] = useState([]);
   const [inToken, setInToken] = useState(null);
   const [outToken, setOutToken] = useState(null);
+  const [inTokenWithPrice, setInTokenWithPrice] = useState(null);
+  const [outTokenWithPrice, setOutTokenWithPrice] = useState(null);
   const [quote, setQuote] = useState();
   const [status, setStatus] = useState();
   const [currentTransaction, setCurrentTransaction] = useState('');
@@ -222,9 +225,63 @@ const SwapPage = ({ t }) => {
     }
   }, [activeBlockchainAccount, tokensAddresses]);
 
+  // Always fetch fresh price from Jupiter for inToken to ensure accurate swap calculations
+  useEffect(() => {
+    if (!inToken) {
+      setInTokenWithPrice(null);
+      return;
+    }
+
+    const fetchPrice = async () => {
+      const price = await getSolanaTokenPrice(inToken.address, networkId);
+      setInTokenWithPrice({
+        ...inToken,
+        usdPrice: price,
+      });
+    };
+
+    fetchPrice();
+  }, [inToken, networkId]);
+
+  // Always fetch fresh price from Jupiter for outToken to ensure accurate swap calculations
+  useEffect(() => {
+    if (!outToken) {
+      setOutTokenWithPrice(null);
+      return;
+    }
+
+    const fetchPrice = async () => {
+      const price = await getSolanaTokenPrice(outToken.address, networkId);
+      setOutTokenWithPrice({
+        ...outToken,
+        usdPrice: price,
+      });
+    };
+
+    fetchPrice();
+  }, [outToken, networkId]);
+
   const [inAmount, setInAmount] = useState(null);
 
-  const [outAmount, setOutAmount] = useState('--');
+  // Calculate estimated output amount based on USD prices
+  const outAmount = useMemo(() => {
+    if (!inAmount || !inTokenWithPrice || !outTokenWithPrice) {
+      return '--';
+    }
+
+    const inTokenUsdPrice = inTokenWithPrice.usdPrice;
+    const outTokenUsdPrice = outTokenWithPrice.usdPrice;
+
+    // If both tokens have USD prices, calculate estimate
+    if (inTokenUsdPrice && outTokenUsdPrice) {
+      const inValueUsd = parseFloat(inAmount) * inTokenUsdPrice;
+      const estimatedOut = inValueUsd / outTokenUsdPrice;
+      return estimatedOut.toFixed(8).replace(/\.?0+$/, ''); // Remove trailing zeros
+    }
+
+    return '--';
+  }, [inAmount, inTokenWithPrice, outTokenWithPrice]);
+
   useEffect(() => {
     setError(false);
   }, [inAmount, inToken, outToken]);
@@ -380,9 +437,9 @@ const SwapPage = ({ t }) => {
                 )}
                 <GlobalPadding size="xs" />
 
-                {inToken.usdPrice && (
+                {inTokenWithPrice?.usdPrice && (
                   <GlobalText type="body1" color="tertiary">
-                    {showValue(inAmount * inToken.usdPrice, 6)}{' '}
+                    {showValue(inAmount * inTokenWithPrice.usdPrice, 6)}{' '}
                     {t('general.usd')}
                   </GlobalText>
                 )}
@@ -393,7 +450,7 @@ const SwapPage = ({ t }) => {
 
                 <InputWithTokenSelector
                   value={outAmount}
-                  setValue={setOutAmount}
+                  setValue={() => {}} // Dummy setter - field is disabled
                   title={outToken ? outToken.symbol : '-'}
                   tokens={availableTokens}
                   featuredTokens={featuredTokens}
@@ -405,6 +462,13 @@ const SwapPage = ({ t }) => {
                 />
 
                 <GlobalPadding size="xs" />
+
+                {outTokenWithPrice?.usdPrice && outAmount !== '--' && (
+                  <GlobalText type="body1" color="tertiary">
+                    {showValue(parseFloat(outAmount) * outTokenWithPrice.usdPrice, 7)}{' '}
+                    {t('general.usd')}
+                  </GlobalText>
+                )}
 
                 {error && (
                   <GlobalText type="body1" color="negative">

@@ -21,8 +21,28 @@ const getTopTokens = async params => {
   return data;
 };
 
+/**
+ * Get price for a specific Solana token from Jupiter Price API v3
+ * Uses backend endpoint with caching and rate limiting
+ * @param {string} mintAddress - Solana token mint address
+ * @param {string} networkId - Network ID (e.g., 'solana-mainnet', 'solana-devnet')
+ * @returns {Promise<number|null>} USD price or null if not found
+ */
+const getSolanaTokenPrice = async (mintAddress, networkId) => {
+  try {
+    const { data } = await axios.get(
+      `${SALMON_API_URL}/v1/${networkId}/ft/price/${mintAddress}`,
+    );
+    return data?.usdPrice || null;
+  } catch (error) {
+    console.error(`Failed to fetch price for ${mintAddress}:`, error);
+    return null;
+  }
+};
+
 module.exports = {
   getPricesByPlatform,
   getPricesByIds,
   getTopTokensByPlatform,
+  getSolanaTokenPrice,
 };
