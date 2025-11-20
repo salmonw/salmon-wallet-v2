@@ -4,7 +4,7 @@ const salmonEnv = process.env.REACT_APP_SALMON_ENV ?? process.env.NODE_ENV;
 
 switch (salmonEnv) {
   case 'production':
-    apiUrl = 'https://api.salmonwallet.io';
+    apiUrl = 'https://surtbtej2d.execute-api.us-east-1.amazonaws.com/prod';
     break;
   case 'development':
     apiUrl = 'https://d1ms6b491qeh6d.cloudfront.net';
