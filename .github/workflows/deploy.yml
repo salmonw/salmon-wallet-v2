@@ -50,11 +50,33 @@ jobs:
           if aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 2>/dev/null; then
             STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query 'Stacks[0].StackStatus' --output text)
             echo "Stack status: $STATUS"
-            if [[ "$STATUS" == *"FAILED"* ]] || [[ "$STATUS" == *"ROLLBACK"* ]] || [[ "$STATUS" == "CREATE_FAILED" ]] || [[ "$STATUS" == "ROLLBACK_COMPLETE" ]]; then
-              echo "Stack is in failed state, deleting..."
+            
+            # Check if stack is in a state that prevents updates
+            if [[ "$STATUS" == *"FAILED"* ]] || \
+               [[ "$STATUS" == *"ROLLBACK"* ]] || \
+               [[ "$STATUS" == "CREATE_FAILED" ]] || \
+               [[ "$STATUS" == "ROLLBACK_COMPLETE" ]] || \
+               [[ "$STATUS" == "UPDATE_ROLLBACK_COMPLETE" ]] || \
+               [[ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]]; then
+              echo "Stack is in problematic state, deleting..."
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
               echo "Waiting for stack deletion (this may take a few minutes)..."
               aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
+            else
+              echo "Stack exists but is in state: $STATUS"
+              echo "Attempting to delete any pending change sets first..."
+              CHANGESET_NAME="${STACK_NAME}-change-set"
+              aws cloudformation delete-change-set \
+                --stack-name $STACK_NAME \
+                --change-set-name $CHANGESET_NAME \
+                --region us-east-1 2>/dev/null || echo "No change set to delete"
+              
+              # List all change sets
+              aws cloudformation list-change-sets \
+                --stack-name $STACK_NAME \
+                --region us-east-1 \
+                --query 'Summaries[].{Name:ChangeSetName,Status:Status}' \
+                --output table || true
             fi
           else
             echo "Stack does not exist"
@@ -93,28 +115,55 @@ jobs:
         if: steps.deploy.outcome == 'failure'
         run: |
           STACK_NAME="salmon-wallet-app-prod"
-          echo "=== CloudFormation Stack Events ==="
-          aws cloudformation describe-stack-events \
-            --stack-name $STACK_NAME \
-            --region us-east-1 \
-            --max-items 20 \
-            --query 'StackEvents[?contains(ResourceStatusReason, `already exists`) || contains(ResourceStatusReason, `ResourceExistenceCheck`) || contains(ResourceStatusReason, `EarlyValidation`)].{Time:Timestamp,Resource:LogicalResourceId,Status:ResourceStatus,Reason:ResourceStatusReason}' \
-            --output table || true
+
+          echo "=== Checking if stack exists ==="
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 2>/dev/null; then
+            echo "Stack exists, getting details..."
+            aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 \
+              --query 'Stacks[0].{Status:StackStatus,StatusReason:StackStatusReason}' --output table
+          else
+            echo "Stack does not exist"
+          fi
 
           echo ""
-          echo "=== Recent Stack Events ==="
+          echo "=== CloudFormation Stack Events (all recent) ==="
           aws cloudformation describe-stack-events \
             --stack-name $STACK_NAME \
             --region us-east-1 \
-            --max-items 5 \
-            --output table || true
+            --max-items 30 \
+            --output table || echo "Could not get stack events"
+
+          echo ""
+          echo "=== Stack Resources ==="
+          aws cloudformation describe-stack-resources \
+            --stack-name $STACK_NAME \
+            --region us-east-1 \
+            --query 'StackResources[].{LogicalId:LogicalResourceId,PhysicalId:PhysicalResourceId,Type:ResourceType,Status:ResourceStatus}' \
+            --output table || echo "Could not get stack resources"
+
+          echo ""
+          echo "=== Change Set Details ==="
+          CHANGESET_NAME="${STACK_NAME}-change-set"
+          if aws cloudformation describe-change-set \
+            --stack-name $STACK_NAME \
+            --change-set-name $CHANGESET_NAME \
+            --region us-east-1 2>/dev/null; then
+            echo "Change set exists, getting details..."
+            aws cloudformation describe-change-set \
+              --stack-name $STACK_NAME \
+              --change-set-name $CHANGESET_NAME \
+              --region us-east-1 \
+              --query '{Status:Status,StatusReason:StatusReason,Changes:Changes[].{Action:Action,Resource:ResourceChange.LogicalResourceId,Type:ResourceChange.ResourceType,Reason:ResourceChange.Replacement}}' \
+              --output json | head -100
+          else
+            echo "Change set does not exist or could not be described"
+          fi
 
           echo ""
           echo "=== Checking for existing resources ==="
           echo "Checking S3 bucket salmon-wallet-prod..."
           if aws s3api head-bucket --bucket salmon-wallet-prod --region us-east-1 2>/dev/null; then
             echo "✓ Bucket exists"
-            aws s3api get-bucket-location --bucket salmon-wallet-prod --region us-east-1 || true
           else
             echo "✗ Bucket does not exist"
           fi
@@ -123,7 +172,15 @@ jobs:
           echo "Checking CloudFront distributions..."
           aws cloudfront list-distributions \
             --query "DistributionList.Items[?contains(Comment, 'Salmon Wallet') || contains(Comment, 'prod')].{Id:Id,DomainName:DomainName,Status:Status,Comment:Comment}" \
-            --output table || true
+            --output table || echo "Error checking CloudFront"
+
+          echo ""
+          echo "=== Checking for other CloudFormation stacks ==="
+          aws cloudformation list-stacks \
+            --stack-status-filter CREATE_FAILED UPDATE_FAILED DELETE_FAILED ROLLBACK_COMPLETE \
+            --region us-east-1 \
+            --query "StackSummaries[?contains(StackName, 'salmon-wallet')].{Name:StackName,Status:StackStatus}" \
+            --output table || echo "Error listing stacks"
 
           exit 1
 
