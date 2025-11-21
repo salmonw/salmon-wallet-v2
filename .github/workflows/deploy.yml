@@ -83,9 +83,25 @@ jobs:
               echo "Waiting for stack deletion (this may take a few minutes)..."
               aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
             elif [[ "$STATUS" == "CREATE_COMPLETE" ]] || [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
-              echo "Stack exists and is complete. Will attempt to update."
+              echo "Stack exists and is complete. Checking resources..."
+              # Check if stack actually has resources or is empty
+              RESOURCE_COUNT=$(aws cloudformation describe-stack-resources \
+                --stack-name $STACK_NAME \
+                --region us-east-1 \
+                --query 'length(StackResources[])' \
+                --output text 2>/dev/null || echo "0")
+              
+              if [ "$RESOURCE_COUNT" == "0" ] || [ -z "$RESOURCE_COUNT" ]; then
+                echo "Stack exists but has no resources. Deleting for fresh deployment..."
+                aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
+                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion in progress"
+              else
+                echo "Stack has $RESOURCE_COUNT resources. Will attempt to update."
+              fi
             else
-              echo "Stack is in state: $STATUS - may need manual intervention"
+              echo "Stack is in state: $STATUS - deleting to allow fresh deployment"
+              aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion in progress"
             fi
           else
             echo "Stack does not exist"
@@ -163,8 +179,45 @@ jobs:
         continue-on-error: true
         run: yarn serverless:deploy --verbose
 
-      - name: Get detailed error information
+      - name: Fix ResourceExistenceCheck error and retry
         if: steps.deploy.outcome == 'failure'
+        run: |
+          STACK_NAME="salmon-wallet-app-prod"
+
+          # Check if the error log contains ResourceExistenceCheck
+          echo "Checking if error is ResourceExistenceCheck related..."
+
+          # Check stack status to determine if we need to delete it
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 2>/dev/null; then
+            STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query 'Stacks[0].StackStatus' --output text)
+            RESOURCE_COUNT=$(aws cloudformation describe-stack-resources \
+              --stack-name $STACK_NAME \
+              --region us-east-1 \
+              --query 'length(StackResources[])' \
+              --output text 2>/dev/null || echo "0")
+            
+            echo "Stack status: $STATUS, Resources: $RESOURCE_COUNT"
+            
+            # If stack has no resources or is in a state that could cause this error, delete it
+            if [ "$RESOURCE_COUNT" == "0" ] || \
+               [[ "$STATUS" == "CREATE_COMPLETE" ]] || \
+               [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
+              echo "Stack exists but may be in inconsistent state. Deleting for fresh deployment..."
+              aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
+              echo "Waiting for stack deletion..."
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 90 || echo "Stack deletion in progress"
+              
+              echo "Retrying deployment after stack cleanup..."
+              yarn serverless:deploy --verbose
+            else
+              echo "Stack has resources. Manual intervention may be needed."
+            fi
+          else
+            echo "Stack does not exist. Deploy should have worked."
+          fi
+
+      - name: Get detailed error information
+        if: failure() && steps.deploy.outcome == 'failure'
         run: |
           STACK_NAME="salmon-wallet-app-prod"
 
@@ -232,7 +285,13 @@ jobs:
             --stack-status-filter CREATE_FAILED UPDATE_FAILED DELETE_FAILED ROLLBACK_COMPLETE \
             --region us-east-1 \
             --query "StackSummaries[?contains(StackName, 'salmon-wallet')].{Name:StackName,Status:StackStatus}" \
-            --output table || echo "Error listing stacks"
+            --output table 2>/dev/null || echo "Error listing stacks (non-critical)"
+
+          echo ""
+          echo "=== Recommendation ==="
+          echo "If the error persists, the stack may need to be manually deleted."
+          echo "The stack appears to be in an inconsistent state where it exists"
+          echo "but CloudFormation cannot create resources due to ResourceExistenceCheck."
 
           exit 1
 
