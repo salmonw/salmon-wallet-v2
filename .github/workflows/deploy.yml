@@ -60,6 +60,16 @@ jobs:
             echo "Stack does not exist"
           fi
 
+      - name: Clean up CloudFront distributions (if orphaned)
+        run: |
+          echo "Checking for CloudFront distributions related to this stack..."
+          aws cloudfront list-distributions \
+            --query "DistributionList.Items[?contains(Comment, 'Salmon Wallet - prod')].{Id:Id,Status:Status,Comment:Comment}" \
+            --output table --region us-east-1 || echo "No distributions found or error checking"
+
+          echo "Note: CloudFront distributions must be manually disabled before deletion."
+          echo "If distributions exist, they will be cleaned up when the CloudFormation stack is deleted."
+
       - name: Clean up orphaned S3 bucket
         run: |
           BUCKET_NAME="salmon-wallet-prod"
@@ -68,14 +78,54 @@ jobs:
             echo "Bucket exists, attempting to empty and delete..."
             # Empty the bucket first
             aws s3 rm s3://$BUCKET_NAME --recursive --region us-east-1 || true
-            # Delete the bucket
-            aws s3 rb s3://$BUCKET_NAME --region us-east-1 || echo "Bucket deletion failed, may be in use by CloudFront"
+            # Try to delete the bucket
+            aws s3 rb s3://$BUCKET_NAME --region us-east-1 || echo "Bucket deletion failed (may be in use by CloudFront or have versioning enabled)"
           else
             echo "Bucket does not exist"
           fi
 
       - name: Publish
+        id: deploy
+        continue-on-error: true
         run: yarn serverless:deploy --verbose
+
+      - name: Get detailed error information
+        if: steps.deploy.outcome == 'failure'
+        run: |
+          STACK_NAME="salmon-wallet-app-prod"
+          echo "=== CloudFormation Stack Events ==="
+          aws cloudformation describe-stack-events \
+            --stack-name $STACK_NAME \
+            --region us-east-1 \
+            --max-items 20 \
+            --query 'StackEvents[?contains(ResourceStatusReason, `already exists`) || contains(ResourceStatusReason, `ResourceExistenceCheck`) || contains(ResourceStatusReason, `EarlyValidation`)].{Time:Timestamp,Resource:LogicalResourceId,Status:ResourceStatus,Reason:ResourceStatusReason}' \
+            --output table || true
+
+          echo ""
+          echo "=== Recent Stack Events ==="
+          aws cloudformation describe-stack-events \
+            --stack-name $STACK_NAME \
+            --region us-east-1 \
+            --max-items 5 \
+            --output table || true
+
+          echo ""
+          echo "=== Checking for existing resources ==="
+          echo "Checking S3 bucket salmon-wallet-prod..."
+          if aws s3api head-bucket --bucket salmon-wallet-prod --region us-east-1 2>/dev/null; then
+            echo "✓ Bucket exists"
+            aws s3api get-bucket-location --bucket salmon-wallet-prod --region us-east-1 || true
+          else
+            echo "✗ Bucket does not exist"
+          fi
+
+          echo ""
+          echo "Checking CloudFront distributions..."
+          aws cloudfront list-distributions \
+            --query "DistributionList.Items[?contains(Comment, 'Salmon Wallet') || contains(Comment, 'prod')].{Id:Id,DomainName:DomainName,Status:Status,Comment:Comment}" \
+            --output table || true
+
+          exit 1
 
       - name: Build extensions
         run: yarn build:extension
