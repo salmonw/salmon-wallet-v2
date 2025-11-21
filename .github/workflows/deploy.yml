@@ -43,13 +43,32 @@ jobs:
       - name: Build
         run: yarn build:prod
 
-      - name: Clean up failed CloudFormation stack
+      - name: Clean up failed CloudFormation stack and change sets
         run: |
           STACK_NAME="salmon-wallet-app-prod"
           echo "Checking CloudFormation stack status..."
+
           if aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 2>/dev/null; then
             STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query 'Stacks[0].StackStatus' --output text)
-            echo "Stack status: $STATUS"
+            echo "Stack exists with status: $STATUS"
+            
+            # Delete all failed/pending change sets first
+            echo "Cleaning up change sets..."
+            CHANGESETS=$(aws cloudformation list-change-sets \
+              --stack-name $STACK_NAME \
+              --region us-east-1 \
+              --query 'Summaries[?Status==`FAILED` || Status==`UNAVAILABLE`].ChangeSetName' \
+              --output text 2>/dev/null || echo "")
+            
+            if [ -n "$CHANGESETS" ]; then
+              for CS in $CHANGESETS; do
+                echo "Deleting change set: $CS"
+                aws cloudformation delete-change-set \
+                  --stack-name $STACK_NAME \
+                  --change-set-name "$CS" \
+                  --region us-east-1 2>/dev/null || true
+              done
+            fi
             
             # Check if stack is in a state that prevents updates
             if [[ "$STATUS" == *"FAILED"* ]] || \
@@ -57,26 +76,16 @@ jobs:
                [[ "$STATUS" == "CREATE_FAILED" ]] || \
                [[ "$STATUS" == "ROLLBACK_COMPLETE" ]] || \
                [[ "$STATUS" == "UPDATE_ROLLBACK_COMPLETE" ]] || \
-               [[ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]]; then
-              echo "Stack is in problematic state, deleting..."
+               [[ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]] || \
+               [[ "$STATUS" == "REVIEW_IN_PROGRESS" ]]; then
+              echo "Stack is in problematic state ($STATUS), deleting..."
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
               echo "Waiting for stack deletion (this may take a few minutes)..."
               aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
+            elif [[ "$STATUS" == "CREATE_COMPLETE" ]] || [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
+              echo "Stack exists and is complete. Will attempt to update."
             else
-              echo "Stack exists but is in state: $STATUS"
-              echo "Attempting to delete any pending change sets first..."
-              CHANGESET_NAME="${STACK_NAME}-change-set"
-              aws cloudformation delete-change-set \
-                --stack-name $STACK_NAME \
-                --change-set-name $CHANGESET_NAME \
-                --region us-east-1 2>/dev/null || echo "No change set to delete"
-              
-              # List all change sets
-              aws cloudformation list-change-sets \
-                --stack-name $STACK_NAME \
-                --region us-east-1 \
-                --query 'Summaries[].{Name:ChangeSetName,Status:Status}' \
-                --output table || true
+              echo "Stack is in state: $STATUS - may need manual intervention"
             fi
           else
             echo "Stack does not exist"
@@ -85,12 +94,55 @@ jobs:
       - name: Clean up CloudFront distributions (if orphaned)
         run: |
           echo "Checking for CloudFront distributions related to this stack..."
-          aws cloudfront list-distributions \
-            --query "DistributionList.Items[?contains(Comment, 'Salmon Wallet - prod')].{Id:Id,Status:Status,Comment:Comment}" \
-            --output table --region us-east-1 || echo "No distributions found or error checking"
+          DISTRIBUTIONS=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?contains(Comment, 'Salmon Wallet - prod') || contains(Comment, 'salmon-wallet-prod')].Id" \
+            --output text --region us-east-1 2>/dev/null || echo "")
 
-          echo "Note: CloudFront distributions must be manually disabled before deletion."
-          echo "If distributions exist, they will be cleaned up when the CloudFormation stack is deleted."
+          if [ -n "$DISTRIBUTIONS" ]; then
+            echo "Found CloudFront distributions: $DISTRIBUTIONS"
+            for DIST_ID in $DISTRIBUTIONS; do
+              echo "Checking distribution: $DIST_ID"
+              STATUS=$(aws cloudfront get-distribution --id "$DIST_ID" --query 'Distribution.Status' --output text --region us-east-1 2>/dev/null || echo "Unknown")
+              echo "Distribution $DIST_ID status: $STATUS"
+              
+              if [ "$STATUS" == "Deployed" ]; then
+                echo "Distribution is deployed. Note: CloudFront distributions must be disabled before deletion."
+                echo "This distribution will be cleaned up when the CloudFormation stack is deleted."
+              fi
+            done
+          else
+            echo "No CloudFront distributions found for this stack"
+          fi
+
+          # Also check if there are any distributions pointing to the S3 bucket
+          echo ""
+          echo "Checking for distributions pointing to salmon-wallet-prod bucket..."
+          ALL_DISTS=$(aws cloudfront list-distributions --query 'DistributionList.Items[].Id' --output text --region us-east-1 2>/dev/null || echo "")
+          if [ -n "$ALL_DISTS" ]; then
+            for DIST_ID in $ALL_DISTS; do
+              ORIGIN=$(aws cloudfront get-distribution-config --id "$DIST_ID" --query 'DistributionConfig.Origins.Items[0].DomainName' --output text --region us-east-1 2>/dev/null || echo "")
+              if [[ "$ORIGIN" == *"salmon-wallet-prod"* ]]; then
+                echo "Found distribution $DIST_ID pointing to salmon-wallet-prod bucket"
+              fi
+            done
+          fi
+
+      - name: Wait for stack cleanup to complete
+        run: |
+          STACK_NAME="salmon-wallet-app-prod"
+          echo "Checking if stack deletion is in progress..."
+
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 2>/dev/null; then
+            STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query 'Stacks[0].StackStatus' --output text)
+            echo "Stack status: $STATUS"
+            
+            if [[ "$STATUS" == "DELETE_IN_PROGRESS" ]]; then
+              echo "Stack deletion in progress, waiting for completion..."
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 90 || echo "Still deleting or timeout"
+            fi
+          else
+            echo "Stack does not exist, ready for fresh deployment"
+          fi
 
       - name: Clean up orphaned S3 bucket
         run: |
