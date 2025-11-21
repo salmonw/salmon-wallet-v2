@@ -43,8 +43,39 @@ jobs:
       - name: Build
         run: yarn build:prod
 
+      - name: Clean up failed CloudFormation stack
+        run: |
+          STACK_NAME="salmon-wallet-app-prod"
+          echo "Checking CloudFormation stack status..."
+          if aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 2>/dev/null; then
+            STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query 'Stacks[0].StackStatus' --output text)
+            echo "Stack status: $STATUS"
+            if [[ "$STATUS" == *"FAILED"* ]] || [[ "$STATUS" == *"ROLLBACK"* ]] || [[ "$STATUS" == "CREATE_FAILED" ]] || [[ "$STATUS" == "ROLLBACK_COMPLETE" ]]; then
+              echo "Stack is in failed state, deleting..."
+              aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
+              echo "Waiting for stack deletion (this may take a few minutes)..."
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
+            fi
+          else
+            echo "Stack does not exist"
+          fi
+
+      - name: Clean up orphaned S3 bucket
+        run: |
+          BUCKET_NAME="salmon-wallet-prod"
+          echo "Checking S3 bucket..."
+          if aws s3api head-bucket --bucket $BUCKET_NAME --region us-east-1 2>/dev/null; then
+            echo "Bucket exists, attempting to empty and delete..."
+            # Empty the bucket first
+            aws s3 rm s3://$BUCKET_NAME --recursive --region us-east-1 || true
+            # Delete the bucket
+            aws s3 rb s3://$BUCKET_NAME --region us-east-1 || echo "Bucket deletion failed, may be in use by CloudFront"
+          else
+            echo "Bucket does not exist"
+          fi
+
       - name: Publish
-        run: yarn serverless:deploy
+        run: yarn serverless:deploy --verbose
 
       - name: Build extensions
         run: yarn build:extension
