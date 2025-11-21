@@ -52,7 +52,44 @@ jobs:
             STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region us-east-1 --query 'Stacks[0].StackStatus' --output text)
             echo "Stack exists with status: $STATUS"
             
-            # Delete all failed/pending change sets first
+            # Handle DELETE_FAILED state - need to clean up resources manually
+            if [[ "$STATUS" == "DELETE_FAILED" ]]; then
+              echo "Stack is in DELETE_FAILED state. Cleaning up resources manually..."
+              
+              # Get resources that failed to delete
+              FAILED_RESOURCES=$(aws cloudformation describe-stack-resources \
+                --stack-name $STACK_NAME \
+                --region us-east-1 \
+                --query 'StackResources[?ResourceStatus==`DELETE_FAILED`].{LogicalId:LogicalResourceId,PhysicalId:PhysicalResourceId,Type:ResourceType}' \
+                --output json 2>/dev/null || echo "[]")
+              
+              echo "Failed resources: $FAILED_RESOURCES"
+              
+              # Try to manually delete bucket policies
+              BUCKET_POLICIES=$(echo "$FAILED_RESOURCES" | grep -i "BucketPolicy" || echo "")
+              if [ -n "$BUCKET_POLICIES" ]; then
+                echo "Attempting to delete bucket policies manually..."
+                # Get the bucket name from resources
+                BUCKET_NAME=$(aws cloudformation describe-stack-resources \
+                  --stack-name $STACK_NAME \
+                  --region us-east-1 \
+                  --query 'StackResources[?LogicalResourceId==`ServerlessDeploymentBucket`].PhysicalResourceId' \
+                  --output text 2>/dev/null || echo "")
+                
+                if [ -n "$BUCKET_NAME" ]; then
+                  echo "Deleting bucket policy from bucket: $BUCKET_NAME"
+                  aws s3api delete-bucket-policy --bucket "$BUCKET_NAME" --region us-east-1 2>/dev/null || echo "Could not delete bucket policy (may not exist)"
+                fi
+              fi
+              
+              # Now try to continue stack deletion
+              echo "Retrying stack deletion..."
+              aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
+              echo "Waiting for stack deletion..."
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress"
+            fi
+            
+            # Delete all failed/pending change sets
             echo "Cleaning up change sets..."
             CHANGESETS=$(aws cloudformation list-change-sets \
               --stack-name $STACK_NAME \
@@ -78,10 +115,12 @@ jobs:
                [[ "$STATUS" == "UPDATE_ROLLBACK_COMPLETE" ]] || \
                [[ "$STATUS" == "UPDATE_ROLLBACK_FAILED" ]] || \
                [[ "$STATUS" == "REVIEW_IN_PROGRESS" ]]; then
-              echo "Stack is in problematic state ($STATUS), deleting..."
-              aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
-              echo "Waiting for stack deletion (this may take a few minutes)..."
-              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
+              if [[ "$STATUS" != "DELETE_FAILED" ]]; then
+                echo "Stack is in problematic state ($STATUS), deleting..."
+                aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
+                echo "Waiting for stack deletion (this may take a few minutes)..."
+                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
+              fi
             elif [[ "$STATUS" == "CREATE_COMPLETE" ]] || [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
               echo "Stack exists and is complete. Checking resources..."
               # Check if stack actually has resources or is empty
