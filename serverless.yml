@@ -1,6 +1,6 @@
 service: salmon-wallet-app
 
-frameworkVersion: '3'
+frameworkVersion: '4'
 
 plugins:
   - serverless-s3-sync
