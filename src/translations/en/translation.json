@@ -371,7 +371,8 @@
     "go_to_explorer": "Go to Explorer",
     "choose_type": "Choose an option",
     "same_blockchain": "To a token on this blockchain",
-    "other_blockchain": "To a token on other blockchain"
+    "other_blockchain": "To a token on other blockchain",
+    "no_route_found": "Could not get a quote. Try again or adjust the amount."
   },
   "bridge": {
     "preview": "Bridge Preview",

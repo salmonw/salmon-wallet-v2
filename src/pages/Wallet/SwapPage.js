@@ -186,7 +186,7 @@ const SwapPage = ({ t }) => {
   const [step, setStep] = useState(1);
   const [tokens, setTokens] = useState([]);
   const [ready, setReady] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null); // null | 'no_route' | 'generic'
   const [processing, setProcessing] = useState(false);
   const [availableTokens, setAvailableTokens] = useState([]);
   const [featuredTokens, setFeaturedTokens] = useState([]);
@@ -282,7 +282,7 @@ const SwapPage = ({ t }) => {
   }, [inAmount, inTokenWithPrice, outTokenWithPrice]);
 
   useEffect(() => {
-    setError(false);
+    setError(null);
   }, [inAmount, inToken, outToken]);
 
   const zeroAmount = inToken && parseFloat(inAmount) <= 0;
@@ -328,7 +328,7 @@ const SwapPage = ({ t }) => {
   };
 
   const onQuote = async () => {
-    setError(false);
+    setError(null);
     setProcessing(true);
     try {
       const q = await activeBlockchainAccount.getBestSwapQuote(
@@ -341,7 +341,11 @@ const SwapPage = ({ t }) => {
       trackEvent(EVENTS_MAP.SWAP_QUOTE);
       setStep(2);
     } catch (e) {
-      setError(true);
+      if (e.response?.status === 404) {
+        setError('no_route');
+      } else {
+        setError('generic');
+      }
     } finally {
       setProcessing(false);
     }
@@ -349,7 +353,7 @@ const SwapPage = ({ t }) => {
   const onExpire = async () => {};
 
   const onConfirm = async () => {
-    setError(false);
+    setError(null);
     setProcessing(true);
     trackEvent(EVENTS_MAP.SWAP_CONFIRMED);
     setStatus(TRANSACTION_STATUS.SWAPPING);
@@ -370,7 +374,7 @@ const SwapPage = ({ t }) => {
       setCurrentTransaction(txs[0]);
     } catch (ex) {
       console.error(ex);
-      setError(true);
+      setError('generic');
       trackEvent(EVENTS_MAP.SWAP_FAILED);
       setStatus(TRANSACTION_STATUS.FAIL);
     } finally {
@@ -458,8 +462,13 @@ const SwapPage = ({ t }) => {
                   </GlobalText>
                 )}
 
-                {error && (
-                  <GlobalText type="body1" color="negative">
+                {error === 'no_route' && (
+                  <GlobalText type="body1" center color="negative">
+                    {t('swap.no_route_found')}
+                  </GlobalText>
+                )}
+                {error === 'generic' && (
+                  <GlobalText type="body1" center color="negative">
                     {t('general.error')}
                   </GlobalText>
                 )}
