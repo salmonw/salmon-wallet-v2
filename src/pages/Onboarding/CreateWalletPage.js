@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import randomNumber from 'lodash-es/random';
 import {
@@ -134,6 +134,10 @@ const Form = ({ account, onComplete, onBack, t }) => {
 const ValidateSeed = ({ account, onComplete, onBack, t }) => {
   const [positions, setPositions] = useState([]);
   const [phrases, setPhrases] = useState(['', '', '']);
+  const inputRef1 = useRef(null);
+  const inputRef2 = useRef(null);
+  const inputRef3 = useRef(null);
+  const inputRefs = [inputRef1, inputRef2, inputRef3];
   useEffect(() => {
     const length = account.mnemonic.split(' ').length;
     const random = [
@@ -184,12 +188,15 @@ const ValidateSeed = ({ account, onComplete, onBack, t }) => {
         {positions.map((pos, index) => (
           <React.Fragment key={`phrase-${pos}`}>
             <GlobalInput
+              ref={inputRefs[index]}
               startLabel={pos}
               placeholder={t(`wallet.create.enter_word_number`) + pos}
               setValue={value => setPhrasePos(value, index)}
               autoFocus={index === 0}
-              onEnter={() => isValid && onComplete()}
-              // value={phrases[index]}
+              returnKeyType={index < 2 ? 'next' : 'done'}
+              blurOnSubmit={index >= 2}
+              onSubmitEditing={() => index < 2 ? inputRefs[index + 1].current?.focus() : isValid && onComplete()}
+              onEnter={() => index < 2 ? inputRefs[index + 1].current?.focus() : isValid && onComplete()}
             />
             <GlobalPadding />
           </React.Fragment>

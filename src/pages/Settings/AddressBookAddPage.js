@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 
 import { AppContext } from '../../AppProvider';
 import { ROUTES_MAP } from './routes';
@@ -25,6 +25,7 @@ const AddressBookAddPage = ({ t }) => {
   const [showScan, setShowScan] = useState(false);
   const [recipientName, setRecipientName] = useState(null);
   const [inputAddress, setInputAddress] = useState('');
+  const addressRef = useRef(null);
 
   const isValid = addressLabel && validAddress;
   const onBack = () => navigate(ROUTES_MAP.SETTINGS_ADDRESSBOOK);
@@ -64,11 +65,16 @@ const AddressBookAddPage = ({ t }) => {
           invalid={false}
           autoComplete="off"
           autoFocus={true}
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => addressRef.current?.focus()}
+          onEnter={() => addressRef.current?.focus()}
         />
 
         <GlobalPadding size="md" />
 
         <InputAddress
+          ref={addressRef}
           address={inputAddress}
           publicKey={recipientAddress}
           domain={recipientName}
@@ -80,6 +86,9 @@ const AddressBookAddPage = ({ t }) => {
           setAddressEmpty={setAddressEmpty}
           setPublicKey={setRecipientAddress}
           onQR={toggleScan}
+          returnKeyType="done"
+          onSubmitEditing={() => isValid && onSave()}
+          onEnter={() => isValid && onSave()}
         />
       </GlobalLayout.Header>
 

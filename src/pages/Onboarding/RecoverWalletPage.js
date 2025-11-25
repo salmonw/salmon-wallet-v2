@@ -46,7 +46,6 @@ const Form = ({ waiting, onComplete, onBack, t }) => {
           <View style={globalStyles.pagination}>
             <GlobalPageDot active />
             <GlobalPageDot />
-            <GlobalPageDot />
           </View>
         </GlobalBackTitle>
         <Logo size={isExtension() ? 'sm' : null} />

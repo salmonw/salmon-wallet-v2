@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
 });
 const InputAddress = ({
   t,
+  ref,
   address,
   publicKey,
   domain,
@@ -33,6 +34,7 @@ const InputAddress = ({
   setAddressEmpty,
   recipient = true,
   onQR = () => {},
+  ...props
 }) => {
   const [{ activeBlockchainAccount }] = useContext(AppContext);
   const [checkingAddress, setCheckingAddress] = useState(false);
@@ -102,6 +104,7 @@ const InputAddress = ({
   return (
     <>
       <GlobalInputWithButton
+        ref={ref}
         startLabel={recipient ? t('general.to') : null}
         placeholder={
           recipient
@@ -121,6 +124,7 @@ const InputAddress = ({
         inputStyle={
           result && result.type !== 'SUCCESS' ? styles[result.type] : {}
         }
+        {...props}
       />
       {result && result.type !== 'SUCCESS' && (
         <>

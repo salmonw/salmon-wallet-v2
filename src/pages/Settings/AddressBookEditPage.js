@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { AppContext } from '../../AppProvider';
 import { ROUTES_MAP } from './routes';
@@ -26,6 +26,7 @@ const AddressBookEditPage = ({ params, t }) => {
   const [showScan, setShowScan] = useState(false);
   const [recipientName, setRecipientName] = useState(null);
   const [inputAddress, setInputAddress] = useState('');
+  const addressRef = useRef(null);
 
   useEffect(() => {
     const address = addressBook.find(a => a.address === params.address);
@@ -77,11 +78,16 @@ const AddressBookEditPage = ({ params, t }) => {
           invalid={false}
           autoComplete="off"
           autoFocus={true}
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => addressRef.current?.focus()}
+          onEnter={() => addressRef.current?.focus()}
         />
 
         <GlobalPadding size="md" />
 
         <InputAddress
+          ref={addressRef}
           address={inputAddress}
           publicKey={recipientAddress}
           domain={recipientName}
@@ -93,6 +99,9 @@ const AddressBookEditPage = ({ params, t }) => {
           setAddressEmpty={setAddressEmpty}
           setPublicKey={setRecipientAddress}
           onQR={toggleScan}
+          returnKeyType="done"
+          onSubmitEditing={() => isValid && onSave()}
+          onEnter={() => isValid && onSave()}
         />
       </GlobalLayout.Header>
 

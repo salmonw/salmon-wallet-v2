@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
 });
 
 const GlobalInputWithButton = ({
+  ref,
   placeholder,
   forSearch,
   startLabel,
@@ -65,11 +66,13 @@ const GlobalInputWithButton = ({
   onActionPress,
   buttonOnPress,
   validating,
+  inputRef,
   ...props
 }) => {
   return (
     <View style={styles.inputGroup}>
       <GlobalInput
+        ref={ref || inputRef}
         placeholder={placeholder}
         forSearch={forSearch}
         startLabel={startLabel}
