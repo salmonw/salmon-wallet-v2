@@ -48,6 +48,14 @@ export const getTransactionImage = transaction => {
       return IconTransactionSwap;
     case 'interaction':
       return IconTransactionInteraction;
+    case 'mint':
+      return IconTransactionInteraction;
+    case 'burn':
+      return IconTransactionInteraction;
+    case 'stake':
+      return IconTransactionInteraction;
+    case 'loan':
+      return IconTransactionInteraction;
     case 'paid':
       return IconTransactionPaid;
     case 'unknown':

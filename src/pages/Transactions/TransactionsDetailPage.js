@@ -156,6 +156,90 @@ const IconsBanner = ({ type, status, inputs, outputs }) => {
     );
   }
 
+  if (type === TRANSACTION_TYPE.MINT) {
+    return (
+      <View style={styles.floatingTransactionBox}>
+        <GlobalImage
+          source={getTransactionImage('mint')}
+          size="xxl"
+          style={styles.bigImage}
+          circle
+        />
+        {!success && (
+          <GlobalImage
+            source={getTransactionImage('fail')}
+            size="md"
+            circle
+            style={styles.floatingTransaction}
+          />
+        )}
+      </View>
+    );
+  }
+
+  if (type === TRANSACTION_TYPE.BURN) {
+    return (
+      <View style={styles.floatingTransactionBox}>
+        <GlobalImage
+          source={getTransactionImage('burn')}
+          size="xxl"
+          style={styles.bigImage}
+          circle
+        />
+        {!success && (
+          <GlobalImage
+            source={getTransactionImage('fail')}
+            size="md"
+            circle
+            style={styles.floatingTransaction}
+          />
+        )}
+      </View>
+    );
+  }
+
+  if (type === TRANSACTION_TYPE.STAKE) {
+    return (
+      <View style={styles.floatingTransactionBox}>
+        <GlobalImage
+          source={getTransactionImage('stake')}
+          size="xxl"
+          style={styles.bigImage}
+          circle
+        />
+        {!success && (
+          <GlobalImage
+            source={getTransactionImage('fail')}
+            size="md"
+            circle
+            style={styles.floatingTransaction}
+          />
+        )}
+      </View>
+    );
+  }
+
+  if (type === TRANSACTION_TYPE.LOAN) {
+    return (
+      <View style={styles.floatingTransactionBox}>
+        <GlobalImage
+          source={getTransactionImage('loan')}
+          size="xxl"
+          style={styles.bigImage}
+          circle
+        />
+        {!success && (
+          <GlobalImage
+            source={getTransactionImage('fail')}
+            size="md"
+            circle
+            style={styles.floatingTransaction}
+          />
+        )}
+      </View>
+    );
+  }
+
   if (type === TRANSACTION_TYPE.INTERACTION) {
     return (
       <View style={styles.floatingTransactionBox}>
