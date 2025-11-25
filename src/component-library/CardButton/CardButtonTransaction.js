@@ -60,10 +60,24 @@ const CardButtonTransaction = ({ t, transaction, onPress }) => {
       tokenImg1 = inputs[0].logo;
       tokenImg2 = outputs[0].logo;
     }
+  } else if (type === TRANSACTION_TYPE.MINT) {
+    image = getTransactionImage('mint');
+    description = transaction.description;
+  } else if (type === TRANSACTION_TYPE.BURN) {
+    image = getTransactionImage('burn');
+    description = transaction.description;
+  } else if (type === TRANSACTION_TYPE.STAKE) {
+    image = getTransactionImage('stake');
+    description = transaction.description;
+  } else if (type === TRANSACTION_TYPE.LOAN) {
+    image = getTransactionImage('loan');
+    description = transaction.description;
   } else if (type === TRANSACTION_TYPE.INTERACTION) {
     image = getTransactionImage('interaction');
+    description = transaction.description;
   } else {
     image = getTransactionImage('unknown');
+    description = transaction.description;
   }
 
   let actions;
