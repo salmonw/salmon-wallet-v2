@@ -5,7 +5,7 @@
  * Este archivo configura webpack para separar el bundle en chunks optimizados:
  * - react-vendors: React, ReactDOM, y librerías relacionadas
  * - solana: SDK de Solana y paquetes relacionados
- * - crypto-vendors: ethers, bitcoinjs-lib, near-api-js
+ * - crypto-vendors: ethers, bitcoinjs-lib
  * - utils: lodash, moment, i18next
  * - mui: Material-UI components
  */
@@ -57,9 +57,9 @@ module.exports = function override(config, env) {
             reuseExistingChunk: true,
           },
 
-          // Blockchain vendors - ethers, bitcoinjs-lib, near (para lazy load futuro)
+          // Blockchain vendors - ethers, bitcoinjs-lib
           cryptoVendors: {
-            test: /[\\/]node_modules[\\/](ethers|bitcoinjs-lib|near-api-js|@near-js|bitcore-lib)[\\/]/,
+            test: /[\\/]node_modules[\\/](ethers|bitcoinjs-lib|bitcore-lib)[\\/]/,
             name: 'crypto-vendors',
             priority: 25,
             reuseExistingChunk: true,
