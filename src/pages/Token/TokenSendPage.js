@@ -253,6 +253,9 @@ const TokenSendPage = ({ params, t }) => {
                 setAddressEmpty={setAddressEmpty}
                 setPublicKey={setRecipientAddress}
                 onQR={toggleScan}
+                returnKeyType="done"
+                onSubmitEditing={() => validAddress && onNext()}
+                onEnter={() => validAddress && onNext()}
               />
 
               {accounts.length > 1 && (
@@ -376,6 +379,9 @@ const TokenSendPage = ({ params, t }) => {
                 buttonOnPress={() => setRecipientAmount(`${token.uiAmount}`)}
                 invalid={!validAmount && !!recipientAmount}
                 number
+                returnKeyType="done"
+                onSubmitEditing={() => validAmount && onNext()}
+                onEnter={() => validAmount && onNext()}
               />
 
               {zeroAmount ? (

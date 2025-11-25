@@ -47,6 +47,9 @@ const AddressBookEditPage = ({ params, t }) => {
           invalid={!accountName}
           autoComplete="off"
           autoFocus={true}
+          returnKeyType="done"
+          onSubmitEditing={() => accountName && onSave()}
+          onEnter={() => accountName && onSave()}
         />
         <GlobalPadding siz="sm" />
         <GlobalText type="caption" center>

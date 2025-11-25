@@ -1,19 +1,11 @@
 import React from 'react';
 import { TextInput } from 'react-native';
 
-const GlobalTextInput = ({ keyboardInput, onEnter, ...props }) => {
-  const handleKeyPress = value => {
-    if (onEnter && value.key === 'Enter') {
-      onEnter();
-    }
+const GlobalTextInput = ({ ref, onEnter, ...props }) => {
+  const handleKeyPress = e => {
+    if (onEnter && e.key === 'Enter') onEnter();
   };
-  return (
-    <TextInput
-      {...props}
-      onKeyPress={handleKeyPress}
-      keyboardInput={keyboardInput}
-    />
-  );
+  return <TextInput ref={ref} onKeyPress={handleKeyPress} {...props} />;
 };
 
 export default GlobalTextInput;

@@ -117,6 +117,9 @@ const SecureDialog = ({
               invalid={wrongpass}
               autoComplete="password-new"
               secureTextEntry={!showValue}
+              returnKeyType="done"
+              onSubmitEditing={() => password && onContinue()}
+              onEnter={() => password && onContinue()}
             />
             {wrongpass && (
               <GlobalText

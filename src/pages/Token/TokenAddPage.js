@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useContext, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 
 import { AppContext } from '../../AppProvider';
@@ -28,6 +28,8 @@ const TokenAddPage = ({ params, t }) => {
   const [tokenMintAddress, setTokenMintAddress] = useState('');
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
+  const nameRef = useRef(null);
+  const symbolRef = useRef(null);
 
   const tokensAddresses = useMemo(
     () => Object.keys(activeTokens),
@@ -86,22 +88,35 @@ const TokenAddPage = ({ params, t }) => {
               placeholder="Mint Address"
               value={tokenMintAddress}
               setValue={setTokenMintAddress}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => nameRef.current?.focus()}
+              onEnter={() => nameRef.current?.focus()}
             />
 
             <GlobalPadding />
 
             <GlobalInput
+              ref={nameRef}
               placeholder="Name"
               value={tokenName}
               setValue={setTokenName}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => symbolRef.current?.focus()}
+              onEnter={() => symbolRef.current?.focus()}
             />
 
             <GlobalPadding />
 
             <GlobalInput
+              ref={symbolRef}
               placeholder="Symbol"
               value={tokenSymbol}
               setValue={setTokenSymbol}
+              returnKeyType="done"
+              onSubmitEditing={onAddToken}
+              onEnter={onAddToken}
             />
           </View>
         </GlobalLayout.Header>

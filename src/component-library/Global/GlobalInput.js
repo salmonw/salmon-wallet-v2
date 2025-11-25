@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
 });
 
 const GlobalInput = ({
+  ref,
   placeholder,
   forSearch,
   startLabel,
@@ -148,6 +149,7 @@ const GlobalInput = ({
       )}
 
       <GlobalTextInput
+        ref={ref}
         style={[
           styles.input,
           multiline && styles.multiline,

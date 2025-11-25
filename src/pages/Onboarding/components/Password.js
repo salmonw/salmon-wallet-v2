@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Linking } from 'react-native';
 
 import { isExtension } from '../../../utils/platform';
@@ -27,6 +27,7 @@ const Password = ({
   const [wrongpass, setWrongpass] = useState(false);
   const [checking, setChecking] = useState(false);
   const [showValue, setShowValue] = useState(false);
+  const confirmRef = useRef(null);
   const isValid =
     (!requiredLock && ((!!pass && pass === repass) || (!pass && !repass))) ||
     (requiredLock && pass);
@@ -82,7 +83,7 @@ const Password = ({
         <GlobalBackTitle onBack={onBack}>
           <View style={globalStyles.pagination}>
             <GlobalPageDot />
-            <GlobalPageDot />
+            {type === 'create' && <GlobalPageDot />}
             <GlobalPageDot active />
           </View>
         </GlobalBackTitle>
@@ -106,6 +107,9 @@ const Password = ({
               invalid={wrongpass}
               autoComplete="password-new"
               secureTextEntry={!showValue}
+              returnKeyType="done"
+              onSubmitEditing={() => isValid && onContinue()}
+              onEnter={() => isValid && onContinue()}
             />
             {wrongpass && (
               <GlobalText
@@ -144,17 +148,24 @@ const Password = ({
               autoComplete="password-new"
               autoFocus={true}
               secureTextEntry={!showValue}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => confirmRef.current?.focus()}
+              onEnter={() => confirmRef.current?.focus()}
             />
 
             <GlobalPadding />
 
             <GlobalInputWithButton
+              ref={confirmRef}
               placeholder={t('wallet.create.passwordRepeat')}
               value={repass}
               setValue={setRepass}
               invalid={pass === repass}
               autoComplete="password-new"
               secureTextEntry={!showValue}
+              returnKeyType="done"
+              onSubmitEditing={() => isValid && onContinue()}
               onEnter={() => isValid && onContinue()}
             />
 

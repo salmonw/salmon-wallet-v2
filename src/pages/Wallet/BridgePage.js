@@ -630,6 +630,9 @@ const BridgePage = ({ t }) => {
                       : {}
                   }
                   style={{ paddingHorizontal: theme.gutters.paddingSM }}
+                  returnKeyType="done"
+                  onSubmitEditing={() => validAddress && onConfirm()}
+                  onEnter={() => validAddress && onConfirm()}
                 />
                 <GlobalPadding size="xl" />
                 <GlobalAlert
