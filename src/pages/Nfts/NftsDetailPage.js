@@ -257,7 +257,8 @@ const NftsDetailPage = ({ route, params, t }) => {
               goToSend={goToSend}
               canSend={switches?.send && transferable}
               goToList={goToListing}
-              canList={switches?.list_in_marketplace?.active}
+              // TODO: Reactivar cuando se migre el servicio de listing (Hyperspace deprecado)
+              canList={false}
               titleList={getListBtnTitle()}
               listedLoaded
               goToBurn={goToBurn}
