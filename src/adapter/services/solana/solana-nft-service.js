@@ -27,7 +27,7 @@ const getAllGroupedByCollection = async (network, owner) => {
 const getCollections = nfts => {
   const collections = nfts
     .map(nft => nft.collection?.name)
-    .filter(e => e !== undefined);
+    .filter(e => e);
   return Array.from(new Set(collections));
 };
 
@@ -48,7 +48,7 @@ const getNftsByCollection = nfts => {
 };
 
 const getNftsWithoutCollection = nfts => {
-  return nfts.filter(nft => !nft.collection);
+  return nfts.filter(nft => !nft.collection?.name);
 };
 
 const getNftByAddress = async (network, mintAddress) => {

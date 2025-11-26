@@ -11,7 +11,6 @@ import GlobalImage from './GlobalImage';
 import GlobalText from './GlobalText';
 import GlobalFloatingBadge from './GlobalFloatingBadge';
 
-import { getMediaRemoteUrl } from '../../utils/media';
 import { isCollection, isBlacklisted } from '../../utils/nfts';
 import Blacklisted from '../../assets/images/Blacklisted.jpeg';
 // LINT FIX - No usado
@@ -89,12 +88,8 @@ const GlobalNft = ({ nft, onClick = () => {}, t }) => {
             }}
           />
           <GlobalImage
-            source={
-              isBlacklisted(completeNft)
-                ? Blacklisted
-                : completeNft.metadata?.json?.image ||
-                  getMediaRemoteUrl(completeNft.metadata?.uri)
-            }
+            source={isBlacklisted(completeNft) ? Blacklisted : null}
+            url={!isBlacklisted(completeNft) ? completeNft.media || completeNft.uri : null}
             size="block"
             style={completeNft.pending && styles.pendingImage}
           />
@@ -113,9 +108,7 @@ const GlobalNft = ({ nft, onClick = () => {}, t }) => {
           numberOfLines={1}>
           {isCollection(completeNft)
             ? completeNft.collection
-            : completeNft.metadata?.json?.name ||
-              completeNft.metadata?.name ||
-              completeNft.symbol}
+            : completeNft.name || completeNft.symbol}
         </GlobalText>
       </View>
     </>
