@@ -1,5 +1,3 @@
-// PRIMEROS AJUSTES - Roadmap: Dejar únicamente Solana y BTC
-// Fecha: 2025-10-31
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BLOCKCHAINS } from '../../../adapter';
@@ -8,10 +6,7 @@ import BasicSelect from '../../../component-library/Selects/BasicSelect';
 import GlobalText from '../../../component-library/Global/GlobalText';
 import GlobalImage from '../../../component-library/Global/GlobalImage';
 import IconSolanaVector from '../../../assets/images/IconSolanaVector.png';
-// import IconNearVector from '../../../assets/images/IconNearVector.png'; // Comentado - No se usa en esta versión
-// import IconEthereumVector from '../../../assets/images/IconEthereumVector.png'; // Comentado - No se usa en esta versión
 import IconBitcoinVector from '../../../assets/images/IconBitcoinVector.png';
-// import IconEclipseVector from '../../../assets/images/IconEclipseVector.png'; // Comentado - No se usa en esta versión
 import IconSalmon from '../../../assets/images/IconSalmon.png';
 
 const styles = StyleSheet.create({
@@ -43,14 +38,8 @@ const getNetworkIcon = ({ blockchain }) => {
   switch (blockchain) {
     case BLOCKCHAINS.BITCOIN:
       return IconBitcoinVector;
-    // case BLOCKCHAINS.ETHEREUM: // Comentado - No se usa en esta versión
-    //   return IconEthereumVector;
     case BLOCKCHAINS.SOLANA:
       return IconSolanaVector;
-    // case BLOCKCHAINS.NEAR: // Comentado - No se usa en esta versión
-    //   return IconNearVector;
-    // case BLOCKCHAINS.ECLIPSE: // Comentado - No se usa en esta versión
-    //   return IconEclipseVector;
     default:
       return IconSalmon;
   }
