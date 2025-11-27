@@ -39,7 +39,8 @@ const NftsListPage = ({ t }) => {
           setLoaded(false);
           const nfts = await activeBlockchainAccount.getAllNftsGrouped();
           setNftsGroup(await updatePendingNfts(nfts));
-          if (switches?.list_in_marketplace?.active) {
+          // TODO: Reactivar cuando se migre el servicio de listing (Hyperspace deprecado)
+          if (false) {
             const listed = await activeBlockchainAccount.getListedNfts();
             setListedInfo(listed);
           }

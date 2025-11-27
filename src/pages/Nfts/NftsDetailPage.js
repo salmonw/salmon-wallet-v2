@@ -9,7 +9,6 @@ import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
 import { ROUTES_MAP } from './routes';
 import { withTranslation } from '../../hooks/useTranslations';
-import { getMediaRemoteUrl } from '../../utils/media';
 
 import theme, { globalStyles } from '../../component-library/Global/theme';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
@@ -178,15 +177,10 @@ const NftsDetailPage = ({ route, params, t }) => {
       </View>
     );
   };
-  const image =
-    nftDetail.metadata?.json?.image ||
-    getMediaRemoteUrl(nftDetail.metadata?.uri);
+  const image = nftDetail.media || nftDetail.uri;
   //nftDetail.metadata?.json?.name || nftDetail.metadata?.name || nftDetail.symbol
   //nftDetail.metadata?.json?.description
-  const title =
-    nftDetail.metadata?.json?.name ||
-    nftDetail.metadata?.name ||
-    nftDetail.symbol;
+  const title = nftDetail.name || nftDetail.symbol;
 
   return (
     (loaded && (
@@ -210,7 +204,7 @@ const NftsDetailPage = ({ route, params, t }) => {
 
             <View style={styles.imageContainer}>
               <GlobalImage
-                source={image}
+                url={image}
                 style={styles.nftImage}
                 square
                 squircle
@@ -263,7 +257,8 @@ const NftsDetailPage = ({ route, params, t }) => {
               goToSend={goToSend}
               canSend={switches?.send && transferable}
               goToList={goToListing}
-              canList={switches?.list_in_marketplace?.active}
+              // TODO: Reactivar cuando se migre el servicio de listing (Hyperspace deprecado)
+              canList={false}
               titleList={getListBtnTitle()}
               listedLoaded
               goToBurn={goToBurn}
@@ -289,7 +284,7 @@ const NftsDetailPage = ({ route, params, t }) => {
           <GlobalPadding size="sm" />
 
           <GlobalText type="body1" color="secondary">
-            {nftDetail.metadata?.json?.description}
+            {nftDetail.description}
           </GlobalText>
 
           <GlobalPadding size="xl" />
