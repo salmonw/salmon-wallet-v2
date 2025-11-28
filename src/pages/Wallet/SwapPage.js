@@ -285,7 +285,14 @@ const SwapPage = ({ t }) => {
     setError(false);
   }, [inAmount, inToken, outToken]);
 
-  const zeroAmount = inToken && parseFloat(inAmount) <= 0;
+  const MIN_SWAP_USD = 1;
+  const zeroAmount = inToken && inAmount && parseFloat(inAmount) <= 0;
+  const inAmountUsd =
+    inAmount && inTokenWithPrice?.usdPrice
+      ? parseFloat(inAmount) * inTokenWithPrice.usdPrice
+      : 0;
+  const belowMinimum =
+    !zeroAmount && inAmountUsd > 0 && inAmountUsd < MIN_SWAP_USD;
 
   const validAmount =
     inToken &&
@@ -409,15 +416,16 @@ const SwapPage = ({ t }) => {
                   invalid={!validAmount && !!inAmount}
                   number
                 />
-                {zeroAmount ? (
+                {belowMinimum ? (
                   <GlobalText type="body1" center color="negative">
-                    {t(`token.send.amount.invalid`)}
+                    {t('swap.minimum_amount')}
                   </GlobalText>
                 ) : (
                   !validAmount &&
+                  !zeroAmount &&
                   !!inAmount && (
                     <GlobalText type="body1" center color="negative">
-                      {t(`token.send.amount.insufficient`, {
+                      {t('token.send.amount.insufficient', {
                         max: inToken.uiAmount,
                       })}
                     </GlobalText>
@@ -473,7 +481,7 @@ const SwapPage = ({ t }) => {
               type="primary"
               wideSmall
               title={t('swap.quote')}
-              disabled={!validAmount || !outToken || processing}
+              disabled={!validAmount || !outToken || processing || belowMinimum}
               onPress={onQuote}
             />
           </GlobalLayout.Footer>
