@@ -115,7 +115,7 @@ const Header = ({ isHome, t }) => {
   const [isConnected, setIsConnected] = useState(null);
   const [hostname, setHostname] = useState(null);
   const [networks, setNetworks] = useState([]);
-  const { developerNetworks } = useUserConfig();
+  const { developerNetworks, userConfig } = useUserConfig();
 
   const navigate = useNavigation();
 
@@ -141,6 +141,9 @@ const Header = ({ isHome, t }) => {
   }, []);
 
   useEffect(() => {
+    // Wait for config to load before filtering networks
+    if (!userConfig) return;
+
     const load = async () => {
       const switches = await getSwitches();
       const allNetworks = await getNetworks();
@@ -154,11 +157,22 @@ const Header = ({ isHome, t }) => {
         return true;
       });
       setNetworks(filteredNetworks);
+
+      // Auto-switch if current network is not in filtered options
+      const currentNetworkInOptions = filteredNetworks.some(n => n.id === networkId);
+      if (!currentNetworkInOptions && filteredNetworks.length > 0) {
+        // Find a network with the same blockchain, preferably mainnet
+        const currentNetwork = allNetworks.find(n => n.id === networkId);
+        const sameBlockchainNetwork = filteredNetworks.find(
+          n => n.blockchain === currentNetwork?.blockchain,
+        );
+        changeNetwork(sameBlockchainNetwork?.id || filteredNetworks[0].id);
+      }
     };
 
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [developerNetworks]);
+  }, [developerNetworks, networkId, userConfig]);
 
   const toggleScan = () => {
     setShowScan(!showScan);

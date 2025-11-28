@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Linking, View } from 'react-native';
-import { BLOCKCHAINS, formatAmount } from '../../adapter';
+import { BLOCKCHAINS, formatAmount, getNetworks, getSwitches } from '../../adapter';
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
@@ -22,6 +22,7 @@ import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import useUserConfig from '../../hooks/useUserConfig';
 import { SECTIONS_MAP, EVENTS_MAP } from '../../utils/tracking';
 import { getSolanaTokenPrice } from '../../adapter/services/price-service';
+import NetworkSelector from './components/NetworkSelector';
 
 const styles = StyleSheet.create({
   viewTxLink: {
@@ -50,6 +51,10 @@ const styles = StyleSheet.create({
   bigDetail: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+  },
+  networkSelectorContainer: {
+    marginTop: theme.gutters.paddingNormal,
+    alignItems: 'center',
   },
 });
 
@@ -181,11 +186,27 @@ const SwapPage = ({ t }) => {
   const navigate = useNavigation();
   const [
     { activeBlockchainAccount, networkId, hiddenValue, activeTokens },
-    { importTokens },
+    { importTokens, changeNetwork },
   ] = useContext(AppContext);
   const [step, setStep] = useState(1);
   const [tokens, setTokens] = useState([]);
   const [ready, setReady] = useState(false);
+  const [solanaNetworks, setSolanaNetworks] = useState([]);
+
+  const isSolana = activeBlockchainAccount?.network?.blockchain === BLOCKCHAINS.SOLANA;
+
+  // Load Solana networks for the selector when blockchain is not Solana
+  useEffect(() => {
+    if (!isSolana) {
+      Promise.all([getNetworks(), getSwitches()]).then(([allNetworks, switches]) => {
+        const filtered = allNetworks.filter(
+          ({ id, blockchain }) =>
+            blockchain === BLOCKCHAINS.SOLANA && switches[id]?.enable,
+        );
+        setSolanaNetworks(filtered);
+      });
+    }
+  }, [isSolana]);
   const [error, setError] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [availableTokens, setAvailableTokens] = useState([]);
@@ -207,7 +228,7 @@ const SwapPage = ({ t }) => {
   );
 
   useEffect(() => {
-    if (activeBlockchainAccount) {
+    if (activeBlockchainAccount && isSolana) {
       invalidate(CACHE_TYPES.AVAILABLE_TOKENS);
       Promise.all([
         activeBlockchainAccount.getBalance(tokensAddresses),
@@ -222,11 +243,11 @@ const SwapPage = ({ t }) => {
         setReady(true);
       });
     }
-  }, [activeBlockchainAccount, tokensAddresses]);
+  }, [activeBlockchainAccount, tokensAddresses, isSolana]);
 
   // Always fetch fresh price from Jupiter for inToken to ensure accurate swap calculations
   useEffect(() => {
-    if (!inToken) {
+    if (!inToken || !isSolana) {
       setInTokenWithPrice(null);
       return;
     }
@@ -240,11 +261,11 @@ const SwapPage = ({ t }) => {
     };
 
     fetchPrice();
-  }, [inToken, networkId]);
+  }, [inToken, networkId, isSolana]);
 
   // Always fetch fresh price from Jupiter for outToken to ensure accurate swap calculations
   useEffect(() => {
-    if (!outToken) {
+    if (!outToken || !isSolana) {
       setOutTokenWithPrice(null);
       return;
     }
@@ -258,7 +279,7 @@ const SwapPage = ({ t }) => {
     };
 
     fetchPrice();
-  }, [outToken, networkId]);
+  }, [outToken, networkId, isSolana]);
 
   const [inAmount, setInAmount] = useState(null);
 
@@ -385,6 +406,34 @@ const SwapPage = ({ t }) => {
       setProcessing(false);
     }
   };
+
+  // Show network selector when blockchain is not Solana
+  if (!isSolana) {
+    return (
+      <GlobalLayout>
+        <GlobalLayout.Header>
+          <GlobalBackTitle title={t('swap.swap_tokens')} />
+          <GlobalPadding size="2xl" />
+          <GlobalText type="body1" center>
+            {t('swap.not_available_on_network')}
+          </GlobalText>
+          <GlobalPadding />
+          <GlobalText type="body2" center color="tertiary">
+            {t('swap.select_solana_network')}
+          </GlobalText>
+          {solanaNetworks.length > 0 && (
+            <View style={styles.networkSelectorContainer}>
+              <NetworkSelector
+                networks={solanaNetworks}
+                value=""
+                setValue={changeNetwork}
+              />
+            </View>
+          )}
+        </GlobalLayout.Header>
+      </GlobalLayout>
+    );
+  }
 
   return (
     <GlobalLayout>
