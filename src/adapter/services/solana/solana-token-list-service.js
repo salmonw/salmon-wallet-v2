@@ -1,6 +1,7 @@
 const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const { TOKEN_PROGRAM_ID } = require('../../constants/token-constants');
 const http = require('../axios-wrapper').default;
+const { SALMON_API_URL } = require('../../constants/environment');
 
 const TOKEN_LIST_URL_JUP = 'https://cache.jup.ag/tokens';
 
@@ -8,6 +9,7 @@ const TOKEN_LIST_URL_CDN =
   'https://cdn.jsdelivr.net/gh/solana-labs/token-list@latest/src/tokens/solana.tokenlist.json';
 
 let tokenList = [];
+let tokenListSource = null;
 
 // List of known problematic/dead domains that should be skipped
 const DEAD_DOMAINS = [
@@ -79,38 +81,57 @@ const fixIPFSUrl = (url) => {
   return url;
 };
 
-const retrieveTokenList = async () => {
+const retrieveTokenList = async (networkId = 'solana-mainnet') => {
   if (Array.isArray(tokenList) && tokenList.length > 0) {
-    return tokenList;
+    return { tokens: tokenList, source: tokenListSource };
   }
 
-  let response;
-
+  // Try backend first (fastest, with cache)
   try {
-    response = await http.get(TOKEN_LIST_URL_JUP);
+    const response = await http.get(`${SALMON_API_URL}/v1/${networkId}/ft`);
     tokenList = response.data;
+    tokenListSource = 'backend';
+    return { tokens: tokenList, source: tokenListSource };
   } catch (error) {
     console.error(
-      `Cannot retrieve token list from ${TOKEN_LIST_URL_JUP}, using fallback ${TOKEN_LIST_URL_CDN}`,
+      `Cannot retrieve token list from backend, trying Jupiter...`,
     );
-    response = await http.get(TOKEN_LIST_URL_CDN);
-    tokenList = response.data.tokens;
   }
 
-  return tokenList;
+  // Fallback to Jupiter
+  try {
+    const response = await http.get(TOKEN_LIST_URL_JUP);
+    tokenList = response.data;
+    tokenListSource = 'jupiter';
+    return { tokens: tokenList, source: tokenListSource };
+  } catch (error) {
+    console.error(
+      `Cannot retrieve token list from ${TOKEN_LIST_URL_JUP}, using CDN fallback...`,
+    );
+  }
+
+  // Last resort: CDN
+  const response = await http.get(TOKEN_LIST_URL_CDN);
+  tokenList = response.data.tokens;
+  tokenListSource = 'cdn';
+  return { tokens: tokenList, source: tokenListSource };
 };
 
 async function getTokenList() {
-  const allTokens = await retrieveTokenList();
+  const { tokens: allTokens, source } = await retrieveTokenList();
 
+  // Normalize tokens based on source
+  // Backend returns: logo, tags, coingeckoId
+  // Jupiter returns: logoURI, tags, extensions.coingeckoId
+  // CDN returns: logoURI, no tags, no extensions
   const tokens = allTokens.map(token => ({
     symbol: token.symbol,
     name: token.name,
     decimals: token.decimals,
-    logo: fixIPFSUrl(token.logoURI),
+    logo: fixIPFSUrl(source === 'backend' ? token.logo : token.logoURI),
     address: token.address,
     chainId: token.chainId,
-    coingeckoId: token.extensions?.coingeckoId,
+    coingeckoId: source === 'backend' ? token.coingeckoId : token.extensions?.coingeckoId,
     tags: token.tags || [],
   }));
 
