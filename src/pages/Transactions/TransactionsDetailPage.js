@@ -293,8 +293,9 @@ const TransactionDetail = ({
 
   const [{ hiddenBalance }] = useContext(AppContext);
 
-  const mapAmount = (sign, { amount, decimals, symbol, name }) => {
-    const unit = symbol || name || '';
+  const mapAmount = (sign, { amount, decimals, symbol, name, isNft }) => {
+    // Para NFTs, mostrar nombre completo; para tokens, símbolo
+    const unit = isNft ? (name || symbol || '') : (symbol || name || '');
     if (hiddenBalance) {
       return `${hiddenValue} ${unit}`;
     } else {

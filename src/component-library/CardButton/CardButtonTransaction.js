@@ -82,8 +82,9 @@ const CardButtonTransaction = ({ t, transaction, onPress }) => {
 
   let actions;
   if (status === TRANSACTION_STATUS.COMPLETED) {
-    const mapAction = (sign, { amount, decimals, symbol, name }, i) => {
-      const unit = symbol || name || '';
+    const mapAction = (sign, { amount, decimals, symbol, name, isNft }, i) => {
+      // Para NFTs, mostrar nombre completo; para tokens, símbolo
+      const unit = isNft ? (name || symbol || '') : (symbol || name || '');
       let amountUi;
       if (hiddenBalance) {
         amountUi = `${hiddenValue} ${unit}`;
