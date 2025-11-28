@@ -31,6 +31,7 @@ const getSolanaBalance = async (connection, publicKey) => {
     name: SOL_NAME,
     logo: SOL_LOGO,
     address: SOL_ADDRESS,
+    coingeckoId: 'solana',
   };
 };
 
