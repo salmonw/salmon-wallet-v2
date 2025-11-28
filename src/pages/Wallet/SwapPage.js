@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Linking, View } from 'react-native';
+import { StyleSheet, Linking, View, TouchableOpacity } from 'react-native';
 import { BLOCKCHAINS, formatAmount } from '../../adapter';
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';
@@ -398,9 +398,12 @@ const SwapPage = ({ t }) => {
               <>
                 <View style={globalStyles.inlineFlexButtons}>
                   <GlobalText type="body2">{t('swap.you_send')}</GlobalText>
-                  <GlobalText type="body1">
-                    Max. {inToken.uiAmount} {inToken.symbol}
-                  </GlobalText>
+                  <TouchableOpacity
+                    onPress={() => setInAmount(inToken.uiAmount.toString())}>
+                    <GlobalText type="body1">
+                      Max. {inToken.uiAmount} {inToken.symbol}
+                    </GlobalText>
+                  </TouchableOpacity>
                 </View>
 
                 <GlobalPadding size="xs" />
