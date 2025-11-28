@@ -154,19 +154,6 @@ const Header = ({ isHome, t }) => {
         return true;
       });
       setNetworks(filteredNetworks);
-
-      // Si la red actual no está en las redes filtradas, cambiar a solana-mainnet
-      const currentNetworkAvailable = filteredNetworks.some(
-        net => net.id === networkId,
-      );
-      if (!currentNetworkAvailable && filteredNetworks.length > 0) {
-        // Buscar solana-mainnet primero
-        const solanaMainnet = filteredNetworks.find(
-          net => net.id === 'solana-mainnet',
-        );
-        const targetNetwork = solanaMainnet || filteredNetworks[0];
-        changeNetwork(targetNetwork.id);
-      }
     };
 
     load();
@@ -263,7 +250,7 @@ const Header = ({ isHome, t }) => {
         </View>
 
         <View style={styles.walletActions}>
-          {isHome && networks.length > 1 && (
+          {networks.length > 1 && (
             <View style={styles.networkSelector}>
               <NetworkSelector
                 networks={networks}
