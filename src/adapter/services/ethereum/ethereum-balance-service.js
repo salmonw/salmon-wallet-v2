@@ -36,7 +36,9 @@ const getBalance = async (network, address, tokenAddresses) => {
   const prices = await getPrices();
   const balances = await decorateBalancePrices(tokensBalance, prices);
   if (prices) {
-    const sortedBalances = balances.sort((a, b) => a.usdBalance < b.usdBalance);
+    const sortedBalances = balances.sort(
+      (a, b) => (b.usdBalance || 0) - (a.usdBalance || 0),
+    );
     const usdTotal = balances.reduce(
       (currentValue, next) => (next.usdBalance || 0) + currentValue,
       0,

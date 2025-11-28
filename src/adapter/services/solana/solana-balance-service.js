@@ -60,7 +60,13 @@ const getBalance = async (connection, publicKey) => {
     prices,
   );
   if (prices) {
-    const sortedBalances = balances.sort((a, b) => a.usdBalance < b.usdBalance);
+    const sortedBalances = balances.sort((a, b) => {
+      // SOL always first
+      if (a.address === SOL_ADDRESS) return -1;
+      if (b.address === SOL_ADDRESS) return 1;
+      // Then sort by USD balance descending
+      return (b.usdBalance || 0) - (a.usdBalance || 0);
+    });
     const usdTotal = balances.reduce(
       (currentValue, next) => (next.usdBalance || 0) + currentValue,
       0,
