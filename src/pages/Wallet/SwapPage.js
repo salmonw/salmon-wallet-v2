@@ -374,6 +374,7 @@ const SwapPage = ({ t }) => {
 
       trackEvent(EVENTS_MAP.SWAP_COMPLETED);
       setStatus(TRANSACTION_STATUS.SUCCESS);
+      invalidate(CACHE_TYPES.BALANCE);
       setCurrentTransaction(txs[0]);
     } catch (ex) {
       console.error(ex);

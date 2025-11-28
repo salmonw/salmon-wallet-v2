@@ -10,6 +10,7 @@ import { useNavigation, withParams } from '../../routes/hooks';
 import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
 import { withTranslation } from '../../hooks/useTranslations';
 import { getTransactionImage, TRANSACTION_STATUS } from '../../utils/wallet';
+import { CACHE_TYPES, invalidate } from '../../utils/cache';
 import useToken from '../../hooks/useToken';
 
 import theme, { globalStyles } from '../../component-library/Global/theme';
@@ -163,6 +164,7 @@ const TokenSendPage = ({ params, t }) => {
         isBitcoin ? executableTx : txId,
       );
       setStatus(TRANSACTION_STATUS.SUCCESS);
+      invalidate(CACHE_TYPES.BALANCE);
       if (isBitcoin) {
         savePendingTx(txId, token.symbol, recipientAmount);
       }

@@ -66,6 +66,7 @@ const WalletBalanceCard = ({
   actions,
   showBalance,
   onToggleShow,
+  onRefresh,
   t,
 }) => {
   const [showDialog, setShowDialog] = useState(false);
@@ -88,6 +89,14 @@ const WalletBalanceCard = ({
                   icon={showBalance ? IconVisibilityShow : IconVisibilityHidden}
                   onPress={onToggleShow}
                 />
+                {onRefresh && (
+                  <GlobalButton
+                    type="icon"
+                    transparent
+                    icon={IconReset}
+                    onPress={onRefresh}
+                  />
+                )}
               </GlobalText>
             </View>
 
