@@ -27,6 +27,9 @@ const styles = StyleSheet.create({
   buttonMD: {
     minHeight: 32,
   },
+  buttonSM: {
+    minHeight: 24,
+  },
   tabbar: {
     minWidth: 60,
     minHeight: 80,
@@ -176,6 +179,7 @@ const GlobalButton = ({
     ...(wideSmall ? styles.wideSmall : {}),
     ...(outlined ? styles.outlined : {}),
     ...(size === 'medium' ? styles.buttonMD : {}),
+    ...(size === 'small' ? styles.buttonSM : {}),
     ...(type === 'accent' ? styles.accent : {}),
     ...(type === 'primary' ? styles.primary : {}),
     ...(type === 'secondary' ? styles.secondary : {}),
