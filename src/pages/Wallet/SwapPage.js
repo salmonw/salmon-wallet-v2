@@ -398,12 +398,16 @@ const SwapPage = ({ t }) => {
               <>
                 <View style={globalStyles.inlineFlexButtons}>
                   <GlobalText type="body2">{t('swap.you_send')}</GlobalText>
-                  <TouchableOpacity
-                    onPress={() => setInAmount(inToken.uiAmount.toString())}>
-                    <GlobalText type="body1">
-                      Max. {inToken.uiAmount} {inToken.symbol}
-                    </GlobalText>
-                  </TouchableOpacity>
+         
+                  <GlobalButton
+                      type="secondary"                      
+                      size="small"
+                      onPress={() => setInAmount(inToken.uiAmount.toString())}>                      
+                      <GlobalText type="body1">                  
+                        Max                      
+                      </GlobalText>
+                    </GlobalButton>  
+                  
                 </View>
 
                 <GlobalPadding size="xs" />
@@ -435,14 +439,25 @@ const SwapPage = ({ t }) => {
                     </GlobalText>
                   )
                 )}
+
                 <GlobalPadding size="xs" />
 
-                {inTokenWithPrice?.usdPrice && (
-                  <GlobalText type="body1" color="tertiary">
-                    {showValue(inAmount * inTokenWithPrice.usdPrice, 6)}{' '}
-                    {t('general.usd')}
-                  </GlobalText>
-                )}
+                <View style={globalStyles.inlineFlexButtons}>
+                  {inTokenWithPrice?.usdPrice && (
+                    <GlobalText type="body1" color="tertiary">
+                      {showValue(inAmount * inTokenWithPrice.usdPrice, 6)}{' '}
+                      {t('general.usd')}
+                    </GlobalText>                
+                  )}
+
+                  <View style={globalStyles.inline}>                                   
+                    
+                    <GlobalText type="caption" >                  
+                      Available: {inToken.uiAmount} {inToken.symbol}
+                    </GlobalText> 
+                      
+                    </View>
+                  </View>
 
                 <GlobalPadding size="md" />
                 <GlobalText type="body2">{t('swap.you_receive')}</GlobalText>
