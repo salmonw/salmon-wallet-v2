@@ -353,7 +353,9 @@
     "choose_type": "Elige una opción",
     "same_blockchain": "Hacia un token de ésta blockchain",
     "other_blockchain": "Hacia un token de otra blockchain",
-    "minimum_amount": "El monto debe ser mayor a $1 USD"
+    "minimum_amount": "El monto debe ser mayor a $1 USD",
+    "not_available_on_network": "Swap no está disponible en esta red",
+    "select_solana_network": "Selecciona una red de Solana para continuar"
   },
   "bridge": {
     "bridge": "Bridge",
