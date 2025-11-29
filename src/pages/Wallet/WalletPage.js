@@ -38,11 +38,8 @@ const WalletPage = () => {
         }
       }
       if (swapRoute) {
-        if (!switches.swap?.active) {
-          swapRoute.Component = UnavailablePage;
-        } else {
-          swapRoute.Component = SwapPage;
-        }
+        // SwapPage handles non-Solana blockchains internally with a network selector
+        swapRoute.Component = SwapPage;
       }
       if (exchangeRoute) {
         if (!switches.exchange?.active) {

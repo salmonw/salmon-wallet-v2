@@ -36,18 +36,6 @@ const ChangeNetworkPage = ({ t }) => {
       });
       setSwitches(allSwitches);
       setNetworks(filteredNetworks);
-
-      // Si la red actual no está disponible, cambiar a solana-mainnet
-      const currentNetworkAvailable = filteredNetworks.some(
-        net => net.id === networkId,
-      );
-      if (!currentNetworkAvailable && filteredNetworks.length > 0) {
-        const solanaMainnet = filteredNetworks.find(
-          net => net.id === 'solana-mainnet',
-        );
-        const targetNetwork = solanaMainnet || filteredNetworks[0];
-        onSelect(targetNetwork.id);
-      }
     };
 
     load();

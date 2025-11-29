@@ -18,14 +18,6 @@ import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
 
 const styles = StyleSheet.create({
-  header: {
-    marginLeft: theme.gutters.paddingLG + 4,
-  },
-  titleStyle: {
-    marginTop: theme.gutters.paddingNormal,
-    marginLeft: theme.gutters.paddingSM,
-    marginRight: theme.gutters.paddingSM,
-  },
   dateStyle: {
     lineHeight: theme.gutters.padding3XL,
   },
@@ -84,16 +76,11 @@ const TransactionsListPage = ({ t }) => {
   };
 
   return (
-    <>
-      <View style={styles.titleStyle}>
-        <View style={styles.header}>
-          <Header />
-        </View>
+    <GlobalLayout>
+      <GlobalLayout.Header>
+        <Header />
         <GlobalBackTitle title={t('transactions.your_transactions')} />
-      </View>
-      <GlobalLayout>
-        <GlobalLayout.Header>
-          <View>
+        <View>
             {!loaded && <GlobalSkeleton type="ActivityList" />}
             {loaded &&
               transactions.length > 0 &&
@@ -121,10 +108,9 @@ const TransactionsListPage = ({ t }) => {
                 {t('transactions.empty')}
               </GlobalText>
             )}
-          </View>
-        </GlobalLayout.Header>
-      </GlobalLayout>
-    </>
+        </View>
+      </GlobalLayout.Header>
+    </GlobalLayout>
   );
 };
 
