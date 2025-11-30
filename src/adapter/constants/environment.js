@@ -4,14 +4,14 @@ const salmonEnv = process.env.REACT_APP_SALMON_ENV ?? process.env.NODE_ENV;
 
 switch (salmonEnv) {
   case 'production':
-    apiUrl = 'https://surtbtej2d.execute-api.us-east-1.amazonaws.com/prod';
+    apiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
     break;
   case 'development':
     apiUrl = 'https://d1ms6b491qeh6d.cloudfront.net';
     break;
   case 'test':
   case 'local':
-    apiUrl = 'http://localhost:3000/local';
+    apiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
     break;
   case 'main':
     apiUrl = 'https://bo0q5g7ie1.execute-api.us-east-1.amazonaws.com/main';
