@@ -97,6 +97,7 @@ const GlobalInputWithButton = ({
         <View style={styles.secondaryAction}>
           <GlobalButton
             onPress={onActionPress}
+            tabIndex={-1}
             touchableStyles={styles.touchableActionButton}
             transparent>
             {actionIcon === 'qr' && (
