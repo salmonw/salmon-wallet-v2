@@ -1,6 +1,6 @@
 'use strict';
 
-const bs58 = require('bs58');
+const bs58 = require('../bs58-wrapper').default;
 const { Connection, PublicKey } = require('@solana/web3.js');
 const nftService = require('./solana-nft-service');
 const balanceService = require('./solana-balance-service');
