@@ -1,7 +1,7 @@
 'use strict';
 
 const axios = require('./axios-wrapper').default;
-const { SALMON_API_URL } = require('../constants/environment');
+const { SALMON_STATIC_API_URL } = require('../constants/environment');
 
 let promise;
 
@@ -10,7 +10,7 @@ const getNetworks = async () => {
     return promise;
   }
 
-  promise = axios.get(`${SALMON_API_URL}/v1/networks`).then(({ data }) => data);
+  promise = axios.get(`${SALMON_STATIC_API_URL}/v1/networks`).then(({ data }) => data);
 
   try {
     return await promise;
