@@ -1,7 +1,7 @@
 const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const { TOKEN_PROGRAM_ID } = require('../../constants/token-constants');
 const http = require('../axios-wrapper').default;
-const { SALMON_API_URL } = require('../../constants/environment');
+const { SALMON_STATIC_API_URL } = require('../../constants/environment');
 
 const TOKEN_LIST_URL_JUP = 'https://cache.jup.ag/tokens';
 
@@ -88,7 +88,7 @@ const retrieveTokenList = async (networkId = 'solana-mainnet') => {
 
   // Try backend first (fastest, with cache)
   try {
-    const response = await http.get(`${SALMON_API_URL}/v1/${networkId}/ft`);
+    const response = await http.get(`${SALMON_STATIC_API_URL}/v1/${networkId}/ft`);
     tokenList = response.data;
     tokenListSource = 'backend';
     return { tokens: tokenList, source: tokenListSource };
