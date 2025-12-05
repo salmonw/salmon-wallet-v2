@@ -12,8 +12,8 @@ switch (salmonEnv) {
     break;
   case 'test':
   case 'local':
-    staticApiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
-    apiUrl = 'https://surtbtej2d.execute-api.us-east-1.amazonaws.com/prod';
+    staticApiUrl = 'http://localhost:3000/local';
+    apiUrl = 'http://localhost:3000/local';
     break;
   case 'main':
     staticApiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
