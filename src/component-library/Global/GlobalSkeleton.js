@@ -30,6 +30,8 @@ const GlobalSkeleton = ({ type }) => {
       return <DerivedAccounts />;
     case 'Generic':
       return <Generic />;
+    case 'Chart':
+      return <Chart />;
   }
 };
 
@@ -188,6 +190,15 @@ const Generic = () => (
     backgroundColor={theme.colors.bgLight}
     viewBox="0 0 100 200">
     <rect x="0" y="0" width="100" height="200" />
+  </ContentLoader>
+);
+
+const Chart = () => (
+  <ContentLoader
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 50">
+    <rect x="0" y="0" rx="4" ry="4" width="100" height="50" />
   </ContentLoader>
 );
 
