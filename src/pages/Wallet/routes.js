@@ -1,9 +1,6 @@
 import { lazy } from 'react';
 import WalletOverview from './WalletOverviewPage';
-// PRIMEROS AJUSTES - No usado (ruta comentada)
-// import BridgePage from './BridgePage';
-// PRIMEROS AJUSTES - No usado (ruta comentada)
-// import ExchangeSection from './ExchangeSection';
+import BridgePage from './BridgePage';
 
 // Lazy loading de sub-secciones (se cargan solo cuando el usuario navega a ellas)
 const SwapPage = lazy(() => import('./SwapPage'));
@@ -14,6 +11,7 @@ const NftsSection = lazy(() => import('../Nfts'));
 import IconWallet from '../../assets/images/IconWallet.png';
 import IconNFT from '../../assets/images/IconNFT.png';
 import IconSwap from '../../assets/images/IconSwap.png';
+import IconCurrencyExchange from '../../assets/images/IconCurrencyExchange.png';
 import IconBalance from '../../assets/images/IconBalance.png';
 import IconSettings from '../../assets/images/IconSettings.png';
 import { getDefaultRouteKey, getRoutesWithParent } from '../../routes/utils';
@@ -72,16 +70,15 @@ const routes = [
     default: false,
     icon: IconSwap,
   },
-  // EXCHANGE (con Bridge) - Comentado para ocultarlo del footer
-  // {
-  //   key: ROUTES_MAP.WALLET_EXCHANGE,
-  //   name: 'Exchange',
-  //   path: 'exchange',
-  //   route: '/wallet/exchange',
-  //   Component: ExchangeSection,
-  //   default: false,
-  //   icon: IconSwap, // Al tener icon, aparecía en el footer
-  // },
+  {
+    key: ROUTES_MAP.WALLET_EXCHANGE,
+    name: 'Exchange',
+    path: 'exchange',
+    route: '/wallet/exchange',
+    Component: BridgePage,
+    default: false,
+    icon: IconCurrencyExchange,
+  },
   {
     key: ROUTES_MAP.WALLET_TRANSACTIONS,
     name: 'Transactions',
@@ -101,15 +98,14 @@ const routes = [
     default: false,
     icon: IconSettings,
   },
-  // BRIDGE - Comentado
-  // {
-  //   key: ROUTES_MAP.WALLET_BRIDGE,
-  //   name: 'Bridge',
-  //   path: 'bridge',
-  //   route: '/wallet/bridge',
-  //   Component: BridgePage,
-  //   default: false,
-  // },
+  {
+    key: ROUTES_MAP.WALLET_BRIDGE,
+    name: 'Bridge',
+    path: 'bridge',
+    route: '/wallet/bridge',
+    Component: BridgePage,
+    default: false,
+  },
   ...getRoutesWithParent(NFTS_ROUTES, ROUTES_MAP.WALLET_NFTS),
   ...getRoutesWithParent(SETTINGS_ROUTES, ROUTES_MAP.WALLET_SETTINGS),
 ];

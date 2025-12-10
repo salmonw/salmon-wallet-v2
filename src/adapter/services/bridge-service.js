@@ -3,6 +3,20 @@
 const axios = require('./axios-wrapper').default;
 const { SALMON_API_URL } = require('../constants/environment');
 
+// In-memory cache to prevent duplicate requests (especially from React StrictMode)
+const cache = {
+  supported: null,
+  featured: {},
+  available: {},
+  ttl: 5 * 60 * 1000, // 5 minutes
+  timestamps: {},
+};
+
+const isCacheValid = (key) => {
+  const timestamp = cache.timestamps[key];
+  return timestamp && Date.now() - timestamp < cache.ttl;
+};
+
 const getBridgeTransaction = async id => {
   try {
     const config = {

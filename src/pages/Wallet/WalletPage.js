@@ -8,7 +8,7 @@ import routes from './routes';
 import { ROUTES_TYPES } from '../../routes/constants';
 import SwapPage from './SwapPage';
 import NftsSection from '../Nfts';
-import ExchangeSection from './ExchangeSection';
+import BridgePage from './BridgePage';
 import UnavailablePage from './UnavailablePage';
 
 import GlobalTabBarLayout from '../../component-library/Global/GlobalTabBarLayout';
@@ -45,7 +45,7 @@ const WalletPage = () => {
         if (!switches.exchange?.active) {
           exchangeRoute.Component = UnavailablePage;
         } else {
-          exchangeRoute.Component = ExchangeSection;
+          exchangeRoute.Component = BridgePage;
         }
       }
     }

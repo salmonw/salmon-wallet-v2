@@ -15,8 +15,7 @@ import CardButton from '../../component-library/CardButton/CardButton';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalText from '../../component-library/Global/GlobalText';
 import Header from '../../component-library/Layout/Header';
-// PRIMEROS AJUSTES - No usado
-// import IconBridge from '../../assets/images/IconBridge.png';
+import IconBridge from '../../assets/images/IconBridge.png';
 
 const styles = StyleSheet.create({
   cardBtn: {
@@ -64,8 +63,7 @@ const ExchangeSection = ({ t }) => {
           ]}
         />
         <GlobalPadding size="xxs" />
-        {/* BRIDGE OPTION - Comentado temporalmente */}
-        {/* <CardButton
+        <CardButton
           buttonStyle={styles.cardBtn}
           onPress={() => setOptSelected(1)}
           title={t('swap.other_blockchain')}
@@ -73,7 +71,7 @@ const ExchangeSection = ({ t }) => {
           actions={[
             <AvatarImage key="bridge-icon" url={IconBridge} size={30} />,
           ]}
-        /> */}
+        />
       </GlobalLayout.Header>
 
       <GlobalLayout.Footer>

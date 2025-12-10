@@ -137,7 +137,7 @@ const mergeStealthExTokenData = (bsupp, tks, network) => {
     .filter(
       tok =>
         tok.network.split(' ')[0] === network.name.toUpperCase() ||
-        tok.network === 'MAINNET' ||
+        tok.network.toLowerCase() === 'mainnet' ||
         tok.network === smbl ||
         tok.network === smbl.toUpperCase(),
     )
@@ -213,52 +213,46 @@ const BridgePage = ({ t }) => {
 
   useEffect(() => {
     if (activeBlockchainAccount) {
-      invalidate(CACHE_TYPES.BRIDGE_SUPPORTED);
+      const symbol = current_symbol.toLowerCase();
+
+      // Load only active network balance first for faster initial render
+      const activeNetworkBalance = async () => {
+        const network = activeBlockchainAccount.network;
+        const tokens = await activeBlockchainAccount.getBalance();
+        return [{ network, tokens }];
+      };
+
       Promise.all([
-        Object.values(activeAccount.networksAccounts)
-          .filter(accts => accts[0].network.id.includes('mainnet'))
-          .flatMap(async accts => ({
-            network: accts[0].network,
-            tokens: await accts[0].getBalance(),
-          })),
+        activeNetworkBalance(),
         getBridgeSupportedTokens(),
-        getBridgeFeaturedTokens(current_symbol.toLowerCase()),
-        getBridgeAvailableTokens(current_symbol.toLowerCase()),
+        getBridgeFeaturedTokens(symbol),
+        getBridgeAvailableTokens(symbol),
       ])
         .then(([balance, bsupp, ftks, avtks]) => {
-          Promise.all(balance).then(bal => {
-            const tksSupp = bal
-              .map(ntwBlc =>
-                mergeStealthExTokenData(
-                  bsupp,
-                  ntwBlc.tokens.items,
-                  ntwBlc.network,
-                ),
-              )
-              .flat(1);
-            setTokens(tksSupp);
-            setInToken(
-              tksSupp.length
-                ? tksSupp.filter(
-                    tok => tok.symbol === current_symbol.toLowerCase(),
-                  )[0]
-                : null,
-            );
-            setOutToken(ftks.length ? ftks[0] : null);
-            setFeaturedTokens(ftks);
-            setAvailableTokens(avtks);
-            setReady(true);
-          });
+          const tksSupp = balance
+            .map(ntwBlc =>
+              mergeStealthExTokenData(
+                bsupp,
+                ntwBlc.tokens.items,
+                ntwBlc.network,
+              ),
+            )
+            .flat(1);
+          setTokens(tksSupp);
+          setInToken(
+            tksSupp.length
+              ? tksSupp.find(tok => tok.symbol === symbol) || tksSupp[0]
+              : null,
+          );
+          setOutToken(ftks.length ? ftks[0] : null);
+          setFeaturedTokens(ftks);
+          setAvailableTokens(avtks);
+          setReady(true);
         })
-        .catch(e => setProviderError(true));
+        .catch(() => setProviderError(true));
     }
-  }, [
-    activeBlockchainAccount,
-    tokensAddresses,
-    providerError,
-    current_symbol,
-    activeAccount.networksAccounts,
-  ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeBlockchainAccount?.address]);
 
   const [inAmount, setInAmount] = useState(null);
   const [outAmount, setOutAmount] = useState('--');
@@ -467,7 +461,7 @@ const BridgePage = ({ t }) => {
               <Header />
               <GlobalBackTitle title={t('bridge.bridge')} />
               <GlobalPadding />
-              {ready && tokens.length && (
+              {ready && tokens.length && inToken && (
                 <>
                   <View style={globalStyles.inlineFlexButtons}>
                     <GlobalText type="body2">{t('bridge.you_pay')}</GlobalText>
