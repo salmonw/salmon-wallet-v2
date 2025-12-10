@@ -24,6 +24,8 @@ const GlobalSkeleton = ({ type }) => {
       return <TransactionSimulation />;
     case 'Swap':
       return <Swap />;
+    case 'Bridge':
+      return <Bridge />;
     case 'NftSlider':
       return <NftSlider />;
     case 'DerivedAccounts':
@@ -158,6 +160,26 @@ const Swap = () => (
     <rect x="0" y={25} rx="3" ry="3" width="100" height="23" />
     <rect x="0" y={25 * 2} rx="3" ry="3" width="100" height="23" />
     <rect x="0" y={25 * 3} rx="3" ry="3" width="100" height="23" />
+  </ContentLoader>
+);
+
+const Bridge = () => (
+  <ContentLoader
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 130">
+    {/* You Pay label */}
+    <rect x="0" y="0" rx="2" ry="2" width="30" height="8" />
+    {/* Input You Pay */}
+    <rect x="0" y="12" rx="3" ry="3" width="100" height="28" />
+    {/* USD value */}
+    <rect x="0" y="44" rx="2" ry="2" width="40" height="6" />
+    {/* Swap icon placeholder */}
+    <circle cx="50" cy="62" r="8" />
+    {/* You Receive label */}
+    <rect x="0" y="78" rx="2" ry="2" width="40" height="8" />
+    {/* Input You Receive */}
+    <rect x="0" y="90" rx="3" ry="3" width="100" height="28" />
   </ContentLoader>
 );
 

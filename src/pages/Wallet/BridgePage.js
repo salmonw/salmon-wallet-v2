@@ -560,7 +560,7 @@ const BridgePage = ({ t }) => {
                   )}
                 </>
               )}
-              {!ready && <GlobalSkeleton type="Swap" />}
+              {!ready && <GlobalSkeleton type="Bridge" />}
             </GlobalLayout.Header>
 
             <GlobalLayout.Footer>
