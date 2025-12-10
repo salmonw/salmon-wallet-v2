@@ -261,6 +261,9 @@ const BridgePage = ({ t }) => {
 
   useEffect(() => {
     if (activeBlockchainAccount) {
+      // Reset ready state to show skeleton while loading new network data
+      setReady(false);
+
       const symbol = current_symbol.toLowerCase();
 
       // Load only active network balance first for faster initial render
