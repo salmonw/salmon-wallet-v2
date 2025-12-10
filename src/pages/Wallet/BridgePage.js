@@ -143,8 +143,8 @@ const mergeStealthExTokenData = (bsupp, tks, network) => {
     )
     .filter(el => tks?.find(element => isMatch(el, element)))
     .map(el => ({
-      ...tks.find(element => isMatch(el, element)),
       ...el,
+      ...tks.find(element => isMatch(el, element)),
       blockchain: network.blockchain,
     }));
 };
