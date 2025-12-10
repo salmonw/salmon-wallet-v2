@@ -252,7 +252,7 @@ const BridgePage = ({ t }) => {
         .catch(() => setProviderError(true));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeBlockchainAccount?.address]);
+  }, [activeBlockchainAccount?.address, activeBlockchainAccount?.network?.id]);
 
   const [inAmount, setInAmount] = useState(null);
   const [outAmount, setOutAmount] = useState('--');
