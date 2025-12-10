@@ -48,10 +48,9 @@ const styles = StyleSheet.create({
   priceContainer: {
     paddingHorizontal: theme.gutters.paddingNormal,
     marginBottom: theme.gutters.paddingSM,
-    alignItems: 'center',
   },
   currentPrice: {
-    fontSize: theme.fontSize.fontSizeXL,
+    fontSize: theme.fontSize.fontSizeLG,
     fontFamily: theme.fonts.dmSansBold,
     color: theme.colors.labelPrimary,
   },
