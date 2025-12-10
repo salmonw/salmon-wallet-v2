@@ -182,14 +182,13 @@ const InputWithTokenSelector = ({
           </GlobalLayout.Header>
 
           <GlobalLayout.Footer>
-            {tokens.length > MAX_PAG && (
+            {filteredTokens.length > drawedList.length && (
               <>
                 <GlobalButton
                   type="default"
                   wideSmall
                   onPress={onViewMore}
                   title={t('actions.view_more')}
-                  disabled={filteredTokens.length <= drawedList.length}
                 />
                 <GlobalPadding size="xs" />
               </>
