@@ -133,20 +133,38 @@ const mergeStealthExTokenData = (bsupp, tks, network) => {
     tok1.symbol === tok2.symbol.toLowerCase() ||
     tok1.symbol === tok2.symbol.slice(0, 3).concat(smbl).toLowerCase() ||
     tok1.symbol === tok2.symbol.slice(0, 4).concat(smbl).toLowerCase();
-  return bsupp
-    .filter(
-      tok =>
-        tok.network.split(' ')[0] === network.name.toUpperCase() ||
-        tok.network.toLowerCase() === 'mainnet' ||
-        tok.network === smbl ||
-        tok.network === smbl.toUpperCase(),
-    )
-    .filter(el => tks?.find(element => isMatch(el, element)))
-    .map(el => ({
+
+  // Filter supported tokens for this network
+  const networkTokens = bsupp.filter(
+    tok =>
+      tok.network.split(' ')[0] === network.name.toUpperCase() ||
+      tok.network.toLowerCase() === 'mainnet' ||
+      tok.network === smbl ||
+      tok.network === smbl.toUpperCase(),
+  );
+
+  // Merge with balance data, include all supported tokens (even with 0 balance)
+  const merged = networkTokens.map(el => {
+    const balanceToken = tks?.find(element => isMatch(el, element));
+    return {
       ...el,
-      ...tks.find(element => isMatch(el, element)),
+      ...(balanceToken || {}),
+      uiAmount: balanceToken?.uiAmount || 0,
+      usdPrice: balanceToken?.usdPrice || 0,
+      usdBalance: balanceToken?.usdBalance || 0,
       blockchain: network.blockchain,
-    }));
+    };
+  });
+
+  // Sort: tokens with balance > 0 first (by USD value desc), then others alphabetically
+  return merged.sort((a, b) => {
+    if (a.uiAmount > 0 && b.uiAmount === 0) return -1;
+    if (a.uiAmount === 0 && b.uiAmount > 0) return 1;
+    if (a.uiAmount > 0 && b.uiAmount > 0) {
+      return (b.usdBalance || 0) - (a.usdBalance || 0);
+    }
+    return (a.name || '').localeCompare(b.name || '');
+  });
 };
 
 const BridgePage = ({ t }) => {

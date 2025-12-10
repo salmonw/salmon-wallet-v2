@@ -49,6 +49,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  disabledToken: {
+    opacity: 0.4,
+  },
 });
 
 const InputWithTokenSelector = ({
@@ -150,24 +153,30 @@ const InputWithTokenSelector = ({
               </View>
             )}
             <GlobalPadding />
-            {drawedList.map(token => (
-              <CardButton
-                key={token.mint || token.address || token.symbol}
-                onPress={() => onSelect(token)}
-                icon={<GlobalImage url={token.logo} size="md" circle />}
-                title={
-                  token.name || getShortAddress(token.mint || token.address)
-                }
-                description={
-                  token.uiAmount
-                    ? `${hiddenBalance ? hiddenValue : token.uiAmount} ${
-                        token.symbol || ''
-                      }`
-                    : token.symbol
-                }
-                chip={chips && token?.network?.toUpperCase()}
-              />
-            ))}
+            {drawedList.map(token => {
+              const hasBalance = token.uiAmount > 0;
+              const tokenLogo = token.logo || token.image;
+              return (
+                <CardButton
+                  key={token.mint || token.address || token.symbol}
+                  onPress={() => onSelect(token)}
+                  disabled={!hasBalance}
+                  icon={<GlobalImage url={tokenLogo} size="md" circle />}
+                  title={
+                    token.name || getShortAddress(token.mint || token.address)
+                  }
+                  description={
+                    hasBalance
+                      ? `${hiddenBalance ? hiddenValue : token.uiAmount} ${
+                          token.symbol || ''
+                        }`
+                      : token.symbol
+                  }
+                  chip={chips && token?.network?.toUpperCase()}
+                  buttonStyle={!hasBalance && styles.disabledToken}
+                />
+              );
+            })}
           </GlobalLayout.Header>
 
           <GlobalLayout.Footer>

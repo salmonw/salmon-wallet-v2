@@ -146,6 +146,7 @@ const CardButton = ({
   touchableStyles,
   buttonStyle,
   imageStyle,
+  disabled,
   ...props
 }) => {
   const buttonSize = {
@@ -160,6 +161,7 @@ const CardButton = ({
       title={!children ? title : null}
       selected={selected}
       active={active}
+      disabled={disabled}
       onPress={onPress}
       style={[styles.buttonCard, buttonSize, buttonStyle]}
       touchableStyles={[
