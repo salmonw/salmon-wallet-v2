@@ -68,6 +68,7 @@ const InputWithTokenSelector = ({
   featuredTokens,
   chips,
   onChange = () => {},
+  disableZeroBalance = false, // When true, tokens with 0 balance are disabled
   ...props
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -156,11 +157,12 @@ const InputWithTokenSelector = ({
             {drawedList.map(token => {
               const hasBalance = token.uiAmount > 0;
               const tokenLogo = token.logo || token.image;
+              const isDisabled = disableZeroBalance && !hasBalance;
               return (
                 <CardButton
                   key={token.mint || token.address || token.symbol}
                   onPress={() => onSelect(token)}
-                  disabled={!hasBalance}
+                  disabled={isDisabled}
                   icon={<GlobalImage url={tokenLogo} size="md" circle />}
                   title={
                     token.name || getShortAddress(token.mint || token.address)
@@ -173,7 +175,7 @@ const InputWithTokenSelector = ({
                       : token.symbol
                   }
                   chip={chips && token?.network?.toUpperCase()}
-                  buttonStyle={!hasBalance && styles.disabledToken}
+                  buttonStyle={isDisabled && styles.disabledToken}
                 />
               );
             })}

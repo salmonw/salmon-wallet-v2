@@ -473,6 +473,7 @@ const SwapPage = ({ t }) => {
                   onChange={setInToken}
                   invalid={!validAmount && !!inAmount}
                   number
+                  disableZeroBalance
                 />
                 {belowMinimum ? (
                   <GlobalText type="body1" center color="negative">

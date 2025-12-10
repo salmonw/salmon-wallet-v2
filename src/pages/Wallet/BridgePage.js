@@ -24,8 +24,6 @@ import { getMediaRemoteUrl } from '../../utils/media';
 import { showValue } from '../../utils/amount';
 import {
   getBridgeSupportedTokens,
-  getBridgeAvailableTokens,
-  getBridgeFeaturedTokens,
   getBridgeEstimatedAmount,
   getBridgeMinimalAmount,
   createBridgeExchange,
@@ -127,6 +125,44 @@ const GlobalButtonTimer = React.memo(function ({
   );
 });
 
+// Explorer patterns to identify blockchain from address_explorer URL
+const EXPLORER_PATTERNS = {
+  solana: 'solana.com',
+  bitcoin: '/bitcoin/', // Specific to avoid matching bitcoin-cash
+  // ethereum: '/ethereum/', // TODO: Enable when ETH support is ready
+};
+
+// Get tokens for a specific blockchain from StealthEX supported tokens
+const getTokensForBlockchain = (bsupp, blockchain, networkSymbol) => {
+  const explorerPattern = EXPLORER_PATTERNS[blockchain] || '';
+  return bsupp.filter(tok => {
+    const tokNetwork = tok.network?.toLowerCase();
+    if (tokNetwork === networkSymbol) {
+      return true;
+    }
+    if (tokNetwork === 'mainnet' && explorerPattern) {
+      return tok.address_explorer?.toLowerCase().includes(explorerPattern);
+    }
+    return false;
+  });
+};
+
+// Get tokens from OTHER blockchains (for "You Receive" selector)
+const getOtherBlockchainsTokens = (bsupp, currentBlockchain) => {
+  const otherBlockchains = Object.keys(EXPLORER_PATTERNS).filter(
+    b => b !== currentBlockchain,
+  );
+  const tokens = otherBlockchains.flatMap(blockchain => {
+    const networkSymbol = blockchain === 'solana' ? 'sol' : blockchain === 'ethereum' ? 'eth' : 'btc';
+    return getTokensForBlockchain(bsupp, blockchain, networkSymbol).map(tok => ({
+      ...tok,
+      blockchain,
+    }));
+  });
+  // Sort alphabetically by name
+  return tokens.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+};
+
 const mergeStealthExTokenData = (bsupp, tks, network) => {
   const smbl = network.currency.symbol.toLowerCase();
   const isMatch = (tok1, tok2) =>
@@ -135,13 +171,7 @@ const mergeStealthExTokenData = (bsupp, tks, network) => {
     tok1.symbol === tok2.symbol.slice(0, 4).concat(smbl).toLowerCase();
 
   // Filter supported tokens for this network
-  const networkTokens = bsupp.filter(
-    tok =>
-      tok.network.split(' ')[0] === network.name.toUpperCase() ||
-      tok.network.toLowerCase() === 'mainnet' ||
-      tok.network === smbl ||
-      tok.network === smbl.toUpperCase(),
-  );
+  const networkTokens = getTokensForBlockchain(bsupp, network.blockchain, smbl);
 
   // Merge with balance data, include all supported tokens (even with 0 balance)
   const merged = networkTokens.map(el => {
@@ -243,10 +273,11 @@ const BridgePage = ({ t }) => {
       Promise.all([
         activeNetworkBalance(),
         getBridgeSupportedTokens(),
-        getBridgeFeaturedTokens(symbol),
-        getBridgeAvailableTokens(symbol),
       ])
-        .then(([balance, bsupp, ftks, avtks]) => {
+        .then(([balance, bsupp]) => {
+          const currentBlockchain = activeBlockchainAccount.network.blockchain;
+
+          // Tokens for "You Pay" (current network)
           const tksSupp = balance
             .map(ntwBlc =>
               mergeStealthExTokenData(
@@ -256,15 +287,19 @@ const BridgePage = ({ t }) => {
               ),
             )
             .flat(1);
+
+          // Tokens for "You Receive" (other blockchains)
+          const otherTokens = getOtherBlockchainsTokens(bsupp, currentBlockchain);
+
           setTokens(tksSupp);
           setInToken(
             tksSupp.length
               ? tksSupp.find(tok => tok.symbol === symbol) || tksSupp[0]
               : null,
           );
-          setOutToken(ftks.length ? ftks[0] : null);
-          setFeaturedTokens(ftks);
-          setAvailableTokens(avtks);
+          setOutToken(otherTokens.length ? otherTokens[0] : null);
+          setFeaturedTokens(otherTokens.slice(0, 4)); // First 4 as featured
+          setAvailableTokens(otherTokens);
           setReady(true);
         })
         .catch(() => setProviderError(true));
@@ -281,13 +316,8 @@ const BridgePage = ({ t }) => {
 
   const onChangeInToken = token => {
     setInToken(token);
-    Promise.all([
-      getBridgeFeaturedTokens(token.symbol.toLowerCase()),
-      getBridgeAvailableTokens(token.symbol.toLowerCase()),
-    ]).then(([ftks, avtks]) => {
-      setFeaturedTokens(ftks);
-      setAvailableTokens(avtks);
-    });
+    // availableTokens already contains all tokens from other blockchains
+    // No need to fetch again when changing input token
   };
 
   const onRefreshEstimate = () => {
@@ -498,11 +528,12 @@ const BridgePage = ({ t }) => {
                     description={inToken.network || inToken.name}
                     tokens={tokens}
                     hiddenValue={hiddenValue}
-                    image={getMediaRemoteUrl(inToken.logo)}
+                    image={getMediaRemoteUrl(inToken.logo || inToken.image)}
                     onChange={onChangeInToken}
                     invalid={!validAmount && !!inAmount}
                     number
                     chips
+                    disableZeroBalance
                   />
                   {zeroAmount ? (
                     <GlobalText type="body1" center color="negative">
@@ -558,11 +589,13 @@ const BridgePage = ({ t }) => {
                     value={outAmount || '--'}
                     setValue={setOutAmount}
                     title={outToken ? outToken.symbol.toUpperCase() : '--'}
-                    description={outToken.network || outToken.name}
+                    description={outToken?.network || outToken?.name}
                     tokens={availableTokens}
                     featuredTokens={featuredTokens}
                     image={
-                      outToken ? getMediaRemoteUrl(outToken.logo) : undefined
+                      outToken
+                        ? getMediaRemoteUrl(outToken.logo || outToken.image)
+                        : undefined
                     }
                     onChange={setOutToken}
                     disabled
