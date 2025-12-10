@@ -365,7 +365,9 @@
     "recipient_type": "Wallet de destino:",
     "you_pay": "Pagas",
     "own_wallet_alert": "Keep in mind that to see the tokens you will receive, you will have to switch from this {{from}} Wallet to the {{to}} one from the menu.",
-    "other_wallet_alert": "Keep in mind that the tokens you will receive are being sent to a {{to}} Wallet that it’s not configured in Salmon. You will not see the tokens unless you open that wallet."
+    "other_wallet_alert": "Keep in mind that the tokens you will receive are being sent to a {{to}} Wallet that it's not configured in Salmon. You will not see the tokens unless you open that wallet.",
+    "not_available_on_testnet": "Bridge no está disponible en redes de prueba",
+    "select_mainnet_network": "Selecciona una red mainnet para continuar"
   },
   "header": {
     "connected": "Conectado a {{hostname}}",

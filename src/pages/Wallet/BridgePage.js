@@ -3,7 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import debounce from 'lodash/debounce';
 import pick from 'lodash/pick';
 
+import { BLOCKCHAINS, getNetworks, getSwitches } from '../../adapter';
 import { AppContext } from '../../AppProvider';
+import NetworkSelector from './components/NetworkSelector';
 import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
 import { ROUTES_MAP as APP_ROUTES_MAP } from '../../routes/app-routes';
@@ -61,6 +63,10 @@ const styles = StyleSheet.create({
   bigDetailItem: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+  },
+  networkSelectorContainer: {
+    marginTop: theme.gutters.paddingNormal,
+    alignItems: 'center',
   },
 });
 
@@ -232,6 +238,25 @@ const BridgePage = ({ t }) => {
   const { trackEvent } = useAnalyticsEventTracker(SECTIONS_MAP.SWAP);
   const current_blockchain = activeBlockchainAccount.network.blockchain;
   const current_symbol = activeBlockchainAccount.network.currency.symbol;
+
+  // Bridge only works on mainnet networks (Solana mainnet, Bitcoin mainnet)
+  const isMainnet = activeBlockchainAccount?.network?.environment === 'mainnet';
+  const [mainnetNetworks, setMainnetNetworks] = useState([]);
+
+  // Load mainnet networks for the selector when current network is not mainnet
+  useEffect(() => {
+    if (!isMainnet) {
+      Promise.all([getNetworks(), getSwitches()]).then(([allNetworks, switches]) => {
+        const filtered = allNetworks.filter(
+          ({ id, blockchain, environment }) =>
+            environment === 'mainnet' &&
+            (blockchain === BLOCKCHAINS.SOLANA || blockchain === BLOCKCHAINS.BITCOIN) &&
+            switches[id]?.enable,
+        );
+        setMainnetNetworks(filtered);
+      });
+    }
+  }, [isMainnet]);
 
   const tokensAddresses = useMemo(
     () => Object.keys(activeTokens),
@@ -481,6 +506,35 @@ const BridgePage = ({ t }) => {
     });
     storage.setItem(STORAGE_KEYS.PENDING_BRIDGE_TXS, transactions);
   };
+
+  // Show network selector when not on mainnet
+  if (!isMainnet) {
+    return (
+      <GlobalLayout>
+        <GlobalLayout.Header>
+          <Header />
+          <GlobalBackTitle title={t('bridge.bridge')} />
+          <GlobalPadding size="2xl" />
+          <GlobalText type="body1" center>
+            {t('bridge.not_available_on_testnet')}
+          </GlobalText>
+          <GlobalPadding />
+          <GlobalText type="body2" center color="tertiary">
+            {t('bridge.select_mainnet_network')}
+          </GlobalText>
+          {mainnetNetworks.length > 0 && (
+            <View style={styles.networkSelectorContainer}>
+              <NetworkSelector
+                networks={mainnetNetworks}
+                value=""
+                setValue={changeNetwork}
+              />
+            </View>
+          )}
+        </GlobalLayout.Header>
+      </GlobalLayout>
+    );
+  }
 
   return (
     <GlobalLayout>
