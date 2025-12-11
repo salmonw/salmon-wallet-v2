@@ -74,6 +74,7 @@ const WalletOverviewPage = ({ cfgs, t }) => {
   const [chartError, setChartError] = useState(null);
   const [coinInfo, setCoinInfo] = useState(null);
   const allowsImported = switches?.features.import_tokens;
+  const isBitcoin = networkId?.startsWith('bitcoin');
 
   useEffect(() => {
     const loadSwitches = async () => {
@@ -115,8 +116,10 @@ const WalletOverviewPage = ({ cfgs, t }) => {
   }, [networkId, chartDays]);
 
   useEffect(() => {
-    loadChart();
-  }, [loadChart]);
+    if (isBitcoin) {
+      loadChart();
+    }
+  }, [loadChart, isBitcoin]);
 
   const load = useCallback(async () => {
     try {
@@ -248,14 +251,16 @@ const WalletOverviewPage = ({ cfgs, t }) => {
             />
           </GlobalCollapse>
         ) : null}
-        <GlobalChart
-          data={chartData}
-          coinInfo={coinInfo}
-          loading={chartLoading}
-          error={chartError}
-          selectedTimeframe={chartDays}
-          onTimeframeChange={setChartDays}
-        />
+        {isBitcoin && (
+          <GlobalChart
+            data={chartData}
+            coinInfo={coinInfo}
+            loading={chartLoading}
+            error={chartError}
+            selectedTimeframe={chartDays}
+            onTimeframeChange={setChartDays}
+          />
+        )}
         {allowsImported && (
           <ImportTokenModal tokens={availableTokens} onChange={onImport} />
         )}
