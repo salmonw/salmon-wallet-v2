@@ -7,7 +7,6 @@ import GlobalText from './GlobalText';
 import GlobalSkeleton from './GlobalSkeleton';
 
 const TIMEFRAMES = [
-  { label: '1H', days: 1, hours: 1 },
   { label: '1D', days: 1 },
   { label: '1W', days: 7 },
   { label: '1M', days: 30 },
@@ -219,29 +218,18 @@ const GlobalChart = ({
   onTimeframeChange,
   showTimeframes = true,
 }) => {
-  const formatChartData = (prices, timeframe) => {
+  const formatChartData = prices => {
     if (!prices || !Array.isArray(prices) || prices.length === 0) {
       return [];
     }
 
-    let filteredPrices = prices;
-
-    // For 1H timeframe, filter to only last hour of data
-    if (timeframe?.hours === 1) {
-      const oneHourAgo = Date.now() - 60 * 60 * 1000;
-      filteredPrices = prices.filter(([timestamp]) => timestamp >= oneHourAgo);
-    }
-
-    return filteredPrices.map(([timestamp, value]) => ({
+    return prices.map(([timestamp, value]) => ({
       timestamp,
       value,
     }));
   };
 
-  const currentTimeframe = TIMEFRAMES.find(
-    tf => tf.days === selectedTimeframe || tf.label === selectedTimeframe,
-  );
-  const chartData = formatChartData(data?.prices, currentTimeframe);
+  const chartData = formatChartData(data?.prices);
 
   const marketData = coinInfo?.marketData;
   const currentPrice = marketData?.currentPrice;
@@ -364,10 +352,19 @@ const GlobalChart = ({
   if (loading) {
     return (
       <View style={styles.container}>
+        <View style={styles.priceContainer}>
+          <GlobalSkeleton type="ChartPrice" />
+        </View>
         <View style={styles.skeletonContainer}>
           <GlobalSkeleton type="Chart" />
         </View>
         {showTimeframes && renderTimeframeSelector()}
+        <View style={styles.infoSection}>
+          <GlobalSkeleton type="ChartInfo" />
+          <View style={styles.aboutContainer}>
+            <GlobalSkeleton type="ChartAbout" />
+          </View>
+        </View>
       </View>
     );
   }
