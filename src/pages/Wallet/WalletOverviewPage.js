@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { getSwitches } from '../../adapter';
+import { getSwitches, getMarketChart, getCoinInfo } from '../../adapter';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
 
@@ -32,6 +32,7 @@ import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalCollapse from '../../component-library/Global/GlobalCollapse';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalSendReceive from '../../component-library/Global/GlobalSendReceive';
+import GlobalChart from '../../component-library/Global/GlobalChart';
 import WalletBalanceCard from '../../component-library/Global/GlobalBalance';
 import Header from '../../component-library/Layout/Header';
 // PRIMEROS AJUSTES - No usado (componente comentado)
@@ -39,6 +40,20 @@ import Header from '../../component-library/Layout/Header';
 import PendingTxs from './components/PendingTxs';
 import PendingBridgeTxs from './components/PendingBridgeTxs';
 import ImportTokenModal from './components/ImportTokenModal';
+
+const NETWORK_TO_COINGECKO = {
+  'solana-mainnet': 'solana',
+  'solana-devnet': 'solana',
+  'solana-testnet': 'solana',
+  'bitcoin-mainnet': 'bitcoin',
+  'bitcoin-testnet': 'bitcoin',
+  'ethereum-mainnet': 'ethereum',
+  'ethereum-sepolia': 'ethereum',
+  'near-mainnet': 'near',
+  'near-testnet': 'near',
+  'eclipse-mainnet': 'solana',
+  'eclipse-testnet': 'solana',
+};
 
 const WalletOverviewPage = ({ cfgs, t }) => {
   const navigate = useNavigation();
@@ -53,7 +68,14 @@ const WalletOverviewPage = ({ cfgs, t }) => {
   const [availableTokens, setAvailableTokens] = useState([]);
   const [error, setError] = useState(null);
   const [switches, setSwitches] = useState(null);
+  const [chartData, setChartData] = useState(null);
+  const [chartLoading, setChartLoading] = useState(true);
+  const [chartDays, setChartDays] = useState('ytd');
+  const [chartError, setChartError] = useState(null);
+  const [coinInfo, setCoinInfo] = useState(null);
+  const [coinInfoLoading, setCoinInfoLoading] = useState(true);
   const allowsImported = switches?.features.import_tokens;
+  const isBitcoin = networkId?.startsWith('bitcoin');
 
   useEffect(() => {
     const loadSwitches = async () => {
@@ -68,6 +90,54 @@ const WalletOverviewPage = ({ cfgs, t }) => {
 
     loadSwitches();
   }, [networkId]);
+
+  const loadCoinInfo = useCallback(async () => {
+    const coinId = NETWORK_TO_COINGECKO[networkId];
+    if (!coinId) return;
+
+    try {
+      setCoinInfoLoading(true);
+      const infoResponse = await getCoinInfo(coinId);
+      setCoinInfo(infoResponse);
+    } catch (e) {
+      console.log('Coin info error:', e);
+    } finally {
+      setCoinInfoLoading(false);
+    }
+  }, [networkId]);
+
+  const loadChart = useCallback(async () => {
+    const coinId = NETWORK_TO_COINGECKO[networkId];
+    if (!coinId) {
+      setChartError(new Error('Unsupported network'));
+      setChartLoading(false);
+      return;
+    }
+
+    try {
+      setChartLoading(true);
+      setChartError(null);
+      const chartResponse = await getMarketChart(coinId, chartDays);
+      setChartData(chartResponse);
+    } catch (e) {
+      console.log('Chart error:', e);
+      setChartError(e);
+    } finally {
+      setChartLoading(false);
+    }
+  }, [networkId, chartDays]);
+
+  useEffect(() => {
+    if (isBitcoin) {
+      loadCoinInfo();
+    }
+  }, [loadCoinInfo, isBitcoin]);
+
+  useEffect(() => {
+    if (isBitcoin) {
+      loadChart();
+    }
+  }, [loadChart, isBitcoin]);
 
   const load = useCallback(async () => {
     try {
@@ -172,14 +242,23 @@ const WalletOverviewPage = ({ cfgs, t }) => {
         <PendingBridgeTxs />
 
         {!error && (
-          <GlobalCollapse title={t('wallet.my_tokens')} isOpen>
+          networkId?.startsWith('bitcoin') ? (
             <TokenList
               loading={loading}
               tokens={tokenList}
               onDetail={goToTokenDetail}
               hiddenBalance={hiddenBalance}
             />
-          </GlobalCollapse>
+          ) : (
+            <GlobalCollapse title={t('wallet.my_tokens')} isOpen>
+              <TokenList
+                loading={loading}
+                tokens={tokenList}
+                onDetail={goToTokenDetail}
+                hiddenBalance={hiddenBalance}
+              />
+            </GlobalCollapse>
+          )
         )}
         {!error && (loading || nonListedTokenList?.length) ? (
           <GlobalCollapse title={t('wallet.non_listed_tokens')} isOpen>
@@ -190,6 +269,17 @@ const WalletOverviewPage = ({ cfgs, t }) => {
             />
           </GlobalCollapse>
         ) : null}
+        {isBitcoin && (
+          <GlobalChart
+            data={chartData}
+            coinInfo={coinInfo}
+            chartLoading={chartLoading}
+            coinInfoLoading={coinInfoLoading}
+            error={chartError}
+            selectedTimeframe={chartDays}
+            onTimeframeChange={setChartDays}
+          />
+        )}
         {allowsImported && (
           <ImportTokenModal tokens={availableTokens} onChange={onImport} />
         )}

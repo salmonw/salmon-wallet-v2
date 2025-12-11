@@ -20,6 +20,7 @@ const getBitcoinBalance = async (network, publicKey) => {
   return data.map(token => ({
     ...token,
     uiAmount: formatAmount(token.amount, token.decimals),
+    coingeckoId: 'bitcoin',
   }));
 };
 

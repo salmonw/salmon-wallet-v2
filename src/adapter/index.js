@@ -8,7 +8,11 @@ const { getPathIndex } = require('./services/account-service');
 const { getAvatar } = require('./services/avatar-service');
 const { generateMnemonic } = require('./services/seed-service');
 const { getMetadata } = require('./services/dapp-service');
-const { getTopTokensByPlatform } = require('./services/price-service');
+const {
+  getTopTokensByPlatform,
+  getMarketChart,
+  getCoinInfo,
+} = require('./services/price-service');
 const { parseAmount, formatAmount } = require('./services/format');
 const {
   getBridgeSupportedTokens,
@@ -33,6 +37,8 @@ module.exports = {
   generateMnemonic,
   getMetadata,
   getTopTokensByPlatform,
+  getMarketChart,
+  getCoinInfo,
   parseAmount,
   formatAmount,
   getBridgeSupportedTokens,
