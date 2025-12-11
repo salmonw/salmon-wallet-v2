@@ -73,6 +73,7 @@ const WalletOverviewPage = ({ cfgs, t }) => {
   const [chartDays, setChartDays] = useState('ytd');
   const [chartError, setChartError] = useState(null);
   const [coinInfo, setCoinInfo] = useState(null);
+  const [coinInfoLoading, setCoinInfoLoading] = useState(true);
   const allowsImported = switches?.features.import_tokens;
   const isBitcoin = networkId?.startsWith('bitcoin');
 
@@ -90,6 +91,21 @@ const WalletOverviewPage = ({ cfgs, t }) => {
     loadSwitches();
   }, [networkId]);
 
+  const loadCoinInfo = useCallback(async () => {
+    const coinId = NETWORK_TO_COINGECKO[networkId];
+    if (!coinId) return;
+
+    try {
+      setCoinInfoLoading(true);
+      const infoResponse = await getCoinInfo(coinId);
+      setCoinInfo(infoResponse);
+    } catch (e) {
+      console.log('Coin info error:', e);
+    } finally {
+      setCoinInfoLoading(false);
+    }
+  }, [networkId]);
+
   const loadChart = useCallback(async () => {
     const coinId = NETWORK_TO_COINGECKO[networkId];
     if (!coinId) {
@@ -101,12 +117,8 @@ const WalletOverviewPage = ({ cfgs, t }) => {
     try {
       setChartLoading(true);
       setChartError(null);
-      const [chartResponse, infoResponse] = await Promise.all([
-        getMarketChart(coinId, chartDays),
-        getCoinInfo(coinId),
-      ]);
+      const chartResponse = await getMarketChart(coinId, chartDays);
       setChartData(chartResponse);
-      setCoinInfo(infoResponse);
     } catch (e) {
       console.log('Chart error:', e);
       setChartError(e);
@@ -114,6 +126,12 @@ const WalletOverviewPage = ({ cfgs, t }) => {
       setChartLoading(false);
     }
   }, [networkId, chartDays]);
+
+  useEffect(() => {
+    if (isBitcoin) {
+      loadCoinInfo();
+    }
+  }, [loadCoinInfo, isBitcoin]);
 
   useEffect(() => {
     if (isBitcoin) {
@@ -255,7 +273,8 @@ const WalletOverviewPage = ({ cfgs, t }) => {
           <GlobalChart
             data={chartData}
             coinInfo={coinInfo}
-            loading={chartLoading}
+            chartLoading={chartLoading}
+            coinInfoLoading={coinInfoLoading}
             error={chartError}
             selectedTimeframe={chartDays}
             onTimeframeChange={setChartDays}

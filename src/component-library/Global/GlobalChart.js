@@ -212,7 +212,8 @@ const CustomTooltip = ({ active, payload }) => {
 const GlobalChart = ({
   data,
   coinInfo,
-  loading,
+  chartLoading,
+  coinInfoLoading,
   error,
   selectedTimeframe,
   onTimeframeChange,
@@ -243,6 +244,14 @@ const GlobalChart = ({
     : theme.colors.negativeBright;
 
   const renderPriceHeader = () => {
+    if (coinInfoLoading) {
+      return (
+        <View style={styles.priceContainer}>
+          <GlobalSkeleton type="ChartPrice" />
+        </View>
+      );
+    }
+
     if (!coinInfo) return null;
 
     return (
@@ -308,6 +317,17 @@ const GlobalChart = ({
   );
 
   const renderInfoSection = () => {
+    if (coinInfoLoading) {
+      return (
+        <View style={styles.infoSection}>
+          <GlobalSkeleton type="ChartInfo" />
+          <View style={styles.aboutContainer}>
+            <GlobalSkeleton type="ChartAbout" />
+          </View>
+        </View>
+      );
+    }
+
     if (!coinInfo) return null;
 
     const infoItems = [
@@ -349,37 +369,20 @@ const GlobalChart = ({
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.priceContainer}>
-          <GlobalSkeleton type="ChartPrice" />
-        </View>
+  const renderChart = () => {
+    if (chartLoading) {
+      return (
         <View style={styles.skeletonContainer}>
           <GlobalSkeleton type="Chart" />
         </View>
-        {showTimeframes && renderTimeframeSelector()}
-        <View style={styles.infoSection}>
-          <GlobalSkeleton type="ChartInfo" />
-          <View style={styles.aboutContainer}>
-            <GlobalSkeleton type="ChartAbout" />
-          </View>
-        </View>
-      </View>
-    );
-  }
+      );
+    }
 
-  if (error || !chartData.length) {
-    return null;
-  }
+    if (error || !chartData.length) {
+      return null;
+    }
 
-  const screenWidth = Dimensions.get('window').width;
-  const chartWidth = Math.min(screenWidth, 500);
-  const chartHeight = 200;
-
-  return (
-    <View style={styles.container}>
-      {renderPriceHeader()}
+    return (
       <View style={styles.chartContainer}>
         <LineChart
           width={chartWidth}
@@ -399,6 +402,17 @@ const GlobalChart = ({
           />
         </LineChart>
       </View>
+    );
+  };
+
+  const screenWidth = Dimensions.get('window').width;
+  const chartWidth = Math.min(screenWidth, 500);
+  const chartHeight = 200;
+
+  return (
+    <View style={styles.container}>
+      {renderPriceHeader()}
+      {renderChart()}
       {showTimeframes && renderTimeframeSelector()}
       {renderInfoSection()}
     </View>
