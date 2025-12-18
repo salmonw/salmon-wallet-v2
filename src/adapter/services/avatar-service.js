@@ -1,6 +1,6 @@
 'use strict';
 
-const getAvatar = index => `http://static.salmonwallet.io/avatar/${index}.png`;
+const getAvatar = index => `https://static.salmonwallet.io/avatar/${index}.png`;
 
 const getRandomAvatar = () => {
   const rnd = Math.floor(Math.random() * 24) + 1;
