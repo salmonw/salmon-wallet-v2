@@ -30,6 +30,14 @@ const GlobalSkeleton = ({ type }) => {
       return <DerivedAccounts />;
     case 'Generic':
       return <Generic />;
+    case 'Chart':
+      return <Chart />;
+    case 'ChartPrice':
+      return <ChartPrice />;
+    case 'ChartInfo':
+      return <ChartInfo />;
+    case 'ChartAbout':
+      return <ChartAbout />;
   }
 };
 
@@ -189,6 +197,57 @@ const Generic = () => (
     backgroundColor={theme.colors.bgLight}
     viewBox="0 0 100 200">
     <rect x="0" y="0" width="100" height="200" />
+  </ContentLoader>
+);
+
+const Chart = () => (
+  <ContentLoader
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 50">
+    <rect x="0" y="0" rx="4" ry="4" width="100" height="50" />
+  </ContentLoader>
+);
+
+const ChartPrice = () => (
+  <ContentLoader
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 28">
+    {/* Main price */}
+    <rect x="0" y="0" rx="3" ry="3" width="45" height="12" />
+    {/* Price change amount */}
+    <rect x="0" y="16" rx="2" ry="2" width="25" height="8" />
+    {/* Percentage badge */}
+    <rect x="28" y="16" rx="4" ry="4" width="18" height="8" />
+  </ContentLoader>
+);
+
+const ChartInfo = () => (
+  <ContentLoader
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 120">
+    {/* Title "Info" */}
+    <rect x="0" y="0" rx="2" ry="2" width="20" height="8" />
+    {/* Card container with rows */}
+    <rect x="0" y="12" rx="4" ry="4" width="100" height="108" />
+  </ContentLoader>
+);
+
+const ChartAbout = () => (
+  <ContentLoader
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 70">
+    {/* Title "About" */}
+    <rect x="0" y="0" rx="2" ry="2" width="25" height="8" />
+    {/* Description lines */}
+    <rect x="0" y="14" rx="2" ry="2" width="100" height="6" />
+    <rect x="0" y="24" rx="2" ry="2" width="100" height="6" />
+    <rect x="0" y="34" rx="2" ry="2" width="100" height="6" />
+    <rect x="0" y="44" rx="2" ry="2" width="100" height="6" />
+    <rect x="0" y="54" rx="2" ry="2" width="75" height="6" />
   </ContentLoader>
 );
 
