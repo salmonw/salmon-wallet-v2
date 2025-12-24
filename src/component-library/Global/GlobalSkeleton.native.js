@@ -217,11 +217,21 @@ const Swap = () => (
   <ContentLoader
     foregroundColor={theme.colors.cards}
     backgroundColor={theme.colors.bgLight}
-    viewBox="0 0 100 100">
-    <Rect x="0" y="0" rx="3" ry="3" width="100" height="23" />
-    <Rect x="0" y="25" rx="3" ry="3" width="100" height="23" />
-    <Rect x="0" y="50" rx="3" ry="3" width="100" height="23" />
-    <Rect x="0" y="75" rx="3" ry="3" width="100" height="23" />
+    viewBox="0 0 100 85">
+    {/* "You Send" label + Max button */}
+    <Rect x="0" y="0" rx="2" ry="2" width="25" height="5" />
+    <Rect x="88" y="0" rx="2" ry="2" width="12" height="5" />
+    {/* Input field with token selector */}
+    <Rect x="0" y="8" rx="4" ry="4" width="100" height="16" />
+    {/* USD value + Available balance */}
+    <Rect x="0" y="27" rx="2" ry="2" width="30" height="4" />
+    <Rect x="60" y="27" rx="2" ry="2" width="40" height="4" />
+    {/* "You Receive" label */}
+    <Rect x="0" y="38" rx="2" ry="2" width="30" height="5" />
+    {/* Output input field with token selector */}
+    <Rect x="0" y="46" rx="4" ry="4" width="100" height="16" />
+    {/* USD value */}
+    <Rect x="0" y="65" rx="2" ry="2" width="30" height="4" />
   </ContentLoader>
 );
 
