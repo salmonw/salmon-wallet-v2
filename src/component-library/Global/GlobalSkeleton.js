@@ -12,6 +12,8 @@ const GlobalSkeleton = ({ type }) => {
       return <NftList />;
     case 'NftListScreen':
       return <NftListScreen />;
+    case 'NftItem':
+      return <NftItem />;
     case 'ActivityList':
       return <ActivityList />;
     case 'Balance':
@@ -24,8 +26,6 @@ const GlobalSkeleton = ({ type }) => {
       return <TransactionSimulation />;
     case 'Swap':
       return <Swap />;
-    case 'NftSlider':
-      return <NftSlider />;
     case 'DerivedAccounts':
       return <DerivedAccounts />;
     case 'Generic':
@@ -80,17 +80,44 @@ const NftList = () => (
 
 const NftListScreen = () => (
   <ContentLoader
+    width="100%"
+    height={420}
     foregroundColor={theme.colors.cards}
     backgroundColor={theme.colors.bgLight}
-    viewBox="0 0 100 200">
-    {/* TODO: Reactivar cuando se migre el servicio de listing (Hyperspace deprecado) */}
-    {/* <rect x="0" y="25" rx="5" ry="5" width="100" height="70" /> */}
-    <rect x="0" y="25" rx="5" ry="5" width="48" height="48" />
-    <rect x="52" y="25" rx="5" ry="5" width="48" height="48" />
-    <rect x="0" y={43 * 2 + 80} rx="5" ry="5" width="48" height="48" />
-    <rect x="52" y={43 * 2 + 80} rx="5" ry="5" width="48" height="48" />
-    <rect x="0" y={47 * 3 + 80} rx="5" ry="5" width="48" height="48" />
-    <rect x="52" y={47 * 3 + 80} rx="5" ry="5" width="48" height="48" />
+    viewBox="0 0 100 112">
+    {/* NFT GRID (2 columns) - using percentages in viewBox */}
+    {/* NFT 1 - Image (48% width, left side) */}
+    <rect x="1" y="2" rx="5" ry="5" width="48" height="44" />
+    {/* NFT 1 - Name container */}
+    <rect x="1" y="38" rx="5" ry="5" width="48" height="13" />
+
+    {/* NFT 2 - Image (48% width, right side) */}
+    <rect x="51" y="2" rx="5" ry="5" width="48" height="44" />
+    {/* NFT 2 - Name container */}
+    <rect x="51" y="38" rx="5" ry="5" width="48" height="13" />
+
+    {/* NFT 3 - Image */}
+    <rect x="1" y="57" rx="5" ry="5" width="48" height="44" />
+    {/* NFT 3 - Name container */}
+    <rect x="1" y="93" rx="5" ry="5" width="48" height="13" />
+
+    {/* NFT 4 - Image */}
+    <rect x="51" y="57" rx="5" ry="5" width="48" height="44" />
+    {/* NFT 4 - Name container */}
+    <rect x="51" y="93" rx="5" ry="5" width="48" height="13" />
+  </ContentLoader>
+);
+
+const NftItem = () => (
+  <ContentLoader
+    width="100%"
+    foregroundColor={theme.colors.cards}
+    backgroundColor={theme.colors.bgLight}
+    viewBox="0 0 100 120">
+    {/* NFT Image - square with borderRadius */}
+    <rect x="0" y="0" rx="10" ry="10" width="100" height="100" />
+    {/* NFT Name container - overlaps image slightly */}
+    <rect x="0" y="85" rx="10" ry="10" width="100" height="35" />
   </ContentLoader>
 );
 
@@ -124,13 +151,22 @@ const NftDetail = () => (
   <ContentLoader
     foregroundColor={theme.colors.cards}
     backgroundColor={theme.colors.bgLight}
-    viewBox="0 0 100 200">
-    <rect x="25" y="18" rx="3" ry="3" width="50" height="10" />
-    <rect x="20" y="34" rx="6" ry="6" width="60" height="60" />
-    <rect x="1" y="140" rx="3" ry="3" width="98" height="16" />
-    <rect x="1" y="160" rx="3" ry="3" width="98" height="10" />
-    <rect x="1" y="180" rx="3" ry="3" width="48" height="14" />
-    <rect x="51" y="180" rx="3" ry="3" width="48" height="14" />
+    viewBox="0 0 100 280">
+    {/* NFT Title (headline2) */}
+    <rect x="25" y="5" rx="3" ry="3" width="50" height="10" />
+    {/* NFT Image (large squircle) */}
+    <rect x="15" y="22" rx="8" ry="8" width="70" height="70" />
+    {/* Input field for address/price */}
+    <rect x="5" y="102" rx="4" ry="4" width="90" height="18" />
+    {/* Info row 1 */}
+    <rect x="5" y="128" rx="4" ry="4" width="90" height="14" />
+    {/* Info row 2 */}
+    <rect x="5" y="148" rx="4" ry="4" width="90" height="14" />
+    {/* Info row 3 (fee) */}
+    <rect x="5" y="168" rx="4" ry="4" width="90" height="14" />
+    {/* Buttons */}
+    <rect x="5" y="195" rx="6" ry="6" width="42" height="16" />
+    <rect x="53" y="195" rx="6" ry="6" width="42" height="16" />
   </ContentLoader>
 );
 
@@ -138,13 +174,31 @@ const TransactionDetail = () => (
   <ContentLoader
     foregroundColor={theme.colors.cards}
     backgroundColor={theme.colors.bgLight}
-    viewBox="0 0 100 143">
-    <rect x="20" y="105" rx="1" ry="1" width="61" height="12" />
-    <rect x="5" y="85" rx="1" ry="1" width="90" height="10" />
-    <circle cx="50" cy="27" r="16" />
-    <rect x="20" y="120" rx="1" ry="1" width="61" height="12" />
-    <rect x="5" y="59" rx="1" ry="1" width="90" height="10" />
-    <rect x="5" y="72" rx="1" ry="1" width="90" height="10" />
+    viewBox="0 0 100 260">
+    {/* IconsBanner - Main circle */}
+    <circle cx="50" cy="25" r="18" />
+    {/* IconsBanner - Status badge (floating) */}
+    <circle cx="62" cy="38" r="6" />
+    {/* Amount line 1 (headline2) */}
+    <rect x="20" y="52" rx="3" ry="3" width="60" height="10" />
+    {/* Amount line 2 (if swap) */}
+    <rect x="25" y="66" rx="3" ry="3" width="50" height="8" />
+    {/* Info row - Date */}
+    <rect x="5" y="85" rx="4" ry="4" width="90" height="12" />
+    {/* Info row - Type */}
+    <rect x="5" y="102" rx="4" ry="4" width="90" height="12" />
+    {/* Info row - ID */}
+    <rect x="5" y="119" rx="4" ry="4" width="90" height="12" />
+    {/* Info row - Status */}
+    <rect x="5" y="136" rx="4" ry="4" width="90" height="12" />
+    {/* Info row - From/To */}
+    <rect x="5" y="153" rx="4" ry="4" width="90" height="12" />
+    {/* Info row - Fee */}
+    <rect x="5" y="170" rx="4" ry="4" width="90" height="12" />
+    {/* Button - Explorer */}
+    <rect x="15" y="200" rx="6" ry="6" width="70" height="14" />
+    {/* Button - Back */}
+    <rect x="15" y="220" rx="6" ry="6" width="70" height="14" />
   </ContentLoader>
 );
 
@@ -167,15 +221,6 @@ const Swap = () => (
     <rect x="0" y={25} rx="3" ry="3" width="100" height="23" />
     <rect x="0" y={25 * 2} rx="3" ry="3" width="100" height="23" />
     <rect x="0" y={25 * 3} rx="3" ry="3" width="100" height="23" />
-  </ContentLoader>
-);
-
-const NftSlider = () => (
-  <ContentLoader
-    foregroundColor={theme.colors.cards}
-    backgroundColor={theme.colors.bgLight}
-    viewBox="0 0 100 90">
-    <rect x="0" y="0" rx="6" ry="6" width="100" height="80" />
   </ContentLoader>
 );
 
