@@ -1,4 +1,5 @@
 let apiUrl;
+let staticApiUrl;
 
 const salmonEnv = process.env.REACT_APP_SALMON_ENV ?? process.env.NODE_ENV;
 
@@ -8,6 +9,7 @@ switch (salmonEnv) {
     apiUrl = 'https://surtbtej2d.execute-api.us-east-1.amazonaws.com/prod';
     break;
   case 'development':
+    staticApiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
     apiUrl = 'https://d1ms6b491qeh6d.cloudfront.net';
     break;
   case 'test':

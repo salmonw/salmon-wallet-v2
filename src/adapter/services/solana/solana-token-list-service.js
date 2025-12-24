@@ -92,10 +92,8 @@ const retrieveTokenList = async (networkId = 'solana-mainnet') => {
     tokenList = response.data;
     tokenListSource = 'backend';
     return { tokens: tokenList, source: tokenListSource };
-  } catch (error) {
-    console.error(
-      `Cannot retrieve token list from backend, trying Jupiter...`,
-    );
+  } catch {
+    console.warn('Token list: backend unavailable, trying Jupiter...');
   }
 
   // Fallback to Jupiter
@@ -104,10 +102,8 @@ const retrieveTokenList = async (networkId = 'solana-mainnet') => {
     tokenList = response.data;
     tokenListSource = 'jupiter';
     return { tokens: tokenList, source: tokenListSource };
-  } catch (error) {
-    console.error(
-      `Cannot retrieve token list from ${TOKEN_LIST_URL_JUP}, using CDN fallback...`,
-    );
+  } catch {
+    console.warn('Token list: Jupiter unavailable, using CDN fallback...');
   }
 
   // Last resort: CDN
