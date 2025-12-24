@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { getSwitches } from '../../adapter';
+import { getSwitches, getMarketChart, getCoinInfo } from '../../adapter';
 import get from 'lodash-es/get';
 
 import { AppContext } from '../../AppProvider';
@@ -23,7 +23,7 @@ import {
 
 import IconInfo from '../../assets/images/IconInfo.png';
 
-import TransactionsListComponent from '../Transactions/TransactionsListComponent';
+import GlobalChart from '../../component-library/Global/GlobalChart';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
@@ -44,6 +44,14 @@ const TokenDetailPage = ({ params, t }) => {
     { toggleHideBalance },
   ] = useContext(AppContext);
   const [switches, setSwitches] = useState(null);
+
+  // Chart and coin info states
+  const [chartData, setChartData] = useState(null);
+  const [chartLoading, setChartLoading] = useState(true);
+  const [chartDays, setChartDays] = useState('ytd');
+  const [chartError, setChartError] = useState(null);
+  const [coinInfo, setCoinInfo] = useState(null);
+  const [coinInfoLoading, setCoinInfoLoading] = useState(true);
 
   useEffect(() => {
     getSwitches().then(allSwitches =>
@@ -71,6 +79,55 @@ const TokenDetailPage = ({ params, t }) => {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Load coin info when token has coingeckoId
+  const loadCoinInfo = useCallback(async () => {
+    const coinId = token.coingeckoId;
+    if (!coinId) {
+      setCoinInfoLoading(false);
+      return;
+    }
+
+    try {
+      setCoinInfoLoading(true);
+      const infoResponse = await getCoinInfo(coinId);
+      setCoinInfo(infoResponse);
+    } catch (e) {
+      console.log('Coin info error:', e);
+    } finally {
+      setCoinInfoLoading(false);
+    }
+  }, [token.coingeckoId]);
+
+  // Load chart data when token has coingeckoId
+  const loadChart = useCallback(async () => {
+    const coinId = token.coingeckoId;
+    if (!coinId) {
+      setChartLoading(false);
+      setChartError(new Error('No coingeckoId available'));
+      return;
+    }
+
+    try {
+      setChartLoading(true);
+      setChartError(null);
+      const chartResponse = await getMarketChart(coinId, chartDays);
+      setChartData(chartResponse);
+    } catch (e) {
+      console.log('Chart error:', e);
+      setChartError(e);
+    } finally {
+      setChartLoading(false);
+    }
+  }, [token.coingeckoId, chartDays]);
+
+  // Load chart and coin info when token changes
+  useEffect(() => {
+    if (token.coingeckoId) {
+      loadCoinInfo();
+      loadChart();
+    }
+  }, [token.coingeckoId, loadCoinInfo, loadChart]);
 
   const goToBack = () => {
     navigate(APP_ROUTES_MAP.WALLET);
@@ -148,7 +205,19 @@ const TokenDetailPage = ({ params, t }) => {
           </View>
         )}
         <GlobalPadding size="lg" />
-        <TransactionsListComponent t={t} />
+
+        {/* Chart and Info Section - only show if token has coingeckoId */}
+        {token.coingeckoId && (
+          <GlobalChart
+            data={chartData}
+            coinInfo={coinInfo}
+            chartLoading={chartLoading}
+            coinInfoLoading={coinInfoLoading}
+            error={chartError}
+            selectedTimeframe={chartDays}
+            onTimeframeChange={setChartDays}
+          />
+        )}
       </GlobalLayout.Header>
     </GlobalLayout>
   );
