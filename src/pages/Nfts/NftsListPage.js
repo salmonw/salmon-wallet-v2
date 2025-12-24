@@ -13,6 +13,7 @@ import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalText from '../../component-library/Global/GlobalText';
 import Header from '../../component-library/Layout/Header';
+import Grid from '../../component-library/Grid/Grid';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
@@ -62,23 +63,31 @@ const NftsListPage = ({ t }) => {
   return (
     <>
       <GlobalLayout>
-        {loaded && (
-          <GlobalLayout.Header>
-            <Header />
-            <View>
-              <GlobalText center type="headline2">
-                {t(`wallet.nfts`)}
-              </GlobalText>
-              <GlobalText type="headline3">{t(`wallet.my_nfts`)}</GlobalText>
-            </View>
+        <GlobalLayout.Header>
+          <Header />
+          <View>
+            <GlobalText center type="headline2">
+              {t(`wallet.nfts`)}
+            </GlobalText>
+            <GlobalText type="headline3">{t(`wallet.my_nfts`)}</GlobalText>
+          </View>
+          {!loaded && (
+            <Grid
+              spacing={1}
+              columns={2}
+              items={[1, 2, 3, 4].map(i => (
+                <GlobalSkeleton key={i} type="NftItem" />
+              ))}
+            />
+          )}
+          {loaded && (
             <GlobalNftList
               nonFungibleTokens={nftsGroup}
               listedInfo={listedInfo}
               onClick={onClick}
             />
-          </GlobalLayout.Header>
-        )}
-        {!loaded && <GlobalSkeleton type="NftListScreen" />}
+          )}
+        </GlobalLayout.Header>
       </GlobalLayout>
     </>
   );
