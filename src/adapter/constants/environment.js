@@ -1,4 +1,5 @@
 let apiUrl;
+let staticApiUrl;
 
 const salmonEnv = process.env.REACT_APP_SALMON_ENV ?? process.env.NODE_ENV;
 

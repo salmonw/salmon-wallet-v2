@@ -1,29 +1,13 @@
 'use strict';
 
-const { UrlJsonRpcProvider } = require('@ethersproject/providers');
+const { JsonRpcProvider, Network } = require('ethers');
 const { SALMON_API_URL } = require('../../constants/environment');
 
-const NETWORKS = {};
-
-class EthereumSalmonProvider extends UrlJsonRpcProvider {
+class EthereumSalmonProvider extends JsonRpcProvider {
   constructor(network) {
-    NETWORKS[network.environment] = network;
-    super(network.environment);
-  }
-
-  isCommunityResource() {
-    return true;
-  }
-
-  static getUrl(network) {
-    const environment = network.name === 'homestead' ? 'mainnet' : network.name;
-
-    const networkId = NETWORKS[environment].id;
-
-    return {
-      allowGzip: true,
-      url: `${SALMON_API_URL}/v1/${networkId}/rpc`,
-    };
+    const url = `${SALMON_API_URL}/v1/${network.id}/rpc`;
+    const staticNetwork = Network.from(network.chainId);
+    super(url, staticNetwork, { staticNetwork });
   }
 }
 

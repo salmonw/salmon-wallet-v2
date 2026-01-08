@@ -47,7 +47,7 @@ const estimateGas = async (connection, network, to, token, amount, opts) => {
     const { standard } = opts;
     if (standard === 'ERC721') {
       const { contract, from } = await buildERC721Transfer(connection, opts);
-      return contract.estimateGas['safeTransferFrom(address,address,uint256)'](
+      return contract['safeTransferFrom(address,address,uint256)'].estimateGas(
         from,
         to,
         token,
@@ -58,7 +58,7 @@ const estimateGas = async (connection, network, to, token, amount, opts) => {
         connection,
         opts,
       );
-      return contract.estimateGas.safeTransferFrom(
+      return contract.safeTransferFrom.estimateGas(
         from,
         to,
         token,
@@ -74,13 +74,13 @@ const estimateGas = async (connection, network, to, token, amount, opts) => {
     amount,
     opts,
   );
-  return contract.estimateGas.transfer(to, value);
+  return contract.transfer.estimateGas(to, value);
 };
 
 const estimateFee = async (connection, network, to, token, amount, opts) => {
   const gas = await estimateGas(connection, network, to, token, amount, opts);
   const { maxFeePerGas } = await connection.provider.getFeeData();
-  return maxFeePerGas.mul(gas);
+  return maxFeePerGas * gas;
 };
 
 const createTransaction = async (
