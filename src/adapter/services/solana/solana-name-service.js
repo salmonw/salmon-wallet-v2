@@ -1,18 +1,25 @@
-const { TldParser } = require('@onsol/tldparser');
+const {
+  resolve,
+  getFavoriteDomain,
+} = require('@bonfida/spl-name-service');
 
 const getDomainName = async (connection, publicKey) => {
-  const parser = new TldParser(connection);
-  const mainDomain = await parser.getMainDomain(publicKey);
-  return mainDomain.domain + mainDomain.tld;
+  const favorite = await getFavoriteDomain(connection, publicKey);
+  if (!favorite?.domain) {
+    throw Error('No favorite domain found for this public key.');
+  }
+  return favorite.domain + '.sol';
 };
 
 const getPublicKey = async (connection, domain) => {
-  const parser = new TldParser(connection);
-  const owner = await parser.getOwnerFromDomainTld(domain);
+  const domainName = domain.endsWith('.sol')
+    ? domain.slice(0, -4)
+    : domain;
+  const owner = await resolve(connection, domainName);
   if (!owner) {
     throw Error('Owner not found for this domain.');
   }
-  return owner.toString();
+  return owner.toBase58();
 };
 
 module.exports = {
