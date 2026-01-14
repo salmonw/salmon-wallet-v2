@@ -5,6 +5,7 @@
   "license": "GPL-3.0-only",
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.2.0",
+    "@bonfida/spl-name-service": "^3.0.16",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.5",
