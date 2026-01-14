@@ -364,8 +364,8 @@ const useAccounts = () => {
           if (data?.whitelisted) {
             setWhitelisted(true);
           }
-        } catch (e) {
-          console.log(e);
+        } catch {
+          // Silently handle - not all accounts are whitelisted
         }
       }
     };
