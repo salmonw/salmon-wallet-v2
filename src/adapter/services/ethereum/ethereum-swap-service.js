@@ -75,7 +75,7 @@ const quote = async (connection, inToken, outToken, amount, slippage) => {
     const { maxFeePerGas } = await connection.provider.getFeeData();
 
     const fee = {
-      amount: maxFeePerGas.mul(gas),
+      amount: maxFeePerGas * gas,
       symbol: ethToken.symbol,
       decimals: ethToken.decimals,
     };
@@ -104,12 +104,12 @@ const quote = async (connection, inToken, outToken, amount, slippage) => {
 
     const value = parseAmount(amount, wEthToken.decimals);
 
-    const approvalTransaction = await contract.populateTransaction.approve(
+    const approvalTransaction = await contract.approve.populateTransaction(
       wEthAddress,
       value,
     );
 
-    const transaction = await contract.populateTransaction.withdraw(value);
+    const transaction = await contract.withdraw.populateTransaction(value);
 
     const gas =
       (await connection.provider.estimateGas(approvalTransaction)) +
@@ -118,7 +118,7 @@ const quote = async (connection, inToken, outToken, amount, slippage) => {
     const { maxFeePerGas } = await connection.provider.getFeeData();
 
     const fee = {
-      amount: maxFeePerGas.mul(gas),
+      amount: maxFeePerGas * gas,
       symbol: ethToken.symbol,
       decimals: ethToken.decimals,
     };
