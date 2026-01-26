@@ -339,3 +339,13 @@ jobs:
 
       - name: Upload bundle into S3
         run: yarn upload:bundle
+
+      - name: Invalidate CloudFront cache
+        continue-on-error: true
+        run: |
+          echo "Invalidating CloudFront distribution cache..."
+          aws cloudfront create-invalidation \
+            --distribution-id E394LJ6ODNZB5T \
+            --paths "/*" \
+            && echo "CloudFront cache invalidation initiated successfully" \
+            || echo "Warning: CloudFront cache invalidation failed, but deployment was successful"
