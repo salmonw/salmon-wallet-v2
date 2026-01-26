@@ -22,18 +22,4 @@ custom:
 # Note: ReactAppBucket and CloudFrontDistribution are managed outside CloudFormation
 # The bucket salmon-wallet-app-prod and CloudFront E2NZ6X31C2VZEL already exist
 # This config only syncs files to the existing bucket
-
-resources:
-  Resources:
-    S3AccessPolicy:
-      Type: AWS::S3::BucketPolicy
-      Properties:
-        Bucket: ${self:custom.bucketName}
-        PolicyDocument:
-          Statement:
-            - Sid: PublicReadGetObject
-              Effect: Allow
-              Principal: '*'
-              Action:
-                - s3:GetObject
-              Resource: arn:aws:s3:::${self:custom.bucketName}/*
+# Bucket permissions should be configured manually in AWS Console
