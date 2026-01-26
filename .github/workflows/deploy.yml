@@ -65,23 +65,37 @@ jobs:
               
               echo "Failed resources: $FAILED_RESOURCES"
               
-              # Try to manually delete bucket policies
-              BUCKET_POLICIES=$(echo "$FAILED_RESOURCES" | grep -i "BucketPolicy" || echo "")
-              if [ -n "$BUCKET_POLICIES" ]; then
-                echo "Attempting to delete bucket policies manually..."
-                # Get the bucket name from resources
-                BUCKET_NAME=$(aws cloudformation describe-stack-resources \
-                  --stack-name $STACK_NAME \
-                  --region us-east-1 \
-                  --query 'StackResources[?LogicalResourceId==`ServerlessDeploymentBucket`].PhysicalResourceId' \
-                  --output text 2>/dev/null || echo "")
-                
-                if [ -n "$BUCKET_NAME" ]; then
-                  echo "Deleting bucket policy from bucket: $BUCKET_NAME"
-                  aws s3api delete-bucket-policy --bucket "$BUCKET_NAME" --region us-east-1 2>/dev/null || echo "Could not delete bucket policy (may not exist)"
-                fi
+              # Get the ServerlessDeploymentBucket name
+              BUCKET_NAME=$(aws cloudformation describe-stack-resources \
+                --stack-name $STACK_NAME \
+                --region us-east-1 \
+                --query 'StackResources[?LogicalResourceId==`ServerlessDeploymentBucket`].PhysicalResourceId' \
+                --output text 2>/dev/null || echo "")
+
+              if [ -n "$BUCKET_NAME" ]; then
+                echo "Found ServerlessDeploymentBucket: $BUCKET_NAME"
+
+                # Delete bucket policy first
+                echo "Deleting bucket policy..."
+                aws s3api delete-bucket-policy --bucket "$BUCKET_NAME" --region us-east-1 2>/dev/null || echo "Could not delete bucket policy (may not exist)"
+
+                # Empty the bucket (this is the key step that was missing!)
+                echo "Emptying bucket contents..."
+                aws s3 rm "s3://$BUCKET_NAME" --recursive --region us-east-1 2>/dev/null || echo "Could not empty bucket (may already be empty)"
+
+                # Handle versioned objects if bucket has versioning
+                echo "Removing any versioned objects..."
+                aws s3api list-object-versions --bucket "$BUCKET_NAME" --region us-east-1 --output json 2>/dev/null | \
+                  jq -r '.Versions[]?, .DeleteMarkers[]? | "--key \"\(.Key)\" --version-id \"\(.VersionId)\""' 2>/dev/null | \
+                  while read -r args; do
+                    if [ -n "$args" ]; then
+                      eval aws s3api delete-object --bucket "$BUCKET_NAME" --region us-east-1 $args 2>/dev/null || true
+                    fi
+                  done || echo "No versioned objects to delete"
+
+                echo "Bucket cleanup completed"
               fi
-              
+
               # Now try to continue stack deletion
               echo "Retrying stack deletion..."
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
@@ -236,20 +250,22 @@ jobs:
               --output text 2>/dev/null || echo "0")
             
             echo "Stack status: $STATUS, Resources: $RESOURCE_COUNT"
-            
-            # If stack has no resources or is in a state that could cause this error, delete it
-            if [ "$RESOURCE_COUNT" == "0" ] || \
-               [[ "$STATUS" == "CREATE_COMPLETE" ]] || \
-               [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
-              echo "Stack exists but may be in inconsistent state. Deleting for fresh deployment..."
+
+            # If stack is in a healthy state (CREATE_COMPLETE or UPDATE_COMPLETE), just retry deploy
+            if [[ "$STATUS" == "CREATE_COMPLETE" ]] || [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
+              echo "Stack is in healthy state ($STATUS). Retrying deployment (will update existing stack)..."
+              yarn serverless:deploy --verbose
+            # If stack has no resources, delete it and retry
+            elif [ "$RESOURCE_COUNT" == "0" ]; then
+              echo "Stack exists but has no resources. Deleting for fresh deployment..."
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
               echo "Waiting for stack deletion..."
               aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Stack deletion in progress"
-              
+
               echo "Retrying deployment after stack cleanup..."
               yarn serverless:deploy --verbose
             else
-              echo "Stack has resources. Manual intervention may be needed."
+              echo "Stack is in state $STATUS with $RESOURCE_COUNT resources. Manual intervention may be needed."
             fi
           else
             echo "Stack does not exist. Deploy should have worked."
