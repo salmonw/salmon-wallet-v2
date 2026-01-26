@@ -1,7 +1,7 @@
 const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const { TOKEN_PROGRAM_ID } = require('../../constants/token-constants');
 const http = require('../axios-wrapper').default;
-const { SALMON_STATIC_API_URL } = require('../../constants/environment');
+const { SALMON_STATIC_API_URL, SALMON_API_URL } = require('../../constants/environment');
 
 const TOKEN_LIST_URL_JUP = 'https://cache.jup.ag/tokens';
 
@@ -10,6 +10,8 @@ const TOKEN_LIST_URL_CDN =
 
 let tokenList = [];
 let tokenListSource = null;
+
+const BATCH_CHUNK_SIZE = 100;
 
 // List of known problematic/dead domains that should be skipped
 const DEAD_DOMAINS = [
@@ -88,7 +90,7 @@ const retrieveTokenList = async (networkId = 'solana-mainnet') => {
 
   // Try backend first (fastest, with cache)
   try {
-    const response = await http.get(`${SALMON_STATIC_API_URL}/v1/${networkId}/ft`);
+    const response = await http.get(`${SALMON_API_URL}/v1/${networkId}/ft/verified`);
     tokenList = response.data;
     tokenListSource = 'backend';
     return { tokens: tokenList, source: tokenListSource };
@@ -192,36 +194,193 @@ async function getTokensByOwner(connection, publicKey) {
   });
 }
 
-async function getTokenBySymbol(symbol) {
-  const tokens = await getTokenList();
-  return tokens.filter(t => t.symbol == symbol);
+async function getFeaturedTokenList(networkId = 'solana-mainnet') {
+  try {
+    const response = await http.get(
+      `${SALMON_API_URL}/v1/${networkId}/ft/top?interval=24h&limit=5`
+    );
+
+    if (response.data && Array.isArray(response.data)) {
+      return response.data.map(token => ({
+        symbol: token.symbol,
+        name: token.name,
+        decimals: token.decimals,
+        logo: fixIPFSUrl(token.logo || token.icon),
+        address: token.address || token.id,
+        coingeckoId: token.coingeckoId || null,
+        tags: token.tags || [],
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.log('Failed to get featured tokens from backend:', error.message);
+    return [];
+  }
 }
 
-async function getTokenByAddress(address) {
-  const tokens = await getTokenList();
-  return tokens.filter(t => t.address == address);
+/**
+ * Fetch token metadata only for specific mint addresses
+ * Uses the batch endpoint which is more efficient than fetching all tokens
+ *
+ * @param {string[]} mintAddresses - Array of mint addresses to fetch metadata for
+ * @param {string} networkId - Network identifier (default: 'solana-mainnet')
+ * @returns {Promise<Array>} Array of normalized token metadata
+ */
+async function getTokenMetadataByMints(mintAddresses, networkId = 'solana-mainnet') {
+  if (!mintAddresses || mintAddresses.length === 0) {
+    return [];
+  }
+
+  // Remove duplicates
+  const uniqueMints = [...new Set(mintAddresses)];
+
+  // Split into chunks if more than BATCH_CHUNK_SIZE mints
+  const chunks = [];
+  for (let i = 0; i < uniqueMints.length; i += BATCH_CHUNK_SIZE) {
+    chunks.push(uniqueMints.slice(i, i + BATCH_CHUNK_SIZE));
+  }
+
+  let allTokens = [];
+
+  for (const chunk of chunks) {
+    const mintsParam = chunk.join(',');
+
+    // Try backend batch endpoint first
+    try {
+      const response = await http.get(
+        `${SALMON_STATIC_API_URL}/v1/${networkId}/ft/batch?mints=${mintsParam}`
+      );
+      const tokens = response.data.map(token => ({
+        symbol: token.symbol,
+        name: token.name,
+        decimals: token.decimals,
+        logo: fixIPFSUrl(token.logo),
+        address: token.address,
+        chainId: token.chainId,
+        coingeckoId: token.coingeckoId,
+        tags: token.tags || [],
+      }));
+      allTokens = allTokens.concat(tokens);
+    } catch {
+      console.warn('Token batch: backend unavailable, trying Jupiter fallback...');
+
+      // Fallback: fetch from Jupiter and filter locally
+      try {
+        const response = await http.get(TOKEN_LIST_URL_JUP);
+        const jupiterTokens = response.data;
+        const chunkSet = new Set(chunk);
+        const filteredTokens = jupiterTokens
+          .filter(token => chunkSet.has(token.address))
+          .map(token => ({
+            symbol: token.symbol,
+            name: token.name,
+            decimals: token.decimals,
+            logo: fixIPFSUrl(token.logoURI),
+            address: token.address,
+            chainId: token.chainId,
+            coingeckoId: token.extensions?.coingeckoId,
+            tags: token.tags || [],
+          }));
+        allTokens = allTokens.concat(filteredTokens);
+      } catch {
+        console.warn('Token batch: Jupiter fallback also failed for chunk');
+        // Continue with next chunk, some tokens may not have metadata
+      }
+    }
+  }
+
+  return allTokens;
 }
 
-async function getFeaturedTokenList() {
-  const tokens = await getTokenList();
-  const featuredList = [
-    { symbol: 'SOL', name: 'Wrapped SOL' },
-    { symbol: 'USDC', name: 'USD Coin' },
-    { symbol: 'SRM', name: 'Serum' },
-    { symbol: 'FIDA', name: 'Bonfida' },
-    { symbol: 'RAY', name: 'Raydium' },
-  ];
-  return tokens.filter(
-    t =>
-      featuredList.some(el => el.symbol === t.symbol && el.name === t.name) &&
-      t.chainId === 101,
-  );
+/**
+ * Get verified tokens from backend
+ * Uses the verified endpoint which returns a curated list instead of the full 71MB list
+ *
+ * @param {string} networkId - Network identifier (default: 'solana-mainnet')
+ * @returns {Promise<Array>} Array of verified token metadata
+ */
+async function getVerifiedTokens(networkId = 'solana-mainnet') {
+  try {
+    // Try backend verified endpoint first
+    const response = await http.get(`${SALMON_API_URL}/v1/${networkId}/ft/verified`);
+    const tokens = response.data.map(token => ({
+      symbol: token.symbol,
+      name: token.name,
+      decimals: token.decimals,
+      logo: fixIPFSUrl(token.logo),
+      address: token.address,
+      chainId: token.chainId,
+      coingeckoId: token.coingeckoId,
+      tags: token.tags || [],
+    }));
+    return tokens;
+  } catch (error) {
+    console.warn('Verified tokens: backend unavailable, using fallback...');
+
+    // Fallback: use featured tokens or filter from main list
+    try {
+      const featuredList = await getFeaturedTokenList();
+      return featuredList;
+    } catch {
+      console.warn('Verified tokens: fallback failed, returning empty list');
+      return [];
+    }
+  }
+}
+
+/**
+ * Search tokens by query string
+ * Searches token name, symbol, or address
+ *
+ * @param {string} query - Search query (name, symbol, or address)
+ * @param {string} networkId - Network identifier (default: 'solana-mainnet')
+ * @returns {Promise<Array>} Array of matching token metadata
+ */
+async function searchTokens(query, networkId = 'solana-mainnet') {
+  if (!query || query.length < 3) {
+    return [];
+  }
+
+  try {
+    // Try backend search endpoint first
+    const response = await http.get(
+      `${SALMON_API_URL}/v1/${networkId}/ft/search?query=${encodeURIComponent(query)}`
+    );
+    const tokens = response.data.map(token => ({
+      symbol: token.symbol,
+      name: token.name,
+      decimals: token.decimals,
+      logo: fixIPFSUrl(token.logo),
+      address: token.address,
+      chainId: token.chainId,
+      coingeckoId: token.coingeckoId,
+      tags: token.tags || [],
+    }));
+    return tokens;
+  } catch (error) {
+    console.warn('Token search: backend unavailable, using local search...');
+
+    // Fallback: search locally in full token list
+    try {
+      const allTokens = await getTokenList();
+      const lowerQuery = query.toLowerCase();
+      return allTokens.filter(token =>
+        token.name?.toLowerCase().includes(lowerQuery) ||
+        token.symbol?.toLowerCase().includes(lowerQuery) ||
+        token.address?.toLowerCase().includes(lowerQuery)
+      ).slice(0, 50); // Limit results to avoid performance issues
+    } catch {
+      console.warn('Token search: local search failed');
+      return [];
+    }
+  }
 }
 
 module.exports = {
   getTokenList,
   getTokensByOwner,
-  getTokenBySymbol,
-  getTokenByAddress,
   getFeaturedTokenList,
+  getTokenMetadataByMints,
+  getVerifiedTokens,
+  searchTokens,
 };

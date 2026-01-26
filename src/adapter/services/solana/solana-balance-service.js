@@ -5,7 +5,7 @@ const {
 } = require('../token-decorator');
 const {
   getTokensByOwner,
-  getTokenList,
+  getTokenMetadataByMints,
 } = require('./solana-token-list-service');
 const {
   SOL_DECIMALS,
@@ -36,10 +36,18 @@ const getSolanaBalance = async (connection, publicKey) => {
 };
 
 const getTokensBalance = async (connection, publicKey) => {
+  // 1. Get tokens owned by user
   const ownerTokens = await getTokensByOwner(connection, publicKey);
   const notEmptyTokens = ownerTokens.filter(t => t.amount && t.amount > 0);
-  const tokens = await getTokenList();
-  return decorateBalanceList(notEmptyTokens, tokens);
+
+  // 2. Extract mint addresses from user's tokens
+  const mintAddresses = notEmptyTokens.map(t => t.mint);
+
+  // 3. Fetch metadata only for those specific mints (efficient batch call)
+  const tokenMetadata = await getTokenMetadataByMints(mintAddresses);
+
+  // 4. Decorate balance with metadata
+  return decorateBalanceList(notEmptyTokens, tokenMetadata);
 };
 
 const getPrices = async () => {

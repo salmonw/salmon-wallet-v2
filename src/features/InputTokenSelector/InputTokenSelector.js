@@ -12,6 +12,7 @@ import GlobalInput from '../../component-library/Global/GlobalInput';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalInputWithButton from '../../component-library/Global/GlobalInputWithButton';
 import GlobalButton from '../../component-library/Global/GlobalButton';
+import GlobalText from '../../component-library/Global/GlobalText';
 import theme from '../../component-library/Global/theme';
 import { getShortAddress } from '../../utils/wallet';
 import { isNative } from '../../utils/platform';
@@ -65,30 +66,72 @@ const InputWithTokenSelector = ({
   featuredTokens,
   chips,
   onChange = () => {},
+  onSearch,
+  showVerifiedDisclaimer = false,
   ...props
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [searchToken, setSearchToken] = useState('');
   const [drawedList, setDrawedList] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Local filtering for tokens with balance (user's tokens)
   const filteredTokens = useMemo(
     () => getFilterItems(tokens, searchToken),
     [tokens, searchToken],
   );
+
+  // Async search handler with debouncing
   useEffect(() => {
-    if (filteredTokens.length > MAX_PAG) {
-      setDrawedList(filteredTokens.slice(0, MAX_PAG));
-    } else {
-      setDrawedList(filteredTokens);
+    if (!onSearch || searchToken.length < 3) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
     }
-  }, [filteredTokens]);
+
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await onSearch(searchToken);
+        setSearchResults(results || []);
+      } catch (error) {
+        console.warn('Token search failed:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchToken, onSearch]);
+
+  // Determine which list to show: search results or filtered tokens
+  const displayTokens = useMemo(() => {
+    if (searchToken.length >= 3 && onSearch) {
+      return searchResults;
+    }
+    return filteredTokens;
+  }, [searchToken, searchResults, filteredTokens, onSearch]);
+
+  useEffect(() => {
+    if (displayTokens.length > MAX_PAG) {
+      setDrawedList(displayTokens.slice(0, MAX_PAG));
+    } else {
+      setDrawedList(displayTokens);
+    }
+  }, [displayTokens]);
+
   const onSelect = token => {
     onChange(token);
     setIsVisible(false);
+    setSearchToken(''); // Reset search when closing
   };
+
   const onViewMore = () => {
     setDrawedList([
       ...drawedList,
-      ...filteredTokens.slice(drawedList.length, drawedList.length + MAX_PAG),
+      ...displayTokens.slice(drawedList.length, drawedList.length + MAX_PAG),
     ]);
   };
   return (
@@ -137,7 +180,23 @@ const InputWithTokenSelector = ({
               setValue={setSearchToken}
             />
             <GlobalPadding />
-            {featuredTokens && (
+            {showVerifiedDisclaimer && searchToken.length < 3 && (
+              <>
+                <GlobalText type="caption" color="tertiary" center>
+                  {t('swap.showing_verified_tokens')}
+                </GlobalText>
+                <GlobalPadding size="xs" />
+              </>
+            )}
+            {isSearching && (
+              <>
+                <GlobalText type="body2" color="tertiary" center>
+                  {t('actions.searching')}
+                </GlobalText>
+                <GlobalPadding />
+              </>
+            )}
+            {featuredTokens && searchToken.length < 3 && (
               <View style={styles.featuredTokensContainer}>
                 {featuredTokens?.map(token => (
                   <TouchableOpacity
@@ -171,14 +230,14 @@ const InputWithTokenSelector = ({
           </GlobalLayout.Header>
 
           <GlobalLayout.Footer>
-            {tokens.length > MAX_PAG && (
+            {displayTokens.length > MAX_PAG && (
               <>
                 <GlobalButton
                   type="default"
                   wideSmall
                   onPress={onViewMore}
                   title={t('actions.view_more')}
-                  disabled={filteredTokens.length <= drawedList.length}
+                  disabled={displayTokens.length <= drawedList.length}
                 />
                 <GlobalPadding size="xs" />
               </>

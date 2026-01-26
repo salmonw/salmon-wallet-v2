@@ -316,11 +316,17 @@ class SolanaAccount {
 
 
   async getAvailableTokens() {
-    return tokenListService.getTokenList();
+    // Return verified tokens instead of full list (71MB)
+    return tokenListService.getVerifiedTokens(this.network.id);
   }
 
   async getFeaturedTokens() {
-    return tokenListService.getFeaturedTokenList();
+    return tokenListService.getFeaturedTokenList(this.network.id);
+  }
+
+  async searchTokens(query) {
+    // Search tokens by query string
+    return tokenListService.searchTokens(query, this.network.id);
   }
 
   async calculateTransferFee(mint, amount) {

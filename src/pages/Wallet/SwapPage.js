@@ -523,6 +523,8 @@ const SwapPage = ({ t }) => {
                     outToken ? getMediaRemoteUrl(outToken.logo) : undefined
                   }
                   onChange={setOutToken}
+                  onSearch={(query) => activeBlockchainAccount.searchTokens(query)}
+                  showVerifiedDisclaimer={true}
                   disabled
                 />
 

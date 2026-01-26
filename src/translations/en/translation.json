@@ -52,7 +52,8 @@
     "continue": "Continue",
     "follow_us": "Follow us",
     "bridge": "Bridge",
-    "retry": "Retry"
+    "retry": "Retry",
+    "searching": "Searching..."
   },
   "settings": {
     "title": "Settings",
@@ -374,7 +375,8 @@
     "other_blockchain": "To a token on other blockchain",
     "minimum_amount": "The amount must be greater than $1 USD",
     "not_available_on_network": "Swap is not available on this network",
-    "select_solana_network": "Select a Solana network to continue"
+    "select_solana_network": "Select a Solana network to continue",
+    "showing_verified_tokens": "Showing verified tokens. Search to find other tokens."
   },
   "bridge": {
     "preview": "Bridge Preview",
