@@ -86,7 +86,7 @@ jobs:
               echo "Retrying stack deletion..."
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
               echo "Waiting for stack deletion..."
-              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress"
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Stack deletion may still be in progress"
             fi
             
             # Delete all failed/pending change sets
@@ -119,7 +119,7 @@ jobs:
                 echo "Stack is in problematic state ($STATUS), deleting..."
                 aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
                 echo "Waiting for stack deletion (this may take a few minutes)..."
-                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion may still be in progress, continuing..."
+                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Stack deletion may still be in progress, continuing..."
               fi
             elif [[ "$STATUS" == "CREATE_COMPLETE" ]] || [[ "$STATUS" == "UPDATE_COMPLETE" ]]; then
               echo "Stack exists and is complete. Checking resources..."
@@ -133,14 +133,14 @@ jobs:
               if [ "$RESOURCE_COUNT" == "0" ] || [ -z "$RESOURCE_COUNT" ]; then
                 echo "Stack exists but has no resources. Deleting for fresh deployment..."
                 aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
-                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion in progress"
+                aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Stack deletion in progress"
               else
                 echo "Stack has $RESOURCE_COUNT resources. Will attempt to update."
               fi
             else
               echo "Stack is in state: $STATUS - deleting to allow fresh deployment"
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
-              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 60 || echo "Stack deletion in progress"
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Stack deletion in progress"
             fi
           else
             echo "Stack does not exist"
@@ -193,7 +193,7 @@ jobs:
             
             if [[ "$STATUS" == "DELETE_IN_PROGRESS" ]]; then
               echo "Stack deletion in progress, waiting for completion..."
-              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 90 || echo "Still deleting or timeout"
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Still deleting or timeout"
             fi
           else
             echo "Stack does not exist, ready for fresh deployment"
@@ -244,7 +244,7 @@ jobs:
               echo "Stack exists but may be in inconsistent state. Deleting for fresh deployment..."
               aws cloudformation delete-stack --stack-name $STACK_NAME --region us-east-1
               echo "Waiting for stack deletion..."
-              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 --max-attempts 90 || echo "Stack deletion in progress"
+              aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region us-east-1 || echo "Stack deletion in progress"
               
               echo "Retrying deployment after stack cleanup..."
               yarn serverless:deploy --verbose
