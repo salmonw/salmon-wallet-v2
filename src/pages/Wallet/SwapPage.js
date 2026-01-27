@@ -229,7 +229,7 @@ const SwapPage = ({ t }) => {
 
   useEffect(() => {
     if (activeBlockchainAccount && isSolana) {
-      invalidate(CACHE_TYPES.AVAILABLE_TOKENS);
+      // invalidate removido - el cache se maneja automáticamente
       Promise.all([
         activeBlockchainAccount.getBalance(tokensAddresses),
         activeBlockchainAccount.getAvailableTokens(),
