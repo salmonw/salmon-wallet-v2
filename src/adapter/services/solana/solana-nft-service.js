@@ -9,12 +9,160 @@ const TransactionError = require('../../errors/TransactionError');
 const { ME_PROGRAM_ID } = require('../../constants/token-constants');
 const { SALMON_API_URL } = require('../../constants/environment');
 
+/**
+ * Transforms Helius DAS API asset to the format expected by the wallet
+ * @param {object} asset - The Helius DAS API asset
+ * @param {string} owner - The owner's public key
+ * @returns {object} - Transformed NFT object
+ */
+const transformDasAsset = (asset, owner) => {
+  const metadata = asset.content?.metadata || {};
+  const links = asset.content?.links || {};
+  const files = asset.content?.files || [];
+  const collection = asset.grouping?.find(g => g.group_key === 'collection');
+
+  return {
+    mint: { address: asset.id },
+    owner,
+    name: metadata.name || '',
+    symbol: metadata.symbol || '',
+    uri: asset.content?.json_uri || '',
+    json: metadata,
+    updateAuthorityAddress:
+      asset.authorities?.find(a => a.scopes?.includes('full'))?.address || null,
+    sellerFeeBasisPoints: asset.royalty?.basis_points || 0,
+    creators: asset.creators || [],
+    collection: collection
+      ? { key: collection.group_value, verified: true }
+      : null,
+    edition:
+      asset.supply?.edition_nonce != null
+        ? { isOriginal: asset.supply.edition_nonce === 0 }
+        : null,
+    tokenStandard: asset.interface || null,
+    image: links.image || files[0]?.uri || null,
+    compressed: asset.compression?.compressed || false,
+  };
+};
+
+/**
+ * Fetches NFTs directly from Helius DAS API, bypassing the backend
+ * This is used when the backend endpoint fails due to IP restrictions
+ * @param {object} network - The network configuration object
+ * @param {string} publicKey - The owner's public key
+ * @param {object} options - Pagination options (limit, offset)
+ * @returns {Promise<object>} - NFTs with pagination info
+ */
+const getAllFromHeliusDirect = async (network, publicKey, options = {}) => {
+  const { nodeUrl } = network.config;
+
+  const limit = Math.min(Math.max(1, parseInt(options.limit, 10) || 50), 100);
+  const offset = Math.max(0, parseInt(options.offset, 10) || 0);
+
+  console.log(
+    `[getAllFromHeliusDirect] Fetching NFTs directly from Helius for: ${publicKey} (limit: ${limit}, offset: ${offset})`,
+  );
+
+  try {
+    const response = await axios.post(
+      nodeUrl,
+      {
+        jsonrpc: '2.0',
+        id: 'get-nfts-by-owner',
+        method: 'getAssetsByOwner',
+        params: {
+          ownerAddress: publicKey,
+          page: 1,
+          limit: 1000, // Fetch all NFTs, then paginate locally
+          displayOptions: {
+            showFungible: false,
+            showNativeBalance: false,
+          },
+        },
+      },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 30000,
+      },
+    );
+
+    const assets = response.data?.result?.items || [];
+    console.log(
+      `[getAllFromHeliusDirect] Helius DAS API returned ${assets.length} assets for: ${publicKey}`,
+    );
+
+    const allNfts = assets.map(asset => transformDasAsset(asset, publicKey));
+    const total = allNfts.length;
+    const paginatedNfts = allNfts.slice(offset, offset + limit);
+    const hasMore = offset + limit < total;
+
+    return {
+      data: paginatedNfts,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore,
+        nextOffset: hasMore ? offset + limit : null,
+      },
+    };
+  } catch (error) {
+    console.error(
+      `[getAllFromHeliusDirect] Helius DAS API error: ${error.message}`,
+    );
+    throw error;
+  }
+};
+
+/**
+ * Fetches all NFTs for a given public key
+ * Tries the backend endpoint first, falls back to direct Helius API call if it fails
+ * @param {object} network - The network configuration object
+ * @param {string} publicKey - The owner's public key
+ * @param {boolean} noCache - Whether to bypass cache
+ * @returns {Promise<Array>} - Array of NFTs
+ */
 const getAll = async (network, publicKey, noCache = false) => {
   const params = { publicKey, noCache };
-  const { data } = await axios.get(`${SALMON_API_URL}/v1/${network.id}/nft`, {
-    params,
-  });
-  return data;
+
+  try {
+    const { data } = await axios.get(`${SALMON_API_URL}/v1/${network.id}/nft`, {
+      params,
+      timeout: 15000, // 15 second timeout for backend
+    });
+    return data;
+  } catch (error) {
+    const status = error.response?.status;
+    const isNetworkError = !error.response;
+    const shouldFallback =
+      status === 401 ||
+      status === 403 ||
+      status === 500 ||
+      status === 502 ||
+      status === 503 ||
+      isNetworkError ||
+      error.code === 'ECONNABORTED';
+
+    if (shouldFallback) {
+      console.warn(
+        `[getAll] Backend NFT endpoint failed (status: ${status || 'network error'}), falling back to direct Helius API call`,
+      );
+
+      try {
+        const result = await getAllFromHeliusDirect(network, publicKey);
+        // Return just the data array to match the original backend response format
+        return result.data;
+      } catch (heliusError) {
+        console.error(
+          `[getAll] Direct Helius API call also failed: ${heliusError.message}`,
+        );
+        throw heliusError;
+      }
+    }
+
+    // For other errors (e.g., 400 Bad Request), throw the original error
+    throw error;
+  }
 };
 
 const getAllGroupedByCollection = async (network, owner) => {
