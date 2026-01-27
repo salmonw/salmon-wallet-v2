@@ -174,29 +174,7 @@ jobs:
           fi
 
       - name: Ensure app bucket exists
-        run: |
-          BUCKET_NAME="salmon-wallet-app-prod"
-          echo "Checking if app bucket exists..."
-          if aws s3api head-bucket --bucket $BUCKET_NAME --region us-east-1 2>/dev/null; then
-            echo "Bucket $BUCKET_NAME already exists"
-          else
-            echo "Bucket $BUCKET_NAME does not exist, creating..."
-            aws s3api create-bucket --bucket $BUCKET_NAME --region us-east-1
-            aws s3api put-public-access-block \
-              --bucket $BUCKET_NAME \
-              --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
-            aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{
-              "Version": "2012-10-17",
-              "Statement": [{
-                "Sid": "PublicReadGetObject",
-                "Effect": "Allow",
-                "Principal": "*",
-                "Action": "s3:GetObject",
-                "Resource": "arn:aws:s3:::'"$BUCKET_NAME"'/*"
-              }]
-            }'
-            echo "Bucket $BUCKET_NAME created and configured"
-          fi
+        run: .github/scripts/ensure-s3-bucket.sh "salmon-wallet-app-prod" us-east-1
 
       - name: Publish
         id: deploy
