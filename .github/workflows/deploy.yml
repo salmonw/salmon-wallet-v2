@@ -156,42 +156,6 @@ jobs:
             echo "Stack does not exist"
           fi
 
-      - name: Clean up CloudFront distributions (if orphaned)
-        run: |
-          echo "Checking for CloudFront distributions related to this stack..."
-          DISTRIBUTIONS=$(aws cloudfront list-distributions \
-            --query "DistributionList.Items[?contains(Comment, 'Salmon Wallet - prod') || contains(Comment, 'salmon-wallet-app-prod')].Id" \
-            --output text --region us-east-1 2>/dev/null || echo "")
-
-          if [ -n "$DISTRIBUTIONS" ]; then
-            echo "Found CloudFront distributions: $DISTRIBUTIONS"
-            for DIST_ID in $DISTRIBUTIONS; do
-              echo "Checking distribution: $DIST_ID"
-              STATUS=$(aws cloudfront get-distribution --id "$DIST_ID" --query 'Distribution.Status' --output text --region us-east-1 2>/dev/null || echo "Unknown")
-              echo "Distribution $DIST_ID status: $STATUS"
-              
-              if [ "$STATUS" == "Deployed" ]; then
-                echo "Distribution is deployed. Note: CloudFront distributions must be disabled before deletion."
-                echo "This distribution will be cleaned up when the CloudFormation stack is deleted."
-              fi
-            done
-          else
-            echo "No CloudFront distributions found for this stack"
-          fi
-
-          # Also check if there are any distributions pointing to the S3 bucket
-          echo ""
-          echo "Checking for distributions pointing to salmon-wallet-app-prod bucket..."
-          ALL_DISTS=$(aws cloudfront list-distributions --query 'DistributionList.Items[].Id' --output text --region us-east-1 2>/dev/null || echo "")
-          if [ -n "$ALL_DISTS" ]; then
-            for DIST_ID in $ALL_DISTS; do
-              ORIGIN=$(aws cloudfront get-distribution-config --id "$DIST_ID" --query 'DistributionConfig.Origins.Items[0].DomainName' --output text --region us-east-1 2>/dev/null || echo "")
-              if [[ "$ORIGIN" == *"salmon-wallet-app-prod"* ]]; then
-                echo "Found distribution $DIST_ID pointing to salmon-wallet-app-prod bucket"
-              fi
-            done
-          fi
-
       - name: Wait for stack cleanup to complete
         run: |
           STACK_NAME="salmon-wallet-app-prod"
