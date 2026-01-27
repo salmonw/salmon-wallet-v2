@@ -6,7 +6,7 @@ const salmonEnv = process.env.REACT_APP_SALMON_ENV ?? process.env.NODE_ENV;
 switch (salmonEnv) {
   case 'production':
     staticApiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
-    apiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
+    apiUrl = 'https://te4x28v8e0.execute-api.us-east-1.amazonaws.com/prod';  // API Gateway directo
     break;
   case 'development':
     staticApiUrl = 'https://d1fh2pwo7kzely.cloudfront.net';
