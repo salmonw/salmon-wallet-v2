@@ -248,7 +248,7 @@ async function getTokenMetadataByMints(mintAddresses, networkId = 'solana-mainne
     // Try backend batch endpoint first
     try {
       const response = await http.get(
-        `${SALMON_STATIC_API_URL}/v1/${networkId}/ft/batch?mints=${mintsParam}`
+        `${SALMON_API_URL}/v1/${networkId}/ft/batch?mints=${mintsParam}`
       );
       const tokens = response.data.map(token => ({
         symbol: token.symbol,
