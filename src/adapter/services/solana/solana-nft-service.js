@@ -10,6 +10,7 @@ const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const TransactionError = require('../../errors/TransactionError');
 const { ME_PROGRAM_ID } = require('../../constants/token-constants');
 const { SALMON_API_URL } = require('../../constants/environment');
+const { normalizeIpfsUrl } = require('../../lib/url-utils');
 
 /**
  * Transforms Helius DAS API asset to the format expected by the wallet
@@ -28,7 +29,7 @@ const transformDasAsset = (asset, owner) => {
     owner,
     name: metadata.name || '',
     symbol: metadata.symbol || '',
-    uri: asset.content?.json_uri || '',
+    uri: normalizeIpfsUrl(asset.content?.json_uri) || '',
     json: metadata,
     updateAuthorityAddress:
       asset.authorities?.find(a => a.scopes?.includes('full'))?.address || null,
@@ -41,7 +42,7 @@ const transformDasAsset = (asset, owner) => {
         ? { isOriginal: asset.supply.edition_nonce === 0 }
         : null,
     tokenStandard: asset.interface || null,
-    media: links.image || files[0]?.uri || null,
+    media: normalizeIpfsUrl(metadata.image) || normalizeIpfsUrl(links.image) || normalizeIpfsUrl(files[0]?.uri) || null,
     description: metadata.description || '',
     compressed: asset.compression?.compressed || false,
     extras: {

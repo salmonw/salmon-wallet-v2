@@ -2,6 +2,7 @@ const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const { TOKEN_PROGRAM_ID } = require('../../constants/token-constants');
 const http = require('../axios-wrapper').default;
 const { SALMON_STATIC_API_URL, SALMON_API_URL } = require('../../constants/environment');
+const { normalizeIpfsUrl } = require('../../lib/url-utils');
 
 const TOKEN_LIST_URL_JUP = 'https://cache.jup.ag/tokens';
 
@@ -12,76 +13,6 @@ let tokenList = [];
 let tokenListSource = null;
 
 const BATCH_CHUNK_SIZE = 100;
-
-// List of known problematic/dead domains that should be skipped
-const DEAD_DOMAINS = [
-  'shdw-drive.genesysgo.net',
-  'chexbacca.com',
-  'cdn.bridgesplit.com',
-];
-
-/**
- * Fix problematic IPFS URLs by redirecting to reliable gateways
- * Handles multiple broken IPFS gateway patterns (2025)
- *
- * @param {string} url - The original logo URL
- * @returns {string|null} Fixed URL or null if domain is known to be dead
- */
-const fixIPFSUrl = (url) => {
-  if (!url) return url;
-
-  // Skip known dead domains to avoid unnecessary network requests
-  if (DEAD_DOMAINS.some(domain => url.includes(domain))) {
-    return null;
-  }
-
-  // Extract IPFS hash from various gateway patterns
-  let ipfsHash = null;
-
-  // Pattern 1: cf-ipfs.com URLs (DNS issues)
-  if (url.includes('cf-ipfs.com/ipfs/')) {
-    ipfsHash = url.split('/ipfs/')[1];
-  }
-
-  // Pattern 2: cloudflare-ipfs.com URLs (DNS issues)
-  else if (url.includes('cloudflare-ipfs.com/ipfs/')) {
-    ipfsHash = url.split('/ipfs/')[1];
-  }
-
-  // Pattern 3: *.ipfs.cf-ipfs.com subdomain format
-  else if (url.includes('.ipfs.cf-ipfs.com')) {
-    ipfsHash = url.split('://')[1]?.split('.ipfs.cf-ipfs.com')[0];
-  }
-
-  // Pattern 4: ipfs.nftstorage.link URLs (SSL issues)
-  else if (url.includes('.ipfs.nftstorage.link')) {
-    ipfsHash = url.split('://')[1]?.split('.ipfs')[0];
-  }
-
-  // Pattern 5: *.ipfs.dweb.link subdomain format
-  else if (url.includes('.ipfs.dweb.link')) {
-    ipfsHash = url.split('://')[1]?.split('.ipfs.dweb.link')[0];
-  }
-
-  // Pattern 6: gateway.pinata.cloud (sometimes slow/unreliable)
-  else if (url.includes('gateway.pinata.cloud/ipfs/')) {
-    ipfsHash = url.split('/ipfs/')[1];
-  }
-
-  // Pattern 7: ipfs.infura.io (deprecated)
-  else if (url.includes('ipfs.infura.io/ipfs/')) {
-    ipfsHash = url.split('/ipfs/')[1];
-  }
-
-  // If we extracted an IPFS hash, redirect to ipfs.io (most reliable gateway)
-  if (ipfsHash) {
-    // Clean up hash (remove query params, trailing slashes)
-    const cleanHash = ipfsHash.split('?')[0].split('#')[0];
-    return `https://ipfs.io/ipfs/${cleanHash}`;
-  }
-
-  return url;
-};
 
 const retrieveTokenList = async (networkId = 'solana-mainnet') => {
   if (Array.isArray(tokenList) && tokenList.length > 0) {
@@ -126,7 +57,7 @@ async function getTokenList() {
     symbol: token.symbol,
     name: token.name,
     decimals: token.decimals,
-    logo: fixIPFSUrl(source === 'backend' ? token.logo : token.logoURI),
+    logo: normalizeIpfsUrl(source === 'backend' ? token.logo : token.logoURI),
     address: token.address,
     chainId: token.chainId,
     coingeckoId: source === 'backend' ? token.coingeckoId : token.extensions?.coingeckoId,
@@ -205,7 +136,7 @@ async function getFeaturedTokenList(networkId = 'solana-mainnet') {
         symbol: token.symbol,
         name: token.name,
         decimals: token.decimals,
-        logo: fixIPFSUrl(token.logo || token.icon),
+        logo: normalizeIpfsUrl(token.logo || token.icon),
         address: token.address || token.id,
         coingeckoId: token.coingeckoId || null,
         tags: token.tags || [],
@@ -254,7 +185,7 @@ async function getTokenMetadataByMints(mintAddresses, networkId = 'solana-mainne
         symbol: token.symbol,
         name: token.name,
         decimals: token.decimals,
-        logo: fixIPFSUrl(token.logo),
+        logo: normalizeIpfsUrl(token.logo),
         address: token.address,
         chainId: token.chainId,
         coingeckoId: token.coingeckoId,
@@ -275,7 +206,7 @@ async function getTokenMetadataByMints(mintAddresses, networkId = 'solana-mainne
             symbol: token.symbol,
             name: token.name,
             decimals: token.decimals,
-            logo: fixIPFSUrl(token.logoURI),
+            logo: normalizeIpfsUrl(token.logoURI),
             address: token.address,
             chainId: token.chainId,
             coingeckoId: token.extensions?.coingeckoId,
