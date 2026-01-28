@@ -151,52 +151,36 @@ const getAllFromHeliusDirect = async (network, publicKey, options = {}) => {
 
 /**
  * Fetches all NFTs for a given public key
- * Tries the backend endpoint first, falls back to direct Helius API call if it fails
+ * Tries direct Helius API call first, falls back to backend endpoint if it fails
  * @param {object} network - The network configuration object
  * @param {string} publicKey - The owner's public key
  * @param {boolean} noCache - Whether to bypass cache
  * @returns {Promise<Array>} - Array of NFTs
  */
 const getAll = async (network, publicKey, noCache = false) => {
-  const params = { publicKey, noCache };
-
+  // PRIMARY: Try direct Helius API first
   try {
-    const { data } = await axios.get(`${SALMON_API_URL}/v1/${network.id}/nft`, {
-      params,
-      timeout: 15000, // 15 second timeout for backend
-    });
-    return data;
-  } catch (error) {
-    const status = error.response?.status;
-    const isNetworkError = !error.response;
-    const shouldFallback =
-      status === 401 ||
-      status === 403 ||
-      status === 500 ||
-      status === 502 ||
-      status === 503 ||
-      isNetworkError ||
-      error.code === 'ECONNABORTED';
+    const result = await getAllFromHeliusDirect(network, publicKey);
+    return result.data;
+  } catch (heliusError) {
+    console.warn(
+      `[getAll] Direct Helius API call failed (${heliusError.message}), falling back to backend endpoint`,
+    );
 
-    if (shouldFallback) {
-      console.warn(
-        `[getAll] Backend NFT endpoint failed (status: ${status || 'network error'}), falling back to direct Helius API call`,
+    // FALLBACK: Try backend endpoint if Helius fails
+    try {
+      const params = { publicKey, noCache };
+      const { data } = await axios.get(`${SALMON_API_URL}/v1/${network.id}/nft`, {
+        params,
+        timeout: 15000,
+      });
+      return data;
+    } catch (backendError) {
+      console.error(
+        `[getAll] Both direct Helius API and backend endpoint failed: ${backendError.message}`,
       );
-
-      try {
-        const result = await getAllFromHeliusDirect(network, publicKey);
-        // Return just the data array to match the original backend response format
-        return result.data;
-      } catch (heliusError) {
-        console.error(
-          `[getAll] Direct Helius API call also failed: ${heliusError.message}`,
-        );
-        throw heliusError;
-      }
+      throw backendError;
     }
-
-    // For other errors (e.g., 400 Bad Request), throw the original error
-    throw error;
   }
 };
 
