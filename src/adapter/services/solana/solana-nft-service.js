@@ -40,7 +40,8 @@ const transformDasAsset = (asset, owner) => {
         ? { isOriginal: asset.supply.edition_nonce === 0 }
         : null,
     tokenStandard: asset.interface || null,
-    image: links.image || files[0]?.uri || null,
+    media: links.image || files[0]?.uri || null,
+    description: metadata.description || '',
     compressed: asset.compression?.compressed || false,
   };
 };
