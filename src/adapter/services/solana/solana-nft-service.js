@@ -4,7 +4,9 @@ const {
   PublicKey,
   VersionedMessage,
   VersionedTransaction,
+  Connection,
 } = require('@solana/web3.js');
+const { TOKEN_2022_PROGRAM_ID } = require('@solana/spl-token');
 const TransactionError = require('../../errors/TransactionError');
 const { ME_PROGRAM_ID } = require('../../constants/token-constants');
 const { SALMON_API_URL } = require('../../constants/environment');
@@ -31,7 +33,6 @@ const transformDasAsset = (asset, owner) => {
     updateAuthorityAddress:
       asset.authorities?.find(a => a.scopes?.includes('full'))?.address || null,
     sellerFeeBasisPoints: asset.royalty?.basis_points || 0,
-    creators: asset.creators || [],
     collection: collection
       ? { key: collection.group_value, verified: true }
       : null,
@@ -43,6 +44,11 @@ const transformDasAsset = (asset, owner) => {
     media: links.image || files[0]?.uri || null,
     description: metadata.description || '',
     compressed: asset.compression?.compressed || false,
+    extras: {
+      attributes: metadata.attributes || [],
+      properties: metadata.properties || {},
+      creators: asset.creators || [],
+    },
   };
 };
 
@@ -92,7 +98,35 @@ const getAllFromHeliusDirect = async (network, publicKey, options = {}) => {
       `[getAllFromHeliusDirect] Helius DAS API returned ${assets.length} assets for: ${publicKey}`,
     );
 
-    const allNfts = assets.map(asset => transformDasAsset(asset, publicKey));
+    // Fetch Token2022 extensions for enrichment
+    const connection = new Connection(nodeUrl);
+    let extensionsMap = {};
+    try {
+      const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+        new PublicKey(publicKey),
+        { programId: TOKEN_2022_PROGRAM_ID }
+      );
+
+      for (const account of tokenAccounts.value || []) {
+        const tokenInfo = account.account.data.parsed.info;
+        const { mint, extensions } = tokenInfo;
+        if (extensions) {
+          extensionsMap[mint] = extensions;
+        }
+      }
+      console.log(
+        `[getAllFromHeliusDirect] Fetched Token2022 extensions for ${Object.keys(extensionsMap).length} tokens`,
+      );
+    } catch (err) {
+      console.warn('[getAllFromHeliusDirect] Failed to fetch Token2022 extensions:', err.message);
+    }
+
+    const allNfts = assets.map(asset => {
+      const nft = transformDasAsset(asset, publicKey);
+      // Enrich with Token2022 extensions if available
+      nft.extensions = extensionsMap[asset.id] || [];
+      return nft;
+    });
     const total = allNfts.length;
     const paginatedNfts = allNfts.slice(offset, offset + limit);
     const hasMore = offset + limit < total;
