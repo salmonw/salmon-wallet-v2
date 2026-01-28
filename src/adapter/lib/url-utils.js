@@ -55,6 +55,7 @@ const normalizeIpfsUrl = (url) => {
     /https?:\/\/(?:www\.)?cloudflare-ipfs\.com\/ipfs\/(.+)/,
     /https?:\/\/(?:www\.)?ipfs\.infura\.io\/ipfs\/(.+)/,
     /https?:\/\/gateway\.pinata\.cloud\/ipfs\/(.+)/,
+    /https?:\/\/(?:www\.)?nftstorage\.link\/ipfs\/(.+)/,
   ];
 
   for (const pattern of brokenGateways) {

@@ -99,6 +99,12 @@ const getAllFromHeliusDirect = async (network, publicKey, options = {}) => {
       `[getAllFromHeliusDirect] Helius DAS API returned ${assets.length} assets for: ${publicKey}`,
     );
 
+    // Filter out burnt NFTs
+    const filteredAssets = assets.filter(asset => !asset.burnt);
+    console.log(
+      `[getAllFromHeliusDirect] Filtered out ${assets.length - filteredAssets.length} burnt NFTs`,
+    );
+
     // Fetch Token2022 extensions for enrichment
     const connection = new Connection(nodeUrl);
     let extensionsMap = {};
@@ -122,7 +128,7 @@ const getAllFromHeliusDirect = async (network, publicKey, options = {}) => {
       console.warn('[getAllFromHeliusDirect] Failed to fetch Token2022 extensions:', err.message);
     }
 
-    const allNfts = assets.map(asset => {
+    const allNfts = filteredAssets.map(asset => {
       const nft = transformDasAsset(asset, publicKey);
       // Enrich with Token2022 extensions if available
       nft.extensions = extensionsMap[asset.id] || [];
