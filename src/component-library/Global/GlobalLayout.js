@@ -18,7 +18,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingVertical: isExtension() ? 10 : theme.gutters.paddingNormal,
     paddingBottom: theme.gutters.padding4XL,
-    paddingHorizontal: theme.gutters.paddingSM,
+    width: '100%',
+    maxWidth: theme.variables.mobileWidthLG,
+  },
+  // Variante sin padding horizontal para elementos edge-to-edge
+  mainContainerEdgeToEdge: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    paddingTop: 0, // La card comienza desde top: 0
+    paddingBottom: theme.gutters.padding4XL,
+    // Sin paddingHorizontal para permitir elementos de borde a borde
     width: '100%',
     maxWidth: theme.variables.mobileWidthLG,
   },
@@ -29,7 +39,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingVertical: theme.gutters.paddingNormal,
     paddingBottom: theme.gutters.padding4XL,
-    paddingHorizontal: theme.gutters.paddingSM,
+    width: '100%',
+    maxWidth: theme.variables.mobileWidthLG,
+  },
+  // Variante sin padding horizontal para elementos edge-to-edge
+  mainTabContainerEdgeToEdge: {
+    flex: 1,
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    paddingTop: 0, // La card comienza desde top: 0
+    paddingBottom: theme.gutters.padding4XL,
+    // Sin paddingHorizontal para permitir elementos de borde a borde
     width: '100%',
     maxWidth: theme.variables.mobileWidthLG,
   },
@@ -62,7 +83,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: theme.variables.mobileWidthLG,
     minHeight: '100%',
-    padding: theme.gutters.paddingNormal,
+    paddingVertical: theme.gutters.paddingNormal,
     backgroundColor: theme.colors.bgPrimary,
   },
 });
@@ -74,10 +95,19 @@ const GlobalLayout = ({
   children,
   onRefresh,
   refreshing,
+  edgeToEdge = false, // Nueva prop para elementos de borde a borde
 }) => {
   const layoutStyle = {
     ...styles.scrollViewContainer,
     ...style,
+  };
+
+  // Seleccionar el estilo del contenedor segun fullscreen y edgeToEdge
+  const getContainerStyle = () => {
+    if (fullscreen) {
+      return edgeToEdge ? styles.mainTabContainerEdgeToEdge : styles.mainTabContainer;
+    }
+    return edgeToEdge ? styles.mainContainerEdgeToEdge : styles.mainContainer;
   };
 
   const inner = (
@@ -93,8 +123,7 @@ const GlobalLayout = ({
               ),
             }
           : {})}>
-        <View
-          style={fullscreen ? styles.mainTabContainer : styles.mainContainer}>
+        <View style={getContainerStyle()}>
           {children}
         </View>
       </ScrollView>

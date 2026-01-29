@@ -158,7 +158,7 @@
     "title": "Enter your password",
     "placeholder": "Enter your password",
     "error": "Invalid Password",
-    "forgot": "I've forgot my password",
+    "forgot": "I forgot my password",
     "forgotten": "Forgotten password",
     "clear": "Clear data",
     "clear_confirm": "I UNDERSTAND, DISCONNECT ALL",

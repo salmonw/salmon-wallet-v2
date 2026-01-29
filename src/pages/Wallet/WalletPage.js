@@ -61,7 +61,7 @@ const WalletPage = () => {
           icon: r.icon,
           route: r.route,
         }))}>
-      <RoutesBuilder routes={routes} type={ROUTES_TYPES.TABS} />
+      <RoutesBuilder routes={routes} type={ROUTES_TYPES.TABS} requireOnboarding={false} />
     </GlobalTabBarLayout>
   );
 };

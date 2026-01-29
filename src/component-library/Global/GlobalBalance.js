@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native';
 
 import { withTranslation } from '../../hooks/useTranslations';
 import theme from './theme';
@@ -17,6 +17,24 @@ import IconBalanceDown from '../../assets/images/IconBalanceDown.png';
 import IconReset from '../../assets/images/IconReset.png';
 
 const styles = StyleSheet.create({
+  balanceContainer: {
+    backgroundColor: 'rgba(16, 19, 28, 0.8)',
+    borderRadius: 34.557,
+    borderWidth: 1.382,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    paddingTop: 114, // Espacio para que el contenido no quede detras del header
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0px 10px 10px rgba(0, 0, 0, 0.9)' }
+      : {
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.9,
+          shadowRadius: 10,
+        }),
+    width: '100%', // De punta a punta
+  },
   numbers: {
     height: 110,
   },
@@ -42,6 +60,15 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginRight: theme.gutters.paddingXXS,
     lineHeight: theme.fontSize.fontSizeNormal,
+  },
+  percentageBadge: {
+    backgroundColor: 'rgba(128, 255, 84, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  percentageBadgeNegative: {
+    backgroundColor: 'rgba(255, 84, 84, 0.2)',
   },
   infoLink: {
     marginLeft: theme.gutters.paddingXXS,
@@ -74,7 +101,7 @@ const WalletBalanceCard = ({
     setShowDialog(!showDialog);
   };
   return (
-    <View>
+    <View style={styles.balanceContainer}>
       <View style={styles.numbers}>
         {loading && <GlobalSkeleton type="Balance" />}
         {!loading && !alert && (
@@ -108,33 +135,37 @@ const WalletBalanceCard = ({
               )}
 
               {negativeTotal && (
-                <>
-                  <GlobalImage
-                    source={IconBalanceDown}
-                    style={styles.iconUpDown}
-                  />
-                  <GlobalText
-                    type="body2"
-                    color="negative"
-                    style={styles.upDownTotals}>
-                    {negativeTotal}
-                  </GlobalText>
-                </>
+                <View style={[styles.percentageBadge, styles.percentageBadgeNegative]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <GlobalImage
+                      source={IconBalanceDown}
+                      style={styles.iconUpDown}
+                    />
+                    <GlobalText
+                      type="body2"
+                      color="negative"
+                      style={styles.upDownTotals}>
+                      {negativeTotal}
+                    </GlobalText>
+                  </View>
+                </View>
               )}
 
               {positiveTotal && (
-                <>
-                  <GlobalImage
-                    source={IconBalanceUp}
-                    style={styles.iconUpDown}
-                  />
-                  <GlobalText
-                    type="body2"
-                    color="positive"
-                    style={styles.upDownTotals}>
-                    {positiveTotal}
-                  </GlobalText>
-                </>
+                <View style={styles.percentageBadge}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <GlobalImage
+                      source={IconBalanceUp}
+                      style={styles.iconUpDown}
+                    />
+                    <GlobalText
+                      type="body2"
+                      color="positive"
+                      style={styles.upDownTotals}>
+                      {positiveTotal}
+                    </GlobalText>
+                  </View>
+                </View>
               )}
               {(neutralTotal || negativeTotal || positiveTotal) && (
                 <TouchableOpacity onPress={toggleDialog}>

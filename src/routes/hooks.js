@@ -32,9 +32,9 @@ export const useCurrentTab = ({ tabs }) => {
   useEffect(() => {
     const selected = tabs.find(
       t =>
-        (location.pathname.startsWith(t.route) && t.title !== 'Wallet') ||
+        (location.pathname.startsWith(t.route) && t.title !== 'Home') ||
         ((location.pathname === t.route || location.pathname === '/') &&
-          t.title === 'Wallet'),
+          t.title === 'Home'),
     );
     if (selected) {
       setTab(selected);

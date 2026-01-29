@@ -12,7 +12,11 @@ import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalText from '../../component-library/Global/GlobalText';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 import Grid from '../../component-library/Grid/Grid';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
@@ -64,7 +68,7 @@ const NftsListPage = ({ t }) => {
     <>
       <GlobalLayout>
         <GlobalLayout.Header>
-          <Header />
+          <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
           <View>
             <GlobalText center type="headline2">
               {t(`wallet.nfts`)}

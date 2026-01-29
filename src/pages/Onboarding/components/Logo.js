@@ -5,8 +5,8 @@ import AppIcon from '../../../assets/images/AppIcon.png';
 
 const styles = StyleSheet.create({
   appLogo: {
-    width: 102,
-    height: 102,
+    width: 137,
+    height: 137,
     margin: 'auto',
   },
   appLogoSm: {

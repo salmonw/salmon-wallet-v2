@@ -1,7 +1,7 @@
 import React from 'react';
 // LINT FIX - TouchableOpacity no usado
 // import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 
 import theme from './theme';
 import GlobalImage from './GlobalImage';
@@ -112,6 +112,32 @@ const styles = StyleSheet.create({
   dangerLight: {
     backgroundColor: theme.colors.accentSecondary,
   },
+  gradient: {
+    // Para gradientes en web, usamos backgroundImage. En native, usamos un color sólido de fallback.
+    // Nota: Para gradientes reales en native, se debería usar expo-linear-gradient o react-native-linear-gradient
+    backgroundColor: '#FF5C45', // Fallback color para native
+    borderWidth: 1.367,
+    borderStyle: 'solid',
+    borderColor: 'rgba(255, 92, 69, 0.8)',
+    borderRadius: 21,
+    // boxShadow para web (compatible con React Native Web)
+    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.64)',
+    ...(Platform.OS === 'web'
+      ? {
+          backgroundImage:
+            'linear-gradient(93.8deg, #FF5C45 12.275%, rgba(161, 42, 42, 0.9) 83.06%)',
+        }
+      : {
+          // Shadow props para iOS/Android nativo
+          shadowColor: 'rgba(0, 0, 0, 0.64)',
+          shadowOffset: { width: 0, height: 0 },
+          shadowRadius: 20,
+          shadowOpacity: 1,
+        }),
+  },
+  gradientText: {
+    color: theme.colors.labelPrimary,
+  },
   secondaryText: {
     color: theme.colors.labelPrimary,
   },
@@ -185,6 +211,7 @@ const GlobalButton = ({
     ...(type === 'secondary' ? styles.secondary : {}),
     ...(type === 'danger' ? styles.danger : {}),
     ...(type === 'dangerLight' ? styles.dangerLight : {}),
+    ...(type === 'gradient' ? styles.gradient : {}),
     ...(type === 'text' ? styles.textButton : {}),
     ...(type === 'card' ? styles.cardButton : {}),
     ...(type === 'tabbar' ? styles.tabbar : {}),
@@ -200,6 +227,7 @@ const GlobalButton = ({
     ...(type === 'accent' ? styles.accentText : {}),
     ...(type === 'primary' ? styles.primaryText : {}),
     ...(type === 'secondary' ? styles.secondaryText : {}),
+    ...(type === 'gradient' ? styles.gradientText : {}),
     ...(type === 'card' ? styles.cardButtonText : {}),
     ...(type === 'tabbar' ? styles.tabbarText : {}),
     ...(color === 'secondary' ? styles.labelSecondary : {}),

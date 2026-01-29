@@ -30,6 +30,20 @@ import WhitelistBackground from '../../assets/images/WhitelistBackground.png';
 import IconWhitelist from '../../assets/images/IconWhitelist.png';
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: '#10131C',
+    borderBottomLeftRadius: 34.557,
+    borderBottomRightRadius: 34.557,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderBottomWidth: 1.38,
+    borderBottomColor: 'rgba(255, 255, 255, 0.8)',
+  },
   avatarWalletAddressActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -202,122 +216,124 @@ const Header = ({ isHome, t }) => {
 
   return (
     <SafeAreaView edges={['top']}>
-      <View style={styles.avatarWalletAddressActions}>
-        <View style={styles.avatarWalletAddress}>
-          <TouchableOpacity onPress={onClickAvatar}>
-            {whitelisted && (
-              <GlobalImage
-                source={WhitelistBackground}
-                size="md"
-                style={styles.avatarWhitelistBorder}
+      <View style={styles.headerContainer}>
+        <View style={styles.avatarWalletAddressActions}>
+          <View style={styles.avatarWalletAddress}>
+            <TouchableOpacity onPress={onClickAvatar}>
+              {whitelisted && (
+                <GlobalImage
+                  source={WhitelistBackground}
+                  size="md"
+                  style={styles.avatarWhitelistBorder}
+                />
+              )}
+              <AvatarImage
+                src={getMediaRemoteUrl(activeAccount.avatar)}
+                size={42}
               />
-            )}
-            <AvatarImage
-              src={getMediaRemoteUrl(activeAccount.avatar)}
-              size={42}
-            />
-            {whitelisted && (
-              <>
-                <GlobalImage
-                  source={IconWhitelist}
-                  size="xxs"
-                  style={styles.whitelistBadgeIcon}
-                />
-                <GlobalText style={styles.whitelistBadgeText}>WL</GlobalText>
-              </>
-            )}
-          </TouchableOpacity>
-          <View style={styles.walletNameAddress}>
-            <GlobalText
-              type="body2"
-              style={styles.walletName}
-              numberOfLines={1}>
-              {activeAccount.name}
-            </GlobalText>
-            <View style={styles.walletAddressActions}>
+              {whitelisted && (
+                <>
+                  <GlobalImage
+                    source={IconWhitelist}
+                    size="xxs"
+                    style={styles.whitelistBadgeIcon}
+                  />
+                  <GlobalText style={styles.whitelistBadgeText}>WL</GlobalText>
+                </>
+              )}
+            </TouchableOpacity>
+            <View style={styles.walletNameAddress}>
               <GlobalText
-                type="caption"
-                color="tertiary"
-                style={styles.walletAddress}
+                type="body2"
+                style={styles.walletName}
                 numberOfLines={1}>
-                ({getShortAddress(activeBlockchainAccount.getReceiveAddress())})
+                {activeAccount.name}
               </GlobalText>
-              <TouchableOpacity onPress={onCopyAddress}>
-                <GlobalImage
-                  source={IconCopy}
-                  style={styles.addressIcon}
-                  size="xxs"
-                />
-              </TouchableOpacity>
-              {isHome &&
-                activeAccount.networksAccounts[networkId].length > 1 && (
-                  <TouchableOpacity onPress={onSelectPathIndex}>
-                    <GlobalImage
-                      source={IconChangeWallet}
-                      style={styles.addressIcon}
-                      size="xxs"
-                    />
-                  </TouchableOpacity>
-                )}
+              <View style={styles.walletAddressActions}>
+                <GlobalText
+                  type="caption"
+                  color="tertiary"
+                  style={styles.walletAddress}
+                  numberOfLines={1}>
+                  ({getShortAddress(activeBlockchainAccount.getReceiveAddress())})
+                </GlobalText>
+                <TouchableOpacity onPress={onCopyAddress}>
+                  <GlobalImage
+                    source={IconCopy}
+                    style={styles.addressIcon}
+                    size="xxs"
+                  />
+                </TouchableOpacity>
+                {isHome &&
+                  activeAccount.networksAccounts[networkId].length > 1 && (
+                    <TouchableOpacity onPress={onSelectPathIndex}>
+                      <GlobalImage
+                        source={IconChangeWallet}
+                        style={styles.addressIcon}
+                        size="xxs"
+                      />
+                    </TouchableOpacity>
+                  )}
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.walletActions}>
-          {networks.length > 1 && (
-            <View style={styles.networkSelector}>
-              <NetworkSelector
-                networks={networks}
-                setValue={changeNetwork}
-                value={networkId}
+          <View style={styles.walletActions}>
+            {networks.length > 1 && (
+              <View style={styles.networkSelector}>
+                <NetworkSelector
+                  networks={networks}
+                  setValue={changeNetwork}
+                  value={networkId}
+                />
+              </View>
+            )}
+            {/* <GlobalButton
+                    type="icon"
+                    transparent
+                    icon={hasNotifications ? IconNotificationsAdd : IconNotifications}
+                    style={styles.narrowBtn}
+                    onPress={goToNotifications}
+                  /> */}
+            {isNative() && (
+              <GlobalButton
+                type="icon"
+                transparent
+                icon={IconQRCodeScanner}
+                style={styles.narrowBtn}
+                onPress={toggleScan}
               />
-            </View>
-          )}
-          {/* <GlobalButton
-                  type="icon"
-                  transparent
-                  icon={hasNotifications ? IconNotificationsAdd : IconNotifications}
-                  style={styles.narrowBtn}
-                  onPress={goToNotifications}
-                /> */}
-          {isNative() && (
-            <GlobalButton
-              type="icon"
-              transparent
-              icon={IconQRCodeScanner}
-              style={styles.narrowBtn}
-              onPress={toggleScan}
-            />
-          )}
-          {isConnected !== null && (
-            <Tooltip
-              title={
-                <GlobalText>
-                  {t(isConnected ? 'header.connected' : 'header.disconnected', {
-                    hostname,
-                  })}
-                </GlobalText>
-              }>
-              <View
-                style={[
-                  styles.appStatus,
-                  isConnected
-                    ? styles.appConnectedStatus
-                    : styles.appDisconnectedStatus,
-                ]}
-              />
-            </Tooltip>
-          )}
+            )}
+            {isConnected !== null && (
+              <Tooltip
+                title={
+                  <GlobalText>
+                    {t(isConnected ? 'header.connected' : 'header.disconnected', {
+                      hostname,
+                    })}
+                  </GlobalText>
+                }>
+                <View
+                  style={[
+                    styles.appStatus,
+                    isConnected
+                      ? styles.appConnectedStatus
+                      : styles.appDisconnectedStatus,
+                  ]}
+                />
+              </Tooltip>
+            )}
+          </View>
         </View>
+        <GlobalToast
+          message={t('wallet.copied')}
+          open={showToast}
+          setOpen={setShowToast}
+        />
+        {isNative() && (
+          <QRScan active={showScan} onClose={toggleScan} onRead={onRead} />
+        )}
       </View>
-      <GlobalToast
-        message={t('wallet.copied')}
-        open={showToast}
-        setOpen={setShowToast}
-      />
-      {isNative() && (
-        <QRScan active={showScan} onClose={toggleScan} onRead={onRead} />
-      )}
     </SafeAreaView>
   );
 };

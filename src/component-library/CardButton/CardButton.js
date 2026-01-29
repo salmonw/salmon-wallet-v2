@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import theme, { globalStyles } from '../Global/theme';
 import GlobalButton from '../Global/GlobalButton';
@@ -29,10 +29,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   buttonCardLG: {
-    minHeight: 80,
+    minHeight: 86,
   },
   buttonCardXL: {
     minHeight: 94,
+  },
+  tokenCardStyle: {
+    minHeight: 86,
+    backgroundColor: 'rgba(56, 63, 82, 0.1)',
+    borderWidth: 1,
+    borderColor: '#404962',
+    borderRadius: 16.59,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    ...(Platform.OS === 'web' && {
+      backdropFilter: 'blur(3px)',
+      WebkitBackdropFilter: 'blur(3px)',
+    }),
   },
   buttonCardSM: {
     minHeight: 32,
@@ -40,6 +53,68 @@ const styles = StyleSheet.create({
   cardContent: {
     flex: 1,
     flexDirection: 'row',
+  },
+  // Token card specific styles
+  tokenCardContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  tokenInfoLeft: {
+    flex: 1,
+  },
+  tokenName: {
+    fontSize: 18,
+    lineHeight: 25.2, // 1.4 * 18
+    color: '#d6d6d6',
+    fontFamily: theme.fonts.dmSansMedium,
+    letterSpacing: -0.09,
+  },
+  tokenPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  tokenPrice: {
+    fontSize: 18,
+    lineHeight: 25.2,
+    color: 'rgba(255, 255, 255, 0.79)',
+    fontFamily: theme.fonts.dmSansBold,
+    letterSpacing: -0.09,
+  },
+  tokenChange: {
+    fontSize: 15,
+    lineHeight: 21,
+    fontFamily: theme.fonts.dmSansRegular,
+    letterSpacing: -0.08,
+  },
+  tokenChangePositive: {
+    color: '#80FF54',
+  },
+  tokenChangeNegative: {
+    color: theme.colors.negativeBright,
+  },
+  tokenChangeNeutral: {
+    color: theme.colors.labelSecondary,
+  },
+  tokenAmountRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  tokenUsdValue: {
+    fontSize: 24,
+    lineHeight: 24,
+    color: '#d6d6d6',
+    fontFamily: theme.fonts.dmSansMedium,
+    letterSpacing: -0.12,
+  },
+  tokenAmount: {
+    fontSize: 16,
+    lineHeight: 16,
+    color: '#FFFFFF',
+    fontFamily: theme.fonts.dmSansMedium,
+    marginTop: 4,
   },
   image: {
     backgroundColor: theme.colors.bgPrimary,
@@ -146,13 +221,90 @@ const CardButton = ({
   touchableStyles,
   buttonStyle,
   imageStyle,
+  // Token card specific props
+  tokenCard,
+  tokenPrice,
+  tokenChange,
+  tokenChangeValue,
+  tokenUsdValue,
+  tokenAmount,
   ...props
 }) => {
+  const isTokenCard = tokenCard === true;
+
   const buttonSize = {
     ...(title && description && styles.buttonCardLG),
     ...(size === 'sm' && styles.buttonCardSM),
     ...(type === 'xl' && styles.buttonCardXL),
+    ...(isTokenCard && styles.tokenCardStyle),
   };
+
+  // Determine change color based on value
+  const getChangeStyle = () => {
+    if (!tokenChange) return styles.tokenChangeNeutral;
+    const numericChange = parseFloat(tokenChange);
+    if (numericChange > 0) return styles.tokenChangePositive;
+    if (numericChange < 0) return styles.tokenChangeNegative;
+    return styles.tokenChangeNeutral;
+  };
+
+  // Token card layout
+  if (isTokenCard) {
+    return (
+      <GlobalButton
+        type="card"
+        title={null}
+        selected={selected}
+        active={active}
+        onPress={onPress}
+        style={[styles.buttonCard, buttonSize, buttonStyle]}
+        touchableStyles={[
+          styles.touchable,
+          touchableStyles,
+          nospace && styles.nospace,
+        ]}
+        {...props}>
+        <View style={styles.tokenCardContent}>
+          {icon && <View>{icon}</View>}
+
+          <View style={styles.tokenInfoLeft}>
+            <GlobalText style={styles.tokenName} numberOfLines={1}>
+              {title}
+            </GlobalText>
+            <View style={styles.tokenPriceRow}>
+              {tokenPrice && (
+                <GlobalText style={styles.tokenPrice} numberOfLines={1}>
+                  {tokenPrice}
+                </GlobalText>
+              )}
+              {tokenChange && (
+                <GlobalText
+                  style={[styles.tokenChange, getChangeStyle()]}
+                  numberOfLines={1}>
+                  {tokenChangeValue
+                    ? `${tokenChange} (${tokenChangeValue})`
+                    : tokenChange}
+                </GlobalText>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.tokenAmountRight}>
+            {tokenUsdValue && (
+              <GlobalText style={styles.tokenUsdValue} numberOfLines={1}>
+                {tokenUsdValue}
+              </GlobalText>
+            )}
+            {tokenAmount && (
+              <GlobalText style={styles.tokenAmount} numberOfLines={1}>
+                {tokenAmount}
+              </GlobalText>
+            )}
+          </View>
+        </View>
+      </GlobalButton>
+    );
+  }
 
   return (
     <GlobalButton

@@ -19,7 +19,11 @@ import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalFloatingBadge from '../../component-library/Global/GlobalFloatingBadge';
 import GlobalSendReceive from '../../component-library/Global/GlobalSendReceive';
 import CardButton from '../../component-library/CardButton/CardButton';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 import IconInfo from '../../assets/images/IconInfo.png';
 import IconSolana from '../../assets/images/IconSolana.png';
 import IconHyperspaceWhite from '../../assets/images/IconHyperspaceWhite.png';
@@ -186,7 +190,7 @@ const NftsDetailPage = ({ route, params, t }) => {
     (loaded && (
       <GlobalLayout fullscreen>
         <GlobalLayout.Header>
-          <Header />
+          <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
           <GlobalBackTitle
             onBack={goToBack}
             inlineTitle={

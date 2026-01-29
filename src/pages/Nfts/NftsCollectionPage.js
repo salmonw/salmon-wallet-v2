@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { View } from 'react-native';
 
 import { AppContext } from '../../AppProvider';
 import { useNavigation, withParams } from '../../routes/hooks';
@@ -8,7 +9,11 @@ import GlobalBackTitle from '../../component-library/Global/GlobalBackTitle';
 import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalText from '../../component-library/Global/GlobalText';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
 
@@ -46,7 +51,7 @@ const NftsCollectionPage = ({ params }) => {
   return (
     <GlobalLayout fullscreen>
       <GlobalLayout.Header>
-        <Header />
+        <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
         <GlobalBackTitle
           onBack={goToBack}
           inlineTitle={

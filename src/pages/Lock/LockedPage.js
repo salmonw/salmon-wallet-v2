@@ -59,7 +59,7 @@ const LockedPage = ({ t }) => {
       <GlobalLayout.Inner>
         <Logo />
         <GlobalPadding size="2xl" />
-        <GlobalText type="headline2" center>
+        <GlobalText type="headline2" center style={{ fontSize: 36 }}>
           {t('lock.title')}
         </GlobalText>
 
@@ -89,6 +89,10 @@ const LockedPage = ({ t }) => {
           title={unlocking ? t('lock.buttonChecking') : t('lock.buttonUnlock')}
           onPress={unlock}
           disabled={!pass || unlocking}
+          style={{
+            background: 'linear-gradient(93.8deg, #FF5C45 12.275%, rgba(161, 42, 42, 0.9) 83.06%)',
+            borderRadius: 21,
+          }}
         />
 
         <GlobalPadding size="lg" />

@@ -268,9 +268,8 @@ const useAccounts = () => {
 
         const storedMnemonics = await storage.getItem(STORAGE_KEYS.MNEMONICS);
         const mnemonics = await unlock(storedMnemonics, password);
-        if (!loaded) {
-          await load(mnemonics);
-        }
+        // Siempre cargar las cuentas después de desbloquear
+        await load(mnemonics);
         setLocked(false);
 
         await stash.setItem('password', password);

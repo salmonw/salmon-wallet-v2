@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import ThemeProvider from './component-library/Theme/ThemeProvider';
 import RoutesProvider from './routes/RoutesProvider';
 import * as splash from './utils/splash';
-import LockedPage from './pages/Lock/LockedPage';
+import LockSheet from './pages/Lock/LockSheet';
 import InactivityCheck from './features/InactivityCheck/InactivityCheck';
 import GlobalSkeleton from './component-library/Global/GlobalSkeleton';
 import GlobalError from './features/ErrorHandler/GlobalError';
@@ -132,12 +132,13 @@ const AppProvider = ({ children }) => {
               <InactivityCheck onIdle={onAppIdle} active>
                 {children}
               </InactivityCheck>
+              <LockSheet />
             </ThemeProvider>
           </RoutesProvider>
         )}
         {accountsState.locked && (
           <ThemeProvider>
-            <LockedPage />
+            <LockSheet />
           </ThemeProvider>
         )}
       </GlobalError>

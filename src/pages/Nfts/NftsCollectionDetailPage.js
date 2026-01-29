@@ -16,7 +16,11 @@ import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalNftList from '../../component-library/Global/GlobalNftList';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import CardButton from '../../component-library/CardButton/CardButton';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
 import { SECTIONS_MAP } from '../../utils/tracking';
@@ -175,7 +179,7 @@ const NftsCollectionDetailPage = ({ params, t }) => {
   return loaded ? (
     <GlobalLayout fullscreen style={isModalOpen && styles.container}>
       <GlobalLayout.Header>
-        <Header />
+        <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
         <GlobalBackTitle
           onBack={goToBack}
           inlineTitle={

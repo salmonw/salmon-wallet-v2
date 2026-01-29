@@ -1,15 +1,14 @@
 import React from 'react';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
+import round from 'lodash-es/round';
 import CardButton from '../../component-library/CardButton/CardButton';
-import GlobalText from '../../component-library/Global/GlobalText';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import AvatarImage from '../../component-library/Image/AvatarImage';
 import {
   hiddenValue,
   showAmount,
-  showPercentage,
-  getLabelValue,
+  isPositive,
 } from '../../utils/amount';
 
 const TokenList = ({ loading, tokens, onDetail, hiddenBalance }) => {
@@ -21,34 +20,53 @@ const TokenList = ({ loading, tokens, onDetail, hiddenBalance }) => {
   );
 };
 
+// Format the price to display like "$ 131.28"
+const formatTokenPrice = price => {
+  if (isNil(price)) return null;
+  return `$ ${round(price, 2).toFixed(2)}`;
+};
+
+// Format the change percentage
+const formatChange = perc => {
+  if (isNil(perc)) return null;
+  const percValue = round(isNaN(perc) ? 0 : perc, 2).toFixed(1);
+  const sign = isPositive(perc) ? '+' : '';
+  return `${sign}${percValue}%`;
+};
+
+// Calculate the change value in USD
+const formatChangeValue = (perc, usdBalance) => {
+  if (isNil(perc) || isNil(usdBalance)) return null;
+  const changeAmount = Math.abs((perc / 100) * usdBalance);
+  const sign = isPositive(perc) ? '+' : '-';
+  return `${sign}$${round(changeAmount, 2).toFixed(2)}`;
+};
+
 const List = ({ tokens, onDetail, hiddenBalance }) => (
   <>
-    {tokens.map(t => (
-      <CardButton
-        key={t.address}
-        onPress={() => onDetail(t)}
-        icon={<AvatarImage url={t.logo} size={48} />}
-        title={t.name}
-        description={`${hiddenBalance ? hiddenValue : t.uiAmount} ${
-          t.symbol || ''
-        }`}
-        actions={[
-          !isNil(t.usdBalance) && (
-            <GlobalText key={'amount-action'} type="body2">
-              {hiddenBalance ? hiddenValue : showAmount(t.usdBalance)}
-            </GlobalText>
-          ),
-          t.last24HoursChange && (
-            <GlobalText
-              key="perc-action"
-              type="body2"
-              color={getLabelValue(get(t, 'last24HoursChange.perc'))}>
-              {showPercentage(get(t, 'last24HoursChange.perc'))}
-            </GlobalText>
-          ),
-        ].filter(Boolean)}
-      />
-    ))}
+    {tokens.map(t => {
+      const perc = get(t, 'last24HoursChange.perc');
+      const tokenPrice = get(t, 'last24HoursChange.usd') || t.price;
+
+      return (
+        <CardButton
+          key={t.address}
+          onPress={() => onDetail(t)}
+          tokenCard
+          icon={<AvatarImage url={t.logo} size={44} />}
+          title={t.name}
+          tokenPrice={formatTokenPrice(tokenPrice)}
+          tokenChange={formatChange(perc)}
+          tokenChangeValue={formatChangeValue(perc, t.usdBalance)}
+          tokenUsdValue={hiddenBalance ? hiddenValue : showAmount(t.usdBalance)}
+          tokenAmount={
+            hiddenBalance
+              ? hiddenValue
+              : `${t.uiAmount} ${t.symbol || ''}`
+          }
+        />
+      );
+    })}
   </>
 );
 

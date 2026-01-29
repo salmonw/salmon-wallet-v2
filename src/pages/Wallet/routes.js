@@ -11,11 +11,10 @@ const TransactionsPage = lazy(() => import('../Transactions/TransactionsPage'));
 const SettingsSection = lazy(() => import('../Settings'));
 const NftsSection = lazy(() => import('../Nfts'));
 
-import IconWallet from '../../assets/images/IconWallet.png';
+import IconHome from '../../assets/images/IconHome.png';
 import IconNFT from '../../assets/images/IconNFT.png';
 import IconSwap from '../../assets/images/IconSwap.png';
-import IconBalance from '../../assets/images/IconBalance.png';
-import IconSettings from '../../assets/images/IconSettings.png';
+// IconBalance e IconSettings ya no se usan en el footer (solo 3 tabs)
 import { getDefaultRouteKey, getRoutesWithParent } from '../../routes/utils';
 import ChangePathIndexPage from './ChangePathIndexPage';
 
@@ -36,12 +35,12 @@ const SETTINGS_ROUTES = require('../Settings/routes').default;
 const routes = [
   {
     key: ROUTES_MAP.WALLET_OVERVIEW,
-    name: 'Wallet',
+    name: 'Home',
     path: '',
     route: '/wallet',
     Component: WalletOverview,
     default: true,
-    icon: IconWallet,
+    icon: IconHome,
   },
   {
     key: ROUTES_MAP.WALLET_INDEX_PATH,
@@ -82,6 +81,8 @@ const routes = [
   //   default: false,
   //   icon: IconSwap, // Al tener icon, aparecía en el footer
   // },
+  // Transactions y Settings NO aparecen en el footer (sin icon)
+  // Solo se acceden desde otras pantallas
   {
     key: ROUTES_MAP.WALLET_TRANSACTIONS,
     name: 'Transactions',
@@ -89,7 +90,7 @@ const routes = [
     route: '/wallet/transactions',
     Component: TransactionsPage,
     default: false,
-    icon: IconBalance,
+    // icon removido - no aparece en footer
   },
   {
     key: ROUTES_MAP.WALLET_SETTINGS,
@@ -99,7 +100,7 @@ const routes = [
     route: '/wallet/settings',
     Component: SettingsSection,
     default: false,
-    icon: IconSettings,
+    // icon removido - no aparece en footer
   },
   // BRIDGE - Comentado
   // {

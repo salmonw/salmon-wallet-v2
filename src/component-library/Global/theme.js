@@ -95,9 +95,14 @@ const borderRadius = {
   borderRadiusSM: 6,
   borderRadiusNormal: 8,
   borderRadiusMD: 10,
-  borderRadiusLG: 16,
-  borderRadiusXL: 20,
-  borderRadiusPill: 25,
+  borderRadiusLG: 16.59,       // Para cards de tokens
+  borderRadiusXL: 34.557,      // Para header/contenedores grandes
+  borderRadiusPill: 82.394,    // Para footer píldora
+};
+
+const shadows = {
+  cardShadow: '0px 10px 20px rgba(0, 0, 0, 0.9)',
+  buttonShadow: '0px 0px 16px rgba(0, 0, 0, 0.64)',
 };
 
 const staticColor = {
@@ -182,6 +187,13 @@ const themes = {
     niceWarningText: '#856404',
     niceDanger: '#f8d7da',
     niceDangerText: '#842029',
+
+    // Design tokens para rediseño
+    gradientStart: 'rgba(255, 92, 69, 1)',      // #FF5C45
+    gradientEnd: 'rgba(161, 42, 42, 0.9)',      // Rojo oscuro
+    borderCard: 'rgba(64, 73, 98, 1)',          // #404962
+    bgGlassy: 'rgba(56, 63, 82, 0.1)',          // Fondo glassy
+    positiveGreen: 'rgba(128, 255, 84, 1)',     // #80FF54
   },
   dark: {
     white: '#1f1f1f',
@@ -257,12 +269,27 @@ const themes = {
     niceWarningText: '#856404',
     niceDanger: '#f8d7da',
     niceDangerText: '#842029',
+
+    // Design tokens para rediseño
+    gradientStart: 'rgba(255, 92, 69, 1)',      // #FF5C45
+    gradientEnd: 'rgba(161, 42, 42, 0.9)',      // Rojo oscuro
+    borderCard: 'rgba(64, 73, 98, 1)',          // #404962
+    bgGlassy: 'rgba(56, 63, 82, 0.1)',          // Fondo glassy
+    positiveGreen: 'rgba(128, 255, 84, 1)',     // #80FF54
   },
 };
 
 const colorTheme = themes.default;
 
 export const globalStyles = StyleSheet.create({
+  // Padding horizontal para elementos que no van edge-to-edge
+  paddedContent: {
+    paddingHorizontal: gutters.paddingSM,
+  },
+  // Padding lateral de 24px segun Figma para botones y listas
+  paddedSection: {
+    paddingHorizontal: gutters.paddingLG,
+  },
   alignEnd: {
     alignSelf: 'flex-end',
   },
@@ -361,6 +388,7 @@ const theme = {
   lineHeight,
   gutters,
   borderRadius,
+  shadows,
   staticColor,
   colors: colorTheme,
   globalStyles,

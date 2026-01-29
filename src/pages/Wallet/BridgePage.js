@@ -30,7 +30,11 @@ import {
   getBridgeMinimalAmount,
   createBridgeExchange,
 } from '../../adapter';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import BasicRadios from '../../component-library/Radios/BasicRadios';
 import IconSwapAccent1 from '../../assets/images/IconSwapAccent1.png';
@@ -442,7 +446,7 @@ const BridgePage = ({ t }) => {
       {step === 1 &&
         (providerError ? (
           <GlobalLayout.Header>
-            <Header />
+            <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
             <GlobalBackTitle title={t('bridge.bridge')} />
             <GlobalPadding size="4xl" />
             <GlobalPadding size="4xl" />
@@ -464,7 +468,7 @@ const BridgePage = ({ t }) => {
         ) : (
           <>
             <GlobalLayout.Header>
-              <Header />
+              <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
               <GlobalBackTitle title={t('bridge.bridge')} />
               <GlobalPadding />
               {ready && tokens.length && (

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { AppContext } from '../../AppProvider';
 import { useNavigation } from '../../routes/hooks';
 import { withTranslation } from '../../hooks/useTranslations';
@@ -14,7 +14,11 @@ import AvatarImage from '../../component-library/Image/AvatarImage';
 import CardButton from '../../component-library/CardButton/CardButton';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalText from '../../component-library/Global/GlobalText';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 // PRIMEROS AJUSTES - No usado
 // import IconBridge from '../../assets/images/IconBridge.png';
 
@@ -43,7 +47,7 @@ const ExchangeSection = ({ t }) => {
   return (
     <GlobalLayout>
       <GlobalLayout.Header>
-        <Header />
+        <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
         <GlobalBackTitle title={t('swap.swap_tokens')} />
         <GlobalPadding />
         <GlobalText type="body2" color="secondary" center>

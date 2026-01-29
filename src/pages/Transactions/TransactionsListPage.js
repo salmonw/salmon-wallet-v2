@@ -7,7 +7,11 @@ import GlobalLayout from '../../component-library/Global/GlobalLayout';
 import GlobalText from '../../component-library/Global/GlobalText';
 import GlobalSkeleton from '../../component-library/Global/GlobalSkeleton';
 import CardButtonTransaction from '../../component-library/CardButton/CardButtonTransaction';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
+
+// Altura del Header de LockSheet para compensar el espacio
+const LOCKSHEET_HEADER_HEIGHT = 63;
 import theme from '../../component-library/Global/theme';
 
 import useAnalyticsEventTracker from '../../hooks/useAnalyticsEventTracker';
@@ -78,7 +82,7 @@ const TransactionsListPage = ({ t }) => {
   return (
     <GlobalLayout>
       <GlobalLayout.Header>
-        <Header />
+        <View style={{ height: LOCKSHEET_HEADER_HEIGHT }} />
         <GlobalBackTitle title={t('transactions.your_transactions')} />
         <View>
             {!loaded && <GlobalSkeleton type="ActivityList" />}

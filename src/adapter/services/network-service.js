@@ -1,16 +1,21 @@
 'use strict';
 
 const axios = require('./axios-wrapper').default;
-const { SALMON_STATIC_API_URL } = require('../constants/environment');
+const { SALMON_API_URL, SALMON_STATIC_API_URL } = require('../constants/environment');
 
 let promise;
+
+// En modo local, usar el backend dinámico para obtener la API key correcta del .env
+const networksUrl = SALMON_API_URL.includes('localhost')
+  ? `${SALMON_API_URL}/v1/networks`
+  : `${SALMON_STATIC_API_URL}/v1/networks`;
 
 const getNetworks = async () => {
   if (promise) {
     return promise;
   }
 
-  promise = axios.get(`${SALMON_STATIC_API_URL}/v1/networks`).then(({ data }) => data);
+  promise = axios.get(networksUrl).then(({ data }) => data);
 
   try {
     return await promise;

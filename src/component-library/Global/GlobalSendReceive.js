@@ -9,11 +9,13 @@ import GlobalButton from './GlobalButton';
 const GlobalSendReceive = ({
   goToSend,
   goToReceive,
+  goToActivity,
   goToList,
   goToBurn,
   goToBridge,
   canSend = false,
   canReceive = false,
+  canActivity = false,
   canList = false,
   canBurn = false,
   canBridge = false,
@@ -25,7 +27,7 @@ const GlobalSendReceive = ({
     <View style={globalStyles.inlineFlexButtons}>
       {canSend && (
         <GlobalButton
-          type="primary"
+          type="gradient"
           flex
           title={t('actions.send')}
           onPress={goToSend}
@@ -36,10 +38,21 @@ const GlobalSendReceive = ({
       )}
       {canReceive && (
         <GlobalButton
-          type="primary"
+          type="secondary"
           flex
           title={t('actions.receive')}
           onPress={goToReceive}
+          style={[globalStyles.button, globalStyles.buttonRight]}
+          touchableStyles={globalStyles.buttonTouchable}
+        />
+      )}
+      {canActivity && (
+        <GlobalButton
+          type="secondary"
+          flex
+          title={t('actions.activity')}
+          onPress={goToActivity}
+          key={'activity-button'}
           style={[globalStyles.button, globalStyles.buttonRight]}
           touchableStyles={globalStyles.buttonTouchable}
         />

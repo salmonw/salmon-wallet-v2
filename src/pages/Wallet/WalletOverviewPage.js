@@ -28,18 +28,46 @@ import {
   showPercentage,
 } from '../../utils/amount';
 import { withTranslation } from '../../hooks/useTranslations';
-import GlobalLayout from '../../component-library/Global/GlobalLayout';
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
+import theme from '../../component-library/Global/theme';
 import GlobalCollapse from '../../component-library/Global/GlobalCollapse';
 import GlobalPadding from '../../component-library/Global/GlobalPadding';
 import GlobalSendReceive from '../../component-library/Global/GlobalSendReceive';
 import GlobalChart from '../../component-library/Global/GlobalChart';
 import WalletBalanceCard from '../../component-library/Global/GlobalBalance';
-import Header from '../../component-library/Layout/Header';
+// Header ahora viene de LockSheet - no se usa aqui
+// import Header from '../../component-library/Layout/Header';
 // PRIMEROS AJUSTES - No usado (componente comentado)
 // import MyNfts from './components/MyNfts';
 import PendingTxs from './components/PendingTxs';
 import PendingBridgeTxs from './components/PendingBridgeTxs';
 import ImportTokenModal from './components/ImportTokenModal';
+
+// Estilos para el layout con header fijo y scroll en tokens
+const styles = StyleSheet.create({
+  // Contenedor principal - ocupa toda la pantalla
+  container: {
+    flex: 1,
+  },
+  // Parte fija (WalletBalanceCard) - altura automatica
+  fixedSection: {
+    // Sin flex - altura automatica segun contenido
+  },
+  // ScrollView - ocupa el espacio restante
+  scrollSection: {
+    flexGrow: 1,
+    flexShrink: 1,
+  },
+  // Contenido dentro del scroll con padding lateral
+  scrollContent: {
+    paddingHorizontal: theme.gutters.paddingLG, // 24px segun Figma
+    paddingBottom: 120, // Espacio para que el contenido termine arriba del footer
+  },
+  // Secciones con padding (compatibilidad con estructura anterior)
+  paddedSection: {
+    paddingHorizontal: theme.gutters.paddingLG, // 24px segun Figma
+  },
+});
 
 const NETWORK_TO_COINGECKO = {
   'solana-mainnet': 'solana',
@@ -217,9 +245,11 @@ const WalletOverviewPage = ({ cfgs, t }) => {
   }, [error, totalBalance, onRefresh, t]);
 
   return (
-    <GlobalLayout onRefresh={onRefresh} refreshing={loading}>
-      <GlobalLayout.Header>
-        <Header isHome />
+    <View style={styles.container}>
+      {/* Seccion fija - WalletBalanceCard NO scrollea */}
+      <View style={styles.fixedSection}>
+        {/* Balance Card - va de borde a borde, comienza desde top: 0, debajo del header */}
+        {/* El padding-top de 114px dentro del card deja espacio para el header */}
         <WalletBalanceCard
           loading={loading}
           total={total}
@@ -237,6 +267,19 @@ const WalletOverviewPage = ({ cfgs, t }) => {
             />
           }
         />
+      </View>
+
+      {/* Seccion scrolleable - Solo TokenList y contenido de abajo */}
+      <ScrollView
+        style={styles.scrollSection}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+        }
+        bounces={false}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+      >
         <GlobalPadding />
         <PendingTxs />
         <PendingBridgeTxs />
@@ -291,8 +334,8 @@ const WalletOverviewPage = ({ cfgs, t }) => {
             <MyNfts />
           </>
         )} */}
-      </GlobalLayout.Header>
-    </GlobalLayout>
+      </ScrollView>
+    </View>
   );
 };
 
